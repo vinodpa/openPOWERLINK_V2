@@ -1,8 +1,9 @@
 ################################################################################
 #
-# CMake options for openPOWERLINK stack on Xilinx/Microblaze
+# CMake file for openPOWERLINK MN library on Microblaze
 #
 # Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+# Copyright (c) 2014, Kalycito Infotech Pvt. Ltd.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,43 +29,59 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-MESSAGE(STATUS "Adding CMake configuration options for Microblaze")
+PROJECT(oplkmndrv-dualprocshm C)
+MESSAGE(STATUS "Configuring ${PROJECT_NAME}")
 
 ################################################################################
-# Handle includes
-SET(CMAKE_MODULE_PATH "${OPLK_BASE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-INCLUDE(global-microblaze)
-INCLUDE(geneclipsefilelist)
-INCLUDE(geneclipseincludelist)
+# Select object dictionary
+
+# set sources of POWERLINK library
+SET(LIB_KERNEL_SOURCES
+     ${KERNEL_SOURCES}
+     ${CTRL_KCAL_DUALPROCSHM_SOURCES}
+     ${DLL_KCAL_CIRCBUF_SOURCES}
+     ${EVENT_KCAL_DUALPROCSHM_SOURCES}
+     ${ERRHND_KCAL_DUALPROCSHM_SOURCES}
+     ${PDO_KCAL_DUALPROCSHM_SOURCES}
+     ${HARDWARE_DRIVER_OPENMAC_SOURCES}
+     ${HARDWARE_DRIVER_OPENMAC_MN_SOURCES}
+    )
+
+SET(LIB_COMMON_SOURCES
+     ${COMMON_SOURCES}
+     ${COMMON_CAL_DIRECT_SOURCES}
+     ${CIRCBUF_DUALPROCSHM_SOURCES}
+     ${COMMON_NOOS_SOURCES}
+     ${ARCH_LE_SOURCES}
+   )
+
+# Create full source list
+SET(LIB_SOURCES
+     ${LIB_KERNEL_SOURCES}
+     ${LIB_COMMON_SOURCES}
+   )
+
+# set includes of POWERLINK library
+INCLUDE_DIRECTORIES(
+                    ${PROJECT_SOURCE_DIR}
+                    ${OBJDICT_DIR}/${OBJDICT}
+                   )
+
+# set flags of the openPOWERLINK library
+ADD_DEFINITIONS("-Wall -Wextra -pedantic -std=c99")
 
 ################################################################################
-# Set Paths
-SET(XIL_HW_LIB_DIR ${OPLK_BASE_DIR}/hardware/lib/${SYSTEM_NAME_DIR}/${SYSTEM_PROCESSOR_DIR})
-SET(XIL_TOOLS_DIR ${TOOLS_DIR}/xilinx-microblaze)
-
-################################################################################
-# Add libraries
-OPTION(CFG_COMPILE_LIB_CN                           "Compile openPOWERLINK CN library" ON)
-OPTION(CFG_COMPILE_LIB_MN_DRV_DUALPROCSHM           "Compile openPOWERLINK MN driver library using dual procesor shared memory" ON)
-
-# CN libraries
-IF(CFG_COMPILE_LIB_CN)
-    # Path to the hardware library folder of your board example
-    SET( CFG_COMPILE_LIB_CN_HW_LIB_DIR ${XIL_HW_LIB_DIR}/avnet-s6plkeb/cn-single-gpio
-            CACHE PATH "Path to the hardware library folder for the single processor CN library")
-
-    ADD_SUBDIRECTORY(proj/generic/liboplkcn)
+# Handle target specific functions
+IF(${CMAKE_SYSTEM_NAME} STREQUAL "Generic" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "Microblaze")
+    INCLUDE(configure-microblaze.cmake)
 ELSE()
-    UNSET(CFG_COMPILE_LIB_CN_HW_PATH CACHE)
+    MESSAGE(FATAL_ERROR "Unknown platform selected!")
 ENDIF()
 
-#MN libraries
-IF(CFG_COMPILE_LIB_MN_DRV_DUALPROCSHM)
-    # Path to the hardware library folder of your board example
-    SET( CFG_COMPILE_LIB_MN_HW_LIB_DIR ${XIL_HW_LIB_DIR}/xilinx-z702/mn-dual-shmem-gpio
-            CACHE PATH "Path to the hardware library folder for the dual processor MN library")
-
-    ADD_SUBDIRECTORY(proj/generic/liboplkmndrv-dualprocshm)
-ELSE()
-    UNSET(CFG_COMPILE_LIB_MN_HW_PATH CACHE)
-ENDIF()
+################################################################################
+# Define library and installation rules
+ADD_LIBRARY(${PROJECT_NAME} ${LIB_TYPE} ${LIB_SOURCES} ${LIB_ARCH_SOURCES})
+SET_PROPERTY(TARGET ${PROJECT_NAME} PROPERTY COMPILE_DEFINITIONS_DEBUG DEBUG;DEF_DEBUG_LVL=${CFG_DEBUG_LVL})
+SET_PROPERTY(TARGET ${PROJECT_NAME} PROPERTY DEBUG_POSTFIX "_d")
+INSTALL(TARGETS ${PROJECT_NAME} ARCHIVE DESTINATION ${ARCH_INSTALL_POSTFIX})
+INSTALL(FILES ${PROJECT_SOURCE_DIR}/oplkcfg.h DESTINATION ${ARCH_INSTALL_POSTFIX}/config-${PROJECT_NAME})
