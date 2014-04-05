@@ -2,10 +2,10 @@
 ********************************************************************************
 \file   xilinx_microblaze/target-microblaze.c
 
-\brief  target specific functions for Microblaze without OS
+\brief  Target specific functions for Microblaze without OS
 
 This target depending module provides several functions that are necessary for
-systems without shared buffer and any OS.
+systems without OS and not using shared buffer library.
 
 \ingroup module_target
 *******************************************************************************/
@@ -48,6 +48,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <xparameters.h>
 #include <xintc.h>         // interrupt controller
 
+#ifdef __ZYNQ__
+    #include "xil_io.h"
+#endif
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -72,7 +75,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
+#ifdef __ZYNQ__
+    // base address of PS Uart1
+    #define UART_BASE 0xE0001000
+    /* Write to memory location or register */
+    #define X_mWriteReg(BASE_ADDRESS, RegOffset, data) \
+                *(unsigned int *)(BASE_ADDRESS + RegOffset) = ((unsigned int) data);
+    /* Read from memory location or register */
+    #define X_mReadReg(BASE_ADDRESS, RegOffset) \
+                *(unsigned int *)(BASE_ADDRESS + RegOffset);
 
+    #define XUartChanged_IsTransmitFull(BaseAddress)  \
+                ((Xil_In32((BaseAddress) + 0x2C) & \
+                            0x10) == 0x10)
+
+    #define XUartChanged_SendByte(BAddr,Data) \
+        u32 u32BaseAddress = BAddr; \
+        u8 u8Data = Data; \
+        while (XUartChanged_IsTransmitFull(u32BaseAddress));\
+        X_mWriteReg(u32BaseAddress, 0x30, u8Data);
+#endif
 //------------------------------------------------------------------------------
 // local types
 //------------------------------------------------------------------------------
@@ -87,7 +109,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static void enableInterruptMaster(void);
 static void disableInterruptMaster(void);
-
+#ifdef __ZYNQ__
+void print(char *str);
+#endif
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
 //============================================================================//
@@ -147,13 +171,13 @@ void target_enableGlobalInterrupt (UINT8 fEnable_p)
 
 //------------------------------------------------------------------------------
 /**
-\brief    checks if CPU is in interrupt context
+\brief    Check if CPU is in interrupt context
 
 This function obtains if the CPU is in interrupt context.
 
-\return UINT8
-\retval TRUE                    CPU is in interrupt context
-\retval FALSE                   CPU is NOT in interrupt context
+\return This function returns the current CPU interrupt context status
+\retval TRUE    CPU is in interrupt context
+\retval FALSE   CPU is NOT in interrupt context
 
 \ingroup module_target
 */
@@ -264,6 +288,45 @@ void target_msleep (UINT32 milliSeconds_p)
     usleep(TGTCONIO_MS_IN_US(milliSeconds_p));
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief Register synchronization interrupt handler
+
+The function registers the ISR for target specific synchronization interrupt
+used by the application for PDO and event synchronization.
+
+\param  callback_p              Interrupt handler
+\param  pArg_p                  Argument to be passed while calling the handler
+
+\return The function returns the error code as a integer value
+\retval 0 if able to register
+\retval other if not
+
+\ingroup module_target
+*/
+//------------------------------------------------------------------------------
+int target_regSyncIrqHdl( void* callback_p,void* pArg_p)
+{
+    // todo gks: Add Target interrupt registration for sync here
+    return 0;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+\brief Sync interrupt control rroutine
+
+The function is used to enable or disable the sync interrupt
+
+\param  fEnable_p              enable if TRUE, disable if FALSE
+
+\ingroup module_target
+*/
+//------------------------------------------------------------------------------
+void target_enableSyncIrq(BOOL fEnable_p)
+{
+    // todo gks Add interrupt handling
+}
 //============================================================================//
 //            P R I V A T E   F U N C T I O N S                               //
 //============================================================================//
@@ -295,4 +358,12 @@ static void disableInterruptMaster(void)
     //disable global interrupt master
     XIntc_MasterDisable(XPAR_PCP_INTC_BASEADDR);
 }
+
+#ifdef __ZYNQ__
+void outbyte(char c)
+{
+    XUartChanged_SendByte(UART_BASE, c);
+}
+#endif
 ///\}
+
