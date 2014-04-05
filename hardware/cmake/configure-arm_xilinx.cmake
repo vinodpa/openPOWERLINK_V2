@@ -33,7 +33,7 @@
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/microblaze" ${CMAKE_MODULE_PATH})
 SET(CMAKE_MODULE_PATH "${OPLK_BASE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-INCLUDE(global-microblaze)
+INCLUDE(global-arm)
 INCLUDE(geneclipsefilelist)
 INCLUDE(geneclipseincludelist)
 
@@ -41,7 +41,7 @@ INCLUDE(geneclipseincludelist)
 # U S E R    O P T I O N S
 
 # Assemble path to all boards with Xilinx demos
-SET(BOARD_DIRS ${PROJECT_SOURCE_DIR}/boards/avnet-s6plkeb;${PROJECT_SOURCE_DIR}/boards/xilinx-z702)
+SET(BOARD_DIRS ${PROJECT_SOURCE_DIR}/boards/xilinx-z702)
 
 ################################################################################
 # Find the Xilinx toolchain
@@ -62,4 +62,4 @@ FIND_PROGRAM(XIL_XPS NAMES xps
 ################################################################################
 # Set path to system folders
 SET(ARCH_IPCORE_REPO ${PROJECT_SOURCE_DIR}/ipcore/xilinx)
-SET(ARCH_TOOLS_DIR ${OPLK_BASE_DIR}/tools/xilinx-microblaze)
+SET(ARCH_TOOLS_DIR ${OPLK_BASE_DIR}/tools/xilinx-arm)

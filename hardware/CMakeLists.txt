@@ -59,6 +59,8 @@ ENDIF()
 # Handle target specific functions
 IF(${CMAKE_SYSTEM_NAME} STREQUAL "Generic" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "Microblaze")
     INCLUDE(configure-microblaze)
+ELSEIF(${CMAKE_SYSTEM_NAME} STREQUAL "Generic" AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "ARM_Xilinx")
+    INCLUDE(configure-arm_xilinx)
 ELSE()
     MESSAGE(FATAL_ERROR "Unknown platform selected!")
 ENDIF()
@@ -93,7 +95,17 @@ FOREACH(BOARD_DIR IN ITEMS ${BOARD_DIRS})
             # Get null settings
             INCLUDE(cmake/null-settings.cmake)
             # Get settings file of demo to add
-            INCLUDE(${BOARD_DIR}/${EXAMPLE_NAME}/cmake/settings.cmake)
+
+            #GET_FILENAME_COMPONENT(TOOLCHAIN ${CMAKE_TOOLCHAIN_FILE} NAME)
+            IF(${EXAMPLE_NAME} MATCHES  mn-dual-shmem-gpio)
+                IF(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "Microblaze")
+                    INCLUDE(${BOARD_DIR}/${EXAMPLE_NAME}/cmake/settings.cmake)
+                ELSE()
+                    INCLUDE(${BOARD_DIR}/${EXAMPLE_NAME}/cmake/settings_host.cmake)
+                ENDIF()
+            ELSE()
+                INCLUDE(${BOARD_DIR}/${EXAMPLE_NAME}/cmake/settings.cmake)
+            ENDIF()
 
             CONFIGURE_FILE(cmake/BoardsCMakeLists.cmake.in ${BOARD_DIR}/${EXAMPLE_NAME}/CMakeLists.txt COPYONLY)
             ADD_SUBDIRECTORY(${BOARD_DIR}/${EXAMPLE_NAME})
