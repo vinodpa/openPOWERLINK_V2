@@ -5,6 +5,27 @@ Revision history of openPOWERLINK Protocol Stack {#page_revision_history}
 
 # Release 2 {#sect_revision_v2}
 
+## V2.1.0 {#sect_revision_v2_1_0}
+
+This is the final release of openPOWERLINK V2.1.0.
+
+### Changes:
+- Xilinx Zynq MN demo with Microblaze and openMAC in FPGA-part (PL)
+
+### Known Issues:
+- Xilinx Zynq MN:
+    - When following the steps in [xapp1093](http://www.xilinx.com/support/documentation/application_notes/xapp1093-amp-bare-metal-microblaze.pdf)
+      to run Microblaze without FSBL XMD-connect fails to stop/reset Microblaze.
+      Usually this error can be ignored, debugging Microblaze is possible although.
+      Otherwise, debugging the design with using the FSBL works.
+
+    - The address map to HP0 AXI slave port of PS is not forwarded to system.xml
+      by XPS automatically. Therefore, the `system.xml` in
+      `hardware/boards/xilinx-z702/mn-dual-shmem-gpio/sdk` is used instead.
+      If any changes are done in XPS (e.g. add some IP-Core, change addresses or
+      add Chip Scope instance), the `system.xml` in `hardware/boards/xilinx-z702/mn-dual-shmem-gpio/sdk`
+      must be revised accordingly.
+
 ## V2.0.2 {#sect_revision_v2_0_2}
 
 This is the final release of openPOWERLINK V2.0.2. This release is a stable
@@ -528,7 +549,7 @@ used for testing. It is not advised to use it in productive environments!
 - altera_nios2: Use Altera Enhanced Interrupt API
 - [FEATURE] Update of the Altera example for SYS TEC ECUcore-EP3C board
             with the new POWERLINK IP-core
-            
+
 ## V1.8 {#sect_revision_v1_8}
 
 - Enable PResChaining in Altera FPGA demo project
