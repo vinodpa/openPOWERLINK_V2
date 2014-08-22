@@ -58,6 +58,11 @@
          value = "5";
          type = "int";
       }
+      datum sopceditor_expanded
+      {
+         value = "0";
+         type = "boolean";
+      }
    }
    element pcp
    {
@@ -81,7 +86,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -487,7 +492,7 @@
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
- <module kind="pcp_subsystem" version="1.0" enabled="1" name="pcp">
+ <module kind="mn_soc_pcp" version="1.0" enabled="1" name="pcp">
   <parameter name="AUTO_GENERATION_ID" value="0" />
   <parameter name="AUTO_UNIQUE_ID" value="$${FILENAME}_pcp" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
