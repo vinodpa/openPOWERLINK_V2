@@ -12,6 +12,14 @@
    element $${FILENAME}
    {
    }
+   element ddr3_emif_0.avl_0
+   {
+      datum baseAddress
+      {
+         value = "0";
+         type = "String";
+      }
+   }
    element clk_100
    {
       datum _sortIndex
@@ -38,6 +46,14 @@
          type = "boolean";
       }
    }
+   element sysid_qsys.control_slave
+   {
+      datum baseAddress
+      {
+         value = "26640";
+         type = "String";
+      }
+   }
    element ddr3_emif_0
    {
       datum _sortIndex
@@ -49,6 +65,14 @@
       {
          value = "0";
          type = "boolean";
+      }
+   }
+   element hostinterface_0.host
+   {
+      datum baseAddress
+      {
+         value = "131072";
+         type = "String";
       }
    }
    element host_0
@@ -64,6 +88,48 @@
          type = "boolean";
       }
    }
+   element hostinterface_0
+   {
+      datum _sortIndex
+      {
+         value = "7";
+         type = "int";
+      }
+      datum sopceditor_expanded
+      {
+         value = "0";
+         type = "boolean";
+      }
+   }
+   element openmac_0.macReg
+   {
+      datum baseAddress
+      {
+         value = "16384";
+         type = "String";
+      }
+   }
+   element openmac_0.macTimer
+   {
+      datum baseAddress
+      {
+         value = "26624";
+         type = "String";
+      }
+   }
+   element openmac_0
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
+      }
+      datum sopceditor_expanded
+      {
+         value = "1";
+         type = "boolean";
+      }
+   }
    element pcp
    {
       datum _sortIndex
@@ -75,6 +141,22 @@
       {
          value = "0";
          type = "boolean";
+      }
+   }
+   element hostinterface_0.pcp
+   {
+      datum baseAddress
+      {
+         value = "24576";
+         type = "String";
+      }
+   }
+   element openmac_0.pktBuf
+   {
+      datum baseAddress
+      {
+         value = "0";
+         type = "String";
       }
    }
    element sysid_qsys
@@ -169,6 +251,21 @@
    internal="host_0.hps_0_h2f_reset"
    type="reset"
    dir="start" />
+ <interface
+   name="openmac_0_mii"
+   internal="openmac_0.mii"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="openmac_0_smi"
+   internal="openmac_0.smi"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="openmac_0_mactimerout"
+   internal="openmac_0.macTimerOut"
+   type="conduit"
+   dir="end" />
  <module
    kind="altera_mem_if_ddr3_emif"
    version="13.1"
@@ -526,6 +623,46 @@
   <parameter name="AUTO_CLK100_CLOCK_DOMAIN" value="1" />
   <parameter name="AUTO_CLK100_RESET_DOMAIN" value="1" />
  </module>
+ <module kind="openmac" version="1.0.0" enabled="1" name="openmac_0">
+  <parameter name="sys_mainClk" value="50000000" />
+  <parameter name="sys_mainClkx2" value="100000000" />
+  <parameter name="sys_dmaAddrWidth" value="30" />
+  <parameter name="gui_phyType" value="2" />
+  <parameter name="gui_phyCount" value="2" />
+  <parameter name="gui_extraSmi" value="false" />
+  <parameter name="gui_txBufLoc" value="1" />
+  <parameter name="gui_txBufSize" value="16" />
+  <parameter name="gui_txBurstSize" value="1" />
+  <parameter name="gui_rxBufLoc" value="2" />
+  <parameter name="gui_rxBufSize" value="1" />
+  <parameter name="gui_rxBurstSize" value="8" />
+  <parameter name="gui_tmrCount" value="1" />
+  <parameter name="gui_tmrPulseEn" value="false" />
+  <parameter name="gui_tmrPulseWdt" value="10" />
+  <parameter name="gui_actEn" value="false" />
+  <parameter name="gui_sdcEn" value="true" />
+  <parameter name="AUTO_DMACLK_CLOCK_RATE" value="100000000" />
+  <parameter name="AUTO_PKTCLK_CLOCK_RATE" value="50000000" />
+ </module>
+ <module
+   kind="hostinterface"
+   version="1.0.0"
+   enabled="1"
+   name="hostinterface_0">
+  <parameter name="sys_uniqueId" value="0" />
+  <parameter name="gui_sizeDynBuf0" value="2" />
+  <parameter name="gui_sizeDynBuf1" value="2" />
+  <parameter name="gui_sizeErrorCnter" value="3108" />
+  <parameter name="gui_sizeTxNmtQ" value="2" />
+  <parameter name="gui_sizeTxGenQ" value="2" />
+  <parameter name="gui_sizeTxSyncQ" value="2" />
+  <parameter name="gui_sizeTxVethQ" value="2" />
+  <parameter name="gui_sizeRxVethQ" value="1" />
+  <parameter name="gui_sizeK2UQ" value="8" />
+  <parameter name="gui_sizeU2KQ" value="8" />
+  <parameter name="gui_sizePdo" value="36864" />
+  <parameter name="AUTO_C0_CLOCK_RATE" value="50000000" />
+ </module>
  <connection
    kind="reset"
    version="13.1"
@@ -559,7 +696,7 @@
    start="pcp.slow_bridge_m0"
    end="sysid_qsys.control_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="baseAddress" value="0x6810" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -633,7 +770,7 @@
    start="host_0.lw_bridge_m0"
    end="sysid_qsys.control_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="baseAddress" value="0x6810" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection kind="clock" version="13.1" start="clk_100.clk" end="host_0.clk100" />
@@ -658,6 +795,130 @@
    version="13.1"
    start="clk_100.clk_reset"
    end="host_0.reset_clk100" />
+ <connection
+   kind="clock"
+   version="13.1"
+   start="clk_50.clk"
+   end="openmac_0.mainClk" />
+ <connection
+   kind="clock"
+   version="13.1"
+   start="clk_100.clk"
+   end="openmac_0.mainClkx2" />
+ <connection
+   kind="clock"
+   version="13.1"
+   start="clk_100.clk"
+   end="openmac_0.dmaClk" />
+ <connection kind="clock" version="13.1" start="clk_50.clk" end="openmac_0.pktClk" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_50.clk_reset"
+   end="openmac_0.mainRst" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_100.clk_reset"
+   end="openmac_0.mainRst" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_50.clk_reset"
+   end="openmac_0.dmaRst" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_100.clk_reset"
+   end="openmac_0.dmaRst" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_50.clk_reset"
+   end="openmac_0.pktRst" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_100.clk_reset"
+   end="openmac_0.pktRst" />
+ <connection
+   kind="clock"
+   version="13.1"
+   start="clk_50.clk"
+   end="hostinterface_0.c0" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_50.clk_reset"
+   end="hostinterface_0.r0" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_100.clk_reset"
+   end="hostinterface_0.r0" />
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="host_0.lw_bridge_m0"
+   end="hostinterface_0.host">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x00020000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="pcp.slow_bridge_m0"
+   end="hostinterface_0.pcp">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x6000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="pcp.slow_bridge_m0"
+   end="openmac_0.macReg">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x4000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="pcp.slow_bridge_m0"
+   end="openmac_0.macTimer">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x6800" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="pcp.slow_bridge_m0"
+   end="openmac_0.pktBuf">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="openmac_0.dma"
+   end="ddr3_emif_0.avl_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="hostinterface_0.hostBridge"
+   end="ddr3_emif_0.avl_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
