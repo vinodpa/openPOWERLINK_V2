@@ -84,7 +84,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -97,7 +97,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -130,6 +130,14 @@
          type = "boolean";
       }
    }
+   element hostinterface_0.pcp
+   {
+      datum baseAddress
+      {
+         value = "24576";
+         type = "String";
+      }
+   }
    element pcp
    {
       datum _sortIndex
@@ -139,16 +147,8 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
-      }
-   }
-   element hostinterface_0.pcp
-   {
-      datum baseAddress
-      {
-         value = "24576";
-         type = "String";
       }
    }
    element openmac_0.pktBuf
@@ -251,21 +251,9 @@
    internal="host_0.hps_0_h2f_reset"
    type="reset"
    dir="start" />
- <interface
-   name="openmac_0_mii"
-   internal="openmac_0.mii"
-   type="conduit"
-   dir="end" />
- <interface
-   name="openmac_0_smi"
-   internal="openmac_0.smi"
-   type="conduit"
-   dir="end" />
- <interface
-   name="openmac_0_mactimerout"
-   internal="openmac_0.macTimerOut"
-   type="conduit"
-   dir="end" />
+ <interface name="openmac_0_mii" internal="openmac_0.mii" />
+ <interface name="openmac_0_smi" internal="openmac_0.smi" />
+ <interface name="openmac_0_mactimerout" internal="openmac_0.macTimerOut" />
  <module
    kind="altera_mem_if_ddr3_emif"
    version="13.1"
@@ -581,7 +569,7 @@
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
-  <parameter name="resetSynchronousEdges" value="NONE" />
+  <parameter name="resetSynchronousEdges" value="DEASSERT" />
  </module>
  <module kind="clock_source" version="13.1" enabled="1" name="clk_100">
   <parameter name="clockFrequency" value="100000000" />
@@ -623,7 +611,7 @@
   <parameter name="AUTO_CLK100_CLOCK_DOMAIN" value="1" />
   <parameter name="AUTO_CLK100_RESET_DOMAIN" value="1" />
  </module>
- <module kind="openmac" version="1.0.0" enabled="1" name="openmac_0">
+ <module kind="openmac" version="1.0.0" enabled="0" name="openmac_0">
   <parameter name="sys_mainClk" value="50000000" />
   <parameter name="sys_mainClkx2" value="100000000" />
   <parameter name="sys_dmaAddrWidth" value="30" />
@@ -842,11 +830,6 @@
    start="clk_100.clk_reset"
    end="openmac_0.pktRst" />
  <connection
-   kind="clock"
-   version="13.1"
-   start="clk_50.clk"
-   end="hostinterface_0.c0" />
- <connection
    kind="reset"
    version="13.1"
    start="clk_50.clk_reset"
@@ -919,6 +902,11 @@
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
+ <connection
+   kind="clock"
+   version="13.1"
+   start="clk_50.clk"
+   end="hostinterface_0.c0" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />

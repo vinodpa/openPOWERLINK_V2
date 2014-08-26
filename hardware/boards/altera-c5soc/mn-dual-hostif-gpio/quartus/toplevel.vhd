@@ -146,7 +146,17 @@ entity toplevel is
   PLNK_SMI_PHYRSTN      : out   std_logic_vector(0 downto 0);                     -- nPhyRst
   PLNK_SMI_CLK          : out   std_logic_vector(0 downto 0);                     -- clk
   PLNK_SMI_DIO          : inout std_logic_vector(0 downto 0)  := (others => 'X'); -- dio
-  PLNK_MAC_TIMER : out   std_logic_vector(0 downto 0)                      -- export
+  PLNK_MAC_TIMER : out   std_logic_vector(0 downto 0);                      -- export
+  
+  --TEST PORTS
+  test_pushbutton	     : out  std_logic;
+  test_pllLocked	     : out  std_logic;
+  test_hps_fpga_reset_n_src	     : out  std_logic;
+  test_ddr3_afi_resetn	     : out  std_logic;
+  test_hps_fpga_reset_n	     : out  std_logic;
+  test_pulse_resetn_ddr	     : out  std_logic
+    
+  
 );
 end toplevel;
 
@@ -170,6 +180,7 @@ architecture rtl of toplevel is
   signal pllLocked				  : std_logic;
   
   signal clock_in					  : std_logic;
+  
   
   component mnDualHostifGpio is
         port (
@@ -294,18 +305,18 @@ architecture rtl of toplevel is
             ddr3_emif_0_global_reset_reset_n                  : in    std_logic                     := 'X';             -- reset_n
             ddr3_emif_0_afi_reset_export_reset_n              : out   std_logic;                                        -- reset_n
 				ddr3_emif_0_pll_ref_clk_clk                       : in    std_logic                     := 'X';             -- clk
-            ddr3_emif_0_soft_reset_reset_n                    : in    std_logic                     := 'X';             -- reset_n
-				openmac_0_mii_txEnable                            : out   std_logic_vector(1 downto 0);                     -- txEnable
-            openmac_0_mii_txData                              : out   std_logic_vector(7 downto 0);                     -- txData
-            openmac_0_mii_txClk                               : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- txClk
-            openmac_0_mii_rxError                             : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxError
-            openmac_0_mii_rxDataValid                         : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxDataValid
-            openmac_0_mii_rxData                              : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- rxData
-            openmac_0_mii_rxClk                               : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxClk
-            openmac_0_smi_nPhyRst                             : out   std_logic_vector(0 downto 0);                     -- nPhyRst
-            openmac_0_smi_clk                                 : out   std_logic_vector(0 downto 0);                     -- clk
-            openmac_0_smi_dio                                 : inout std_logic_vector(0 downto 0)  := (others => 'X'); -- dio
-            openmac_0_mactimerout_export                      : out   std_logic_vector(0 downto 0)                      -- export
+            ddr3_emif_0_soft_reset_reset_n                    : in    std_logic                     := 'X'             -- reset_n
+--				  openmac_0_mii_txEnable                            : out   std_logic_vector(1 downto 0);                     -- txEnable
+--            openmac_0_mii_txData                              : out   std_logic_vector(7 downto 0);                     -- txData
+--            openmac_0_mii_txClk                               : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- txClk
+--            openmac_0_mii_rxError                             : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxError
+--            openmac_0_mii_rxDataValid                         : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxDataValid
+--            openmac_0_mii_rxData                              : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- rxData
+--            openmac_0_mii_rxClk                               : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxClk
+--            openmac_0_smi_nPhyRst                             : out   std_logic_vector(0 downto 0);                     -- nPhyRst
+--            openmac_0_smi_clk                                 : out   std_logic_vector(0 downto 0);                     -- clk
+--            openmac_0_smi_dio                                 : inout std_logic_vector(0 downto 0)  := (others => 'X'); -- dio
+--            openmac_0_mactimerout_export                      : out   std_logic_vector(0 downto 0)                      -- export
         );
     end component mnDualHostifGpio;
 	 
@@ -491,18 +502,18 @@ soc_inst: component mnDualHostifGpio
       ddr3_emif_0_soft_reset_reset_n        =>  pulse_resetn_ddr, 
       ddr3_emif_0_afi_reset_export_reset_n  =>  ddr3_afi_resetn,                       
       ddr3_emif_0_pll_ref_clk_clk           =>  fpga_clk_50,
-      oct_rzqin                             =>  fpga_oct_rzqin,
-		openmac_0_mii_txEnable                =>  PLNK_MII_TXEN,                       --                  openmac_0_mii.txEnable
-      openmac_0_mii_txData                  =>  PLNK_MII_TXD,                        --                               .txData
-      openmac_0_mii_txClk                   =>  PLNK_MII_TXCLK,                      --                               .txClk
-      openmac_0_mii_rxError                 =>  PLNK_MII_RXERR,                      --                               .rxError
-      openmac_0_mii_rxDataValid             =>  PLNK_MII_RXDV,                       --                               .rxDataValid
-      openmac_0_mii_rxData                  =>  PLNK_MII_RXD,                        --                               .rxData
-      openmac_0_mii_rxClk                   =>  PLNK_MII_RXCLK,                      --                               .rxClk
-      openmac_0_smi_nPhyRst                 =>  PLNK_SMI_PHYRSTN,                    --                  openmac_0_smi.nPhyRst
-      openmac_0_smi_clk                     =>  PLNK_SMI_CLK,                        --                               .clk
-      openmac_0_smi_dio                     =>  PLNK_SMI_DIO,                        --                               .dio
-      openmac_0_mactimerout_export          =>  PLNK_MAC_TIMER                       --          openmac_0_mactimerout.export
+      oct_rzqin                             =>  fpga_oct_rzqin
+--		  openmac_0_mii_txEnable                =>  PLNK_MII_TXEN,                       --                  openmac_0_mii.txEnable
+--      openmac_0_mii_txData                  =>  PLNK_MII_TXD,                        --                               .txData
+--      openmac_0_mii_txClk                   =>  PLNK_MII_TXCLK,                      --                               .txClk
+--      openmac_0_mii_rxError                 =>  PLNK_MII_RXERR,                      --                               .rxError
+--      openmac_0_mii_rxDataValid             =>  PLNK_MII_RXDV,                       --                               .rxDataValid
+--      openmac_0_mii_rxData                  =>  PLNK_MII_RXD,                        --                               .rxData
+--      openmac_0_mii_rxClk                   =>  PLNK_MII_RXCLK,                      --                               .rxClk
+--      openmac_0_smi_nPhyRst                 =>  PLNK_SMI_PHYRSTN,                    --                  openmac_0_smi.nPhyRst
+--      openmac_0_smi_clk                     =>  PLNK_SMI_CLK,                        --                               .clk
+--      openmac_0_smi_dio                     =>  PLNK_SMI_DIO,                        --                               .dio
+--      openmac_0_mactimerout_export          =>  PLNK_MAC_TIMER                       --          openmac_0_mactimerout.export
     );  
 	 
 	 
@@ -534,6 +545,12 @@ port map(
   pulse_reset_n    => pulse_resetn_ddr 
  );
 
+  test_pushbutton	          <= fpga_debounced_buttons(0); 
+  test_pllLocked	          <= pllLocked;
+  test_hps_fpga_reset_n_src <= hps_fpga_reset_n_src;
+  test_ddr3_afi_resetn	    <= ddr3_afi_resetn;
+  test_hps_fpga_reset_n	    <= hps_fpga_reset_n;
+  test_pulse_resetn_ddr	    <= pulse_resetn_ddr;
 
 pllInst : pll 
 port map
