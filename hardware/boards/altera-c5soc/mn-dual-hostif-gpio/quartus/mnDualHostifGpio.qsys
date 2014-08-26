@@ -147,7 +147,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -246,14 +246,22 @@
    dir="end" />
  <interface name="memory" internal="host_0.memory" type="conduit" dir="end" />
  <interface name="hps_io" internal="host_0.hps_0_hps_io" type="conduit" dir="end" />
+ <interface name="host_0_hps_0_h2f_reset" internal="host_0.hps_0_h2f_reset" />
  <interface
-   name="host_0_hps_0_h2f_reset"
-   internal="host_0.hps_0_h2f_reset"
-   type="reset"
-   dir="start" />
- <interface name="openmac_0_mii" internal="openmac_0.mii" />
- <interface name="openmac_0_smi" internal="openmac_0.smi" />
- <interface name="openmac_0_mactimerout" internal="openmac_0.macTimerOut" />
+   name="openmac_0_mii"
+   internal="openmac_0.mii"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="openmac_0_smi"
+   internal="openmac_0.smi"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="openmac_0_mactimerout"
+   internal="openmac_0.macTimerOut"
+   type="conduit"
+   dir="end" />
  <module
    kind="altera_mem_if_ddr3_emif"
    version="13.1"
@@ -267,7 +275,7 @@
   <parameter name="DEVICE_DEPTH" value="1" />
   <parameter name="MEM_MIRROR_ADDRESSING" value="0" />
   <parameter name="MEM_CLK_FREQ_MAX" value="800.0" />
-  <parameter name="MEM_ROW_ADDR_WIDTH" value="15" />
+  <parameter name="MEM_ROW_ADDR_WIDTH" value="12" />
   <parameter name="MEM_COL_ADDR_WIDTH" value="10" />
   <parameter name="MEM_DQ_WIDTH" value="32" />
   <parameter name="MEM_DQ_PER_DQS" value="8" />
@@ -611,10 +619,10 @@
   <parameter name="AUTO_CLK100_CLOCK_DOMAIN" value="1" />
   <parameter name="AUTO_CLK100_RESET_DOMAIN" value="1" />
  </module>
- <module kind="openmac" version="1.0.0" enabled="0" name="openmac_0">
+ <module kind="openmac" version="1.0.0" enabled="1" name="openmac_0">
   <parameter name="sys_mainClk" value="50000000" />
   <parameter name="sys_mainClkx2" value="100000000" />
-  <parameter name="sys_dmaAddrWidth" value="30" />
+  <parameter name="sys_dmaAddrWidth" value="27" />
   <parameter name="gui_phyType" value="2" />
   <parameter name="gui_phyCount" value="2" />
   <parameter name="gui_extraSmi" value="false" />
@@ -907,6 +915,34 @@
    version="13.1"
    start="clk_50.clk"
    end="hostinterface_0.c0" />
+ <connection
+   kind="interrupt"
+   version="13.1"
+   start="pcp.mac_irq"
+   end="openmac_0.macIrq">
+  <parameter name="irqNumber" value="0" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="13.1"
+   start="pcp.sync_irq"
+   end="openmac_0.timerIrq">
+  <parameter name="irqNumber" value="0" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="13.1"
+   start="hostinterface_0.irqSync"
+   end="openmac_0.timerIrq">
+  <parameter name="irqNumber" value="0" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="13.1"
+   start="host_0.hostif_irq_i"
+   end="hostinterface_0.irqOut">
+  <parameter name="irqNumber" value="0" />
+ </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />

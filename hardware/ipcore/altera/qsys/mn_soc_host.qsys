@@ -72,19 +72,6 @@
          type = "boolean";
       }
    }
-   element epcs_irq
-   {
-      datum _sortIndex
-      {
-         value = "8";
-         type = "int";
-      }
-      datum sopceditor_expanded
-      {
-         value = "0";
-         type = "boolean";
-      }
-   }
    element hostif_irq
    {
       datum _sortIndex
@@ -94,7 +81,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -111,24 +98,11 @@
          type = "boolean";
       }
    }
-   element jtag_irq
-   {
-      datum _sortIndex
-      {
-         value = "9";
-         type = "int";
-      }
-      datum sopceditor_expanded
-      {
-         value = "0";
-         type = "boolean";
-      }
-   }
    element jtag_uart_0
    {
       datum _sortIndex
       {
-         value = "10";
+         value = "8";
          type = "int";
       }
       datum sopceditor_expanded
@@ -179,11 +153,11 @@
          type = "String";
       }
    }
-   element button_pio.s1
+   element timer_0.s1
    {
       datum baseAddress
       {
-         value = "0";
+         value = "64";
          type = "String";
       }
    }
@@ -193,6 +167,22 @@
       {
          value = "16";
          type = "String";
+      }
+   }
+   element button_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "0";
+         type = "String";
+      }
+   }
+   element timer_0
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
       }
    }
 }
@@ -207,7 +197,7 @@
  <parameter name="globalResetBus" value="false" />
  <parameter name="hdlLanguage" value="VERILOG" />
  <parameter name="maxAdditionalLatency" value="1" />
- <parameter name="projectName" value="toplevel.qpf" />
+ <parameter name="projectName" value="" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="0" />
  <parameter name="timeStamp" value="0" />
@@ -231,11 +221,6 @@
    internal="button_pio.external_connection"
    type="conduit"
    dir="end" />
- <interface
-   name="hps_0_h2f_reset"
-   internal="hps_0.h2f_reset"
-   type="reset"
-   dir="start" />
  <interface name="hps_0_f2h_cold_reset_req" internal="hps_0.f2h_cold_reset_req" />
  <interface name="hps_0_f2h_debug_reset_req" internal="hps_0.f2h_debug_reset_req" />
  <interface name="hps_0_f2h_warm_reset_req" internal="hps_0.f2h_warm_reset_req" />
@@ -255,13 +240,7 @@
    internal="hostif_irq.receiver_irq"
    type="interrupt"
    dir="start" />
- <interface
-   name="epcs_irq_i"
-   internal="epcs_irq.receiver_irq"
-   type="interrupt"
-   dir="start" />
  <interface name="lw_bridge_m0" internal="lw_bridge.m0" type="avalon" dir="start" />
- <interface name="jtag_irq_i" internal="jtag_irq.receiver_irq" />
  <module kind="altera_hps" version="13.1" enabled="1" name="hps_0">
   <parameter name="MEM_VENDOR" value="JEDEC" />
   <parameter name="MEM_FORMAT" value="DISCRETE" />
@@ -728,7 +707,7 @@
   <parameter name="captureEdge" value="true" />
   <parameter name="direction" value="Input" />
   <parameter name="edgeType" value="FALLING" />
-  <parameter name="generateIRQ" value="true" />
+  <parameter name="generateIRQ" value="false" />
   <parameter name="irqType" value="EDGE" />
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
@@ -742,7 +721,7 @@
   <parameter name="captureEdge" value="true" />
   <parameter name="direction" value="Input" />
   <parameter name="edgeType" value="ANY" />
-  <parameter name="generateIRQ" value="true" />
+  <parameter name="generateIRQ" value="false" />
   <parameter name="irqType" value="EDGE" />
   <parameter name="resetValue" value="0" />
   <parameter name="simDoTestBenchWiring" value="false" />
@@ -785,12 +764,6 @@
   <parameter name="AUTO_CLK_CLOCK_RATE" value="50000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
  </module>
- <module kind="altera_irq_bridge" version="13.1" enabled="1" name="epcs_irq">
-  <parameter name="IRQ_WIDTH" value="1" />
-  <parameter name="IRQ_N" value="0" />
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="50000000" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
- </module>
  <module
    kind="altera_avalon_mm_bridge"
    version="13.1"
@@ -805,12 +778,6 @@
   <parameter name="LINEWRAPBURSTS" value="0" />
   <parameter name="PIPELINE_COMMAND" value="1" />
   <parameter name="PIPELINE_RESPONSE" value="1" />
-  <parameter name="AUTO_CLK_CLOCK_RATE" value="50000000" />
-  <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
- </module>
- <module kind="altera_irq_bridge" version="13.1" enabled="0" name="jtag_irq">
-  <parameter name="IRQ_WIDTH" value="1" />
-  <parameter name="IRQ_N" value="0" />
   <parameter name="AUTO_CLK_CLOCK_RATE" value="50000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
  </module>
@@ -832,6 +799,17 @@
   <parameter name="writeIRQThreshold" value="8" />
   <parameter name="avalonSpec" value="2.0" />
  </module>
+ <module kind="altera_avalon_timer" version="13.1" enabled="1" name="timer_0">
+  <parameter name="alwaysRun" value="true" />
+  <parameter name="counterSize" value="32" />
+  <parameter name="fixedPeriod" value="true" />
+  <parameter name="period" value="1" />
+  <parameter name="periodUnits" value="MSEC" />
+  <parameter name="resetOutput" value="false" />
+  <parameter name="snapshot" value="false" />
+  <parameter name="timeoutPulseOutput" value="false" />
+  <parameter name="systemFrequency" value="50000000" />
+ </module>
  <connection
    kind="avalon"
    version="13.1"
@@ -849,20 +827,6 @@
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="interrupt"
-   version="13.1"
-   start="hps_0.f2h_irq0"
-   end="dipsw_pio.irq">
-  <parameter name="irqNumber" value="3" />
- </connection>
- <connection
-   kind="interrupt"
-   version="13.1"
-   start="hps_0.f2h_irq0"
-   end="button_pio.irq">
-  <parameter name="irqNumber" value="1" />
  </connection>
  <connection
    kind="reset"
@@ -915,31 +879,13 @@
    version="13.1"
    start="clk_50.clk_reset"
    end="hostif_irq.clk_reset" />
- <connection
-   kind="reset"
-   version="13.1"
-   start="clk_50.clk_reset"
-   end="epcs_irq.clk_reset" />
- <connection
-   kind="reset"
-   version="13.1"
-   start="clk_100.clk_reset"
-   end="epcs_irq.clk_reset" />
  <connection kind="clock" version="13.1" start="clk_50.clk" end="hostif_irq.clk" />
- <connection kind="clock" version="13.1" start="clk_50.clk" end="epcs_irq.clk" />
  <connection
    kind="interrupt"
    version="13.1"
    start="hps_0.f2h_irq0"
    end="hostif_irq.sender0_irq">
   <parameter name="irqNumber" value="0" />
- </connection>
- <connection
-   kind="interrupt"
-   version="13.1"
-   start="hps_0.f2h_irq0"
-   end="epcs_irq.sender0_irq">
-  <parameter name="irqNumber" value="4" />
  </connection>
  <connection kind="clock" version="13.1" start="clk_50.clk" end="lw_bridge.clk" />
  <connection
@@ -961,24 +907,6 @@
   <parameter name="baseAddress" value="0x00100000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection
-   kind="reset"
-   version="13.1"
-   start="clk_100.clk_reset"
-   end="jtag_irq.clk_reset" />
- <connection
-   kind="reset"
-   version="13.1"
-   start="clk_50.clk_reset"
-   end="jtag_irq.clk_reset" />
- <connection
-   kind="interrupt"
-   version="13.1"
-   start="hps_0.f2h_irq0"
-   end="jtag_irq.sender0_irq">
-  <parameter name="irqNumber" value="2" />
- </connection>
- <connection kind="clock" version="13.1" start="clk_50.clk" end="jtag_irq.clk" />
  <connection
    kind="clock"
    version="13.1"
@@ -1004,7 +932,34 @@
    version="13.1"
    start="hps_0.f2h_irq0"
    end="jtag_uart_0.irq">
-  <parameter name="irqNumber" value="5" />
+  <parameter name="irqNumber" value="2" />
+ </connection>
+ <connection kind="clock" version="13.1" start="clk_50.clk" end="timer_0.clk" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_50.clk_reset"
+   end="timer_0.reset" />
+ <connection
+   kind="reset"
+   version="13.1"
+   start="hps_0.h2f_reset"
+   end="timer_0.reset" />
+ <connection
+   kind="avalon"
+   version="13.1"
+   start="hps_0.h2f_lw_axi_master"
+   end="timer_0.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0040" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="13.1"
+   start="hps_0.f2h_irq0"
+   end="timer_0.irq">
+  <parameter name="irqNumber" value="1" />
  </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />

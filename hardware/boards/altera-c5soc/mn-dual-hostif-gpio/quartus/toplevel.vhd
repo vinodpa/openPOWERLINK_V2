@@ -117,7 +117,7 @@ entity toplevel is
 	hps_gpio_GPIO43      : inout std_logic;
 	hps_gpio_GPIO44      : inout std_logic;
    -- FPGA SDRAM
-  fpga_memory_mem_a    : out std_logic_vector (14 downto 0);
+  fpga_memory_mem_a    : out std_logic_vector (12 downto 0);
   fpga_memory_mem_ba   : out std_logic_vector (2 downto 0);
   fpga_memory_mem_ck   : out std_logic_vector (0 downto 0);
   fpga_memory_mem_ck_n : out std_logic_vector (0 downto 0);
@@ -200,7 +200,7 @@ architecture rtl of toplevel is
             memory_mem_odt                                    : out   std_logic;                                        -- mem_odt
             memory_mem_dm                                     : out   std_logic_vector(4 downto 0);                     -- mem_dm
             memory_oct_rzqin                                  : in    std_logic                     := 'X';             -- oct_rzqin
-            memory_0_mem_a                                    : out   std_logic_vector(14 downto 0);                    -- mem_a
+            memory_0_mem_a                                    : out   std_logic_vector(12 downto 0);                    -- mem_a
             memory_0_mem_ba                                   : out   std_logic_vector(2 downto 0);                     -- mem_ba
             memory_0_mem_ck                                   : out   std_logic_vector(0 downto 0);                     -- mem_ck
             memory_0_mem_ck_n                                 : out   std_logic_vector(0 downto 0);                     -- mem_ck_n
