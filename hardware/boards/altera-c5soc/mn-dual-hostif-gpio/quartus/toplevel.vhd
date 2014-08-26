@@ -32,90 +32,90 @@ use ieee.std_logic_1164.all;
 entity toplevel is
     port (
     -- FPGA peripherals ports
-	fpga_dipsw_pio   : in    std_logic_vector (3 downto 0);                   
-	fpga_led_pio     : out   std_logic_vector (3 downto 0);                     
-	fpga_button_pio  : in    std_logic_vector (1 downto 0);  
+    fpga_dipsw_pio   : in    std_logic_vector (3 downto 0);                   
+    fpga_led_pio     : out   std_logic_vector (3 downto 0);                     
+    fpga_button_pio  : in    std_logic_vector (1 downto 0);  
     -- HPS memory controller ports
-	hps_memory_mem_a     : out   std_logic_vector (14 downto 0);
-	hps_memory_mem_ba    : out   std_logic_vector (2 downto 0);                         
-	hps_memory_mem_ck    : out   std_logic;                          
-	hps_memory_mem_ck_n  : out   std_logic;
-	hps_memory_mem_cke   : out   std_logic;     
-	hps_memory_mem_cs_n  : out   std_logic;
-	hps_memory_mem_ras_n : out   std_logic;     
-	hps_memory_mem_cas_n : out   std_logic;     
-	hps_memory_mem_we_n  : out   std_logic;     
-	hps_memory_mem_reset_n : out std_logic;     
-	hps_memory_mem_dq    : inout std_logic_vector (39 downto 0);                          
-	hps_memory_mem_dqs   : inout std_logic_vector (4 downto 0);
-	hps_memory_mem_dqs_n : inout std_logic_vector (4 downto 0);
-	hps_memory_mem_odt   : out   std_logic;
-	hps_memory_mem_dm    : out   std_logic_vector (4 downto 0);
-	hps_memory_oct_rzqin : in std_logic;
+    hps_memory_mem_a     : out   std_logic_vector (14 downto 0);
+    hps_memory_mem_ba    : out   std_logic_vector (2 downto 0);                         
+    hps_memory_mem_ck    : out   std_logic;                          
+    hps_memory_mem_ck_n  : out   std_logic;
+    hps_memory_mem_cke   : out   std_logic;     
+    hps_memory_mem_cs_n  : out   std_logic;
+    hps_memory_mem_ras_n : out   std_logic;     
+    hps_memory_mem_cas_n : out   std_logic;     
+    hps_memory_mem_we_n  : out   std_logic;     
+    hps_memory_mem_reset_n : out std_logic;     
+    hps_memory_mem_dq    : inout std_logic_vector (39 downto 0);                          
+    hps_memory_mem_dqs   : inout std_logic_vector (4 downto 0);
+    hps_memory_mem_dqs_n : inout std_logic_vector (4 downto 0);
+    hps_memory_mem_odt   : out   std_logic;
+    hps_memory_mem_dm    : out   std_logic_vector (4 downto 0);
+    hps_memory_oct_rzqin : in std_logic;
     -- HPS peripherals
-	hps_emac1_TX_CLK     : out std_logic;   
-	hps_emac1_TXD0       : out std_logic; 
-	hps_emac1_TXD1       : out std_logic;
-	hps_emac1_TXD2       : out std_logic;     
-	hps_emac1_TXD3       : out std_logic;
-	hps_emac1_RXD0       : in std_logic;     
-	hps_emac1_MDIO       : inout std_logic;
-	hps_emac1_MDC        : out std_logic;      
-	hps_emac1_RX_CTL     : in std_logic;
-	hps_emac1_TX_CTL     : out std_logic;   
-	hps_emac1_RX_CLK     : in std_logic;
-	hps_emac1_RXD1       : in std_logic;
-	hps_emac1_RXD2       : in std_logic;
-	hps_emac1_RXD3       : in std_logic;
-	hps_qspi_IO0         : inout std_logic;
-	hps_qspi_IO1         : inout std_logic;
-	hps_qspi_IO2         : inout std_logic;
-	hps_qspi_IO3         : inout std_logic;
-	hps_qspi_SS0         : out std_logic;       
-	hps_qspi_CLK         : out std_logic;       
-	hps_sdio_CMD         : inout std_logic;
-	hps_sdio_D0          : inout std_logic;
-	hps_sdio_D1          : inout std_logic;
-	hps_sdio_CLK         : out std_logic;       
-	hps_sdio_D2          : inout std_logic;
-	hps_sdio_D3          : inout std_logic;
-	hps_usb1_D0          : inout std_logic;
-	hps_usb1_D1          : inout std_logic;
-	hps_usb1_D2          : inout std_logic;
-	hps_usb1_D3          : inout std_logic;
-	hps_usb1_D4          : inout std_logic;
-	hps_usb1_D5          : inout std_logic;
-	hps_usb1_D6          : inout std_logic;
-	hps_usb1_D7          : inout std_logic;
-	hps_usb1_CLK         : in std_logic;
-	hps_usb1_STP         : out std_logic;       
-	hps_usb1_DIR         : in std_logic;
-	hps_usb1_NXT         : in std_logic;
-	hps_spim0_CLK        : out std_logic;      
-	hps_spim0_MOSI       : out std_logic;     
-	hps_spim0_MISO       : in std_logic;
-	hps_spim0_SS0        : out std_logic;      
-	hps_uart0_RX         : in std_logic;
-	hps_uart0_TX         : out std_logic;       
-	hps_i2c0_SDA         : inout std_logic;
-	hps_i2c0_SCL         : inout std_logic;
-	hps_can0_RX          : in std_logic;
-	hps_can0_TX          : out std_logic;        
-	hps_trace_CLK        : out std_logic;
-	hps_trace_D0         : out std_logic;       
-	hps_trace_D1         : out std_logic;
-	hps_trace_D2         : out std_logic;
-	hps_trace_D3         : out std_logic;
-	hps_trace_D4         : out std_logic;
-	hps_trace_D5         : out std_logic;
-	hps_trace_D6         : out std_logic;
-	hps_trace_D7         : out std_logic;
-	hps_gpio_GPIO09      : inout std_logic;    
-	hps_gpio_GPIO35      : inout std_logic;
-	hps_gpio_GPIO41      : inout std_logic;
-	hps_gpio_GPIO42      : inout std_logic;
-	hps_gpio_GPIO43      : inout std_logic;
-	hps_gpio_GPIO44      : inout std_logic;
+    hps_emac1_TX_CLK     : out std_logic;   
+    hps_emac1_TXD0       : out std_logic; 
+    hps_emac1_TXD1       : out std_logic;
+    hps_emac1_TXD2       : out std_logic;     
+    hps_emac1_TXD3       : out std_logic;
+    hps_emac1_RXD0       : in std_logic;     
+    hps_emac1_MDIO       : inout std_logic;
+    hps_emac1_MDC        : out std_logic;      
+    hps_emac1_RX_CTL     : in std_logic;
+    hps_emac1_TX_CTL     : out std_logic;   
+    hps_emac1_RX_CLK     : in std_logic;
+    hps_emac1_RXD1       : in std_logic;
+    hps_emac1_RXD2       : in std_logic;
+    hps_emac1_RXD3       : in std_logic;
+    hps_qspi_IO0         : inout std_logic;
+    hps_qspi_IO1         : inout std_logic;
+    hps_qspi_IO2         : inout std_logic;
+    hps_qspi_IO3         : inout std_logic;
+    hps_qspi_SS0         : out std_logic;       
+    hps_qspi_CLK         : out std_logic;       
+    hps_sdio_CMD         : inout std_logic;
+    hps_sdio_D0          : inout std_logic;
+    hps_sdio_D1          : inout std_logic;
+    hps_sdio_CLK         : out std_logic;       
+    hps_sdio_D2          : inout std_logic;
+    hps_sdio_D3          : inout std_logic;
+    hps_usb1_D0          : inout std_logic;
+    hps_usb1_D1          : inout std_logic;
+    hps_usb1_D2          : inout std_logic;
+    hps_usb1_D3          : inout std_logic;
+    hps_usb1_D4          : inout std_logic;
+    hps_usb1_D5          : inout std_logic;
+    hps_usb1_D6          : inout std_logic;
+    hps_usb1_D7          : inout std_logic;
+    hps_usb1_CLK         : in std_logic;
+    hps_usb1_STP         : out std_logic;       
+    hps_usb1_DIR         : in std_logic;
+    hps_usb1_NXT         : in std_logic;
+    hps_spim0_CLK        : out std_logic;      
+    hps_spim0_MOSI       : out std_logic;     
+    hps_spim0_MISO       : in std_logic;
+    hps_spim0_SS0        : out std_logic;      
+    hps_uart0_RX         : in std_logic;
+    hps_uart0_TX         : out std_logic;       
+    hps_i2c0_SDA         : inout std_logic;
+    hps_i2c0_SCL         : inout std_logic;
+    hps_can0_RX          : in std_logic;
+    hps_can0_TX          : out std_logic;        
+    hps_trace_CLK        : out std_logic;
+    hps_trace_D0         : out std_logic;       
+    hps_trace_D1         : out std_logic;
+    hps_trace_D2         : out std_logic;
+    hps_trace_D3         : out std_logic;
+    hps_trace_D4         : out std_logic;
+    hps_trace_D5         : out std_logic;
+    hps_trace_D6         : out std_logic;
+    hps_trace_D7         : out std_logic;
+    hps_gpio_GPIO09      : inout std_logic;    
+    hps_gpio_GPIO35      : inout std_logic;
+    hps_gpio_GPIO41      : inout std_logic;
+    hps_gpio_GPIO42      : inout std_logic;
+    hps_gpio_GPIO43      : inout std_logic;
+    hps_gpio_GPIO44      : inout std_logic;
    -- FPGA SDRAM
   fpga_memory_mem_a    : out std_logic_vector (12 downto 0);
   fpga_memory_mem_ba   : out std_logic_vector (2 downto 0);
@@ -149,12 +149,12 @@ entity toplevel is
   PLNK_MAC_TIMER : out   std_logic_vector(0 downto 0);                      -- export
   
   --TEST PORTS
-  test_pushbutton	     : out  std_logic;
-  test_pllLocked	     : out  std_logic;
-  test_hps_fpga_reset_n_src	     : out  std_logic;
-  test_ddr3_afi_resetn	     : out  std_logic;
-  test_hps_fpga_reset_n	     : out  std_logic;
-  test_pulse_resetn_ddr	     : out  std_logic
+  test_pushbutton        : out  std_logic;
+  test_pllLocked         : out  std_logic;
+  test_hps_fpga_reset_n_src      : out  std_logic;
+  test_ddr3_afi_resetn       : out  std_logic;
+  test_hps_fpga_reset_n      : out  std_logic;
+  test_pulse_resetn_ddr      : out  std_logic
     
   
 );
@@ -173,13 +173,13 @@ architecture rtl of toplevel is
   signal hps_fpga_reset_n_src   : std_logic;
   signal ddr3_afi_resetn        : std_logic;
   
-  signal clk50						  : std_logic;
-  signal clk25						  : std_logic;
-  signal clk100					  : std_logic;
-  signal clk100_p  				  : std_logic;
-  signal pllLocked				  : std_logic;
+  signal clk50                  : std_logic;
+  signal clk25                  : std_logic;
+  signal clk100                 : std_logic;
+  signal clk100_p               : std_logic;
+  signal pllLocked              : std_logic;
   
-  signal clock_in					  : std_logic;
+  signal clock_in               : std_logic;
   
   
   component mnDualHostifGpio is
@@ -217,7 +217,7 @@ architecture rtl of toplevel is
             memory_0_mem_odt                                  : out   std_logic_vector(0 downto 0);                     -- mem_odt
             oct_rzqin                                         : in    std_logic                     := 'X';             -- rzqin
             clk_50_clk                                        : in    std_logic                     := 'X';             -- clk
-	    clk_100_clk                                       : in    std_logic                     := 'X';             -- clk
+            clk_100_clk                                       : in    std_logic                     := 'X';             -- clk
             reset_reset_n                                     : in    std_logic                     := 'X';             -- reset_n
             hps_io_hps_io_emac1_inst_TX_CLK             : out   std_logic;                                        -- hps_io_emac1_inst_TX_CLK
             hps_io_hps_io_emac1_inst_TXD0               : out   std_logic;                                        -- hps_io_emac1_inst_TXD0
@@ -281,7 +281,7 @@ architecture rtl of toplevel is
             hps_io_hps_io_gpio_inst_GPIO41              : inout std_logic                     := 'X';             -- hps_io_gpio_inst_GPIO41
             hps_io_hps_io_gpio_inst_GPIO42              : inout std_logic                     := 'X';             -- hps_io_gpio_inst_GPIO42
             hps_io_hps_io_gpio_inst_GPIO43              : inout std_logic                     := 'X';             -- hps_io_gpio_inst_GPIO43
-            hps_io_hps_io_gpio_inst_GPIO44              : inout std_logic                     := 'X';             -- hps_io_gpio_inst_GPIO44
+            hps_io_hps_io_gpio_inst_GPIO44                    : inout std_logic                     := 'X';             -- hps_io_gpio_inst_GPIO44
             led_pio_external_connection_in_port               : in    std_logic_vector(3 downto 0)  := (others => 'X'); -- in_port
             led_pio_external_connection_out_port              : out   std_logic_vector(3 downto 0);                     -- out_port
             dipsw_pio_external_connection_export              : in    std_logic_vector(3 downto 0)  := (others => 'X'); -- export
@@ -304,84 +304,84 @@ architecture rtl of toplevel is
             ddr3_emif_0_pll_sharing_pll_avl_phy_clk           : out   std_logic;                                        -- pll_avl_phy_clk
             ddr3_emif_0_global_reset_reset_n                  : in    std_logic                     := 'X';             -- reset_n
             ddr3_emif_0_afi_reset_export_reset_n              : out   std_logic;                                        -- reset_n
-				ddr3_emif_0_pll_ref_clk_clk                       : in    std_logic                     := 'X';             -- clk
-            ddr3_emif_0_soft_reset_reset_n                    : in    std_logic                     := 'X'             -- reset_n
---				  openmac_0_mii_txEnable                            : out   std_logic_vector(1 downto 0);                     -- txEnable
---            openmac_0_mii_txData                              : out   std_logic_vector(7 downto 0);                     -- txData
---            openmac_0_mii_txClk                               : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- txClk
---            openmac_0_mii_rxError                             : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxError
---            openmac_0_mii_rxDataValid                         : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxDataValid
---            openmac_0_mii_rxData                              : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- rxData
---            openmac_0_mii_rxClk                               : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxClk
---            openmac_0_smi_nPhyRst                             : out   std_logic_vector(0 downto 0);                     -- nPhyRst
---            openmac_0_smi_clk                                 : out   std_logic_vector(0 downto 0);                     -- clk
---            openmac_0_smi_dio                                 : inout std_logic_vector(0 downto 0)  := (others => 'X'); -- dio
---            openmac_0_mactimerout_export                      : out   std_logic_vector(0 downto 0)                      -- export
+            ddr3_emif_0_pll_ref_clk_clk                       : in    std_logic                     := 'X';             -- clk
+            ddr3_emif_0_soft_reset_reset_n                    : in    std_logic                     := 'X';             -- reset_n
+            openmac_0_mii_txEnable                            : out   std_logic_vector(1 downto 0);                     -- txEnable
+            openmac_0_mii_txData                              : out   std_logic_vector(7 downto 0);                     -- txData
+            openmac_0_mii_txClk                               : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- txClk
+            openmac_0_mii_rxError                             : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxError
+            openmac_0_mii_rxDataValid                         : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxDataValid
+            openmac_0_mii_rxData                              : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- rxData
+            openmac_0_mii_rxClk                               : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxClk
+            openmac_0_smi_nPhyRst                             : out   std_logic_vector(0 downto 0);                     -- nPhyRst
+            openmac_0_smi_clk                                 : out   std_logic_vector(0 downto 0);                     -- clk
+            openmac_0_smi_dio                                 : inout std_logic_vector(0 downto 0)  := (others => 'X'); -- dio
+            openmac_0_mactimerout_export                      : out   std_logic_vector(0 downto 0)                      -- export
         );
     end component mnDualHostifGpio;
-	 
-	 component debounce 
-	 generic (
-	  WIDTH		: integer := 32 ;
-	  POLARITY	: string := "HIGH" ;
-	  TIMEOUT   : integer := 50000 ;
-	  TIMEOUT_WIDTH : integer := 16
-	 );
-	 port (
-		clk		: in std_logic ;
-		reset_n  : in std_logic ;
-		data_in  : in std_logic_vector (WIDTH-1 downto 0) ;
-		data_out : out std_logic_vector (WIDTH-1 downto 0)
-	 );
-	 end component debounce; 
+     
+     component debounce 
+     generic (
+      WIDTH     : integer := 32 ;
+      POLARITY  : string := "HIGH" ;
+      TIMEOUT   : integer := 50000 ;
+      TIMEOUT_WIDTH : integer := 16
+     );
+     port (
+        clk     : in std_logic ;
+        reset_n  : in std_logic ;
+        data_in  : in std_logic_vector (WIDTH-1 downto 0) ;
+        data_out : out std_logic_vector (WIDTH-1 downto 0)
+     );
+     end component debounce; 
 
-	component altera_edge_detector 
-	generic (
-		PULSE_EXT : integer := 0;
-		EDGE_TYPE : integer := 0;
-		IGNORE_RST_WHILE_BUSY : integer := 0
-	);
+    component altera_edge_detector 
+    generic (
+        PULSE_EXT : integer := 0;
+        EDGE_TYPE : integer := 0;
+        IGNORE_RST_WHILE_BUSY : integer := 0
+    );
    port(
-	clk   : in std_logic;
-	rst_n : in std_logic ;
-	signal_in : in std_logic;
-	pulse_out : out std_logic
-	);
-	end component altera_edge_detector;
-	
-	component altera_reset_controller 
-	generic(
-		RESET_SOURCE_COUNT : integer := 1;
-		RESET_SYNC_LENGTH  : integer := 8;
-		GENERATE_PULSE_OUT : integer := 1;
+    clk   : in std_logic;
+    rst_n : in std_logic ;
+    signal_in : in std_logic;
+    pulse_out : out std_logic
+    );
+    end component altera_edge_detector;
+    
+    component altera_reset_controller 
+    generic(
+        RESET_SOURCE_COUNT : integer := 1;
+        RESET_SYNC_LENGTH  : integer := 8;
+        GENERATE_PULSE_OUT : integer := 1;
       PULSE_LENGTH       : integer := 1
-	);
-	port(
-		clk : in std_logic ;
+    );
+    port(
+        clk : in std_logic ;
       reset_n_src : in std_logic_vector (RESET_SOURCE_COUNT-1 downto 0);
-		combined_reset_n : out std_logic;
+        combined_reset_n : out std_logic;
       pulse_reset_n : out std_logic 
     );
-	end component altera_reset_controller ;
+    end component altera_reset_controller ;
  
   component hps_reset 
   port(
-	--probe		:	in std_logic;
-	source_clk : in std_logic;
-	source : out std_logic_vector (2 downto 0)
-	);
-	end component hps_reset ;
-	
-	component pll
-	PORT
-	(
-		inclk0		: IN STD_LOGIC  := '0';
-		c0		: OUT STD_LOGIC ;
-		c1		: OUT STD_LOGIC ;
-		c2		: OUT STD_LOGIC ;
-		c3		: OUT STD_LOGIC ;
-		locked		: OUT STD_LOGIC 
-	);
+    --probe     :   in std_logic;
+    source_clk : in std_logic;
+    source : out std_logic_vector (2 downto 0)
+    );
+    end component hps_reset ;
+    
+    component pll
+    PORT
+    (
+        inclk0      : IN STD_LOGIC  := '0';
+        c0      : OUT STD_LOGIC ;
+        c1      : OUT STD_LOGIC ;
+        c2      : OUT STD_LOGIC ;
+        c3      : OUT STD_LOGIC ;
+        locked      : OUT STD_LOGIC 
+    );
    end component pll;
 
  begin
@@ -502,21 +502,21 @@ soc_inst: component mnDualHostifGpio
       ddr3_emif_0_soft_reset_reset_n        =>  pulse_resetn_ddr, 
       ddr3_emif_0_afi_reset_export_reset_n  =>  ddr3_afi_resetn,                       
       ddr3_emif_0_pll_ref_clk_clk           =>  fpga_clk_50,
-      oct_rzqin                             =>  fpga_oct_rzqin
---		  openmac_0_mii_txEnable                =>  PLNK_MII_TXEN,                       --                  openmac_0_mii.txEnable
---      openmac_0_mii_txData                  =>  PLNK_MII_TXD,                        --                               .txData
---      openmac_0_mii_txClk                   =>  PLNK_MII_TXCLK,                      --                               .txClk
---      openmac_0_mii_rxError                 =>  PLNK_MII_RXERR,                      --                               .rxError
---      openmac_0_mii_rxDataValid             =>  PLNK_MII_RXDV,                       --                               .rxDataValid
---      openmac_0_mii_rxData                  =>  PLNK_MII_RXD,                        --                               .rxData
---      openmac_0_mii_rxClk                   =>  PLNK_MII_RXCLK,                      --                               .rxClk
---      openmac_0_smi_nPhyRst                 =>  PLNK_SMI_PHYRSTN,                    --                  openmac_0_smi.nPhyRst
---      openmac_0_smi_clk                     =>  PLNK_SMI_CLK,                        --                               .clk
---      openmac_0_smi_dio                     =>  PLNK_SMI_DIO,                        --                               .dio
---      openmac_0_mactimerout_export          =>  PLNK_MAC_TIMER                       --          openmac_0_mactimerout.export
+      oct_rzqin                             =>  fpga_oct_rzqin,
+      openmac_0_mii_txEnable                =>  PLNK_MII_TXEN,                       --                  openmac_0_mii.txEnable
+      openmac_0_mii_txData                  =>  PLNK_MII_TXD,                        --                               .txData
+      openmac_0_mii_txClk                   =>  PLNK_MII_TXCLK,                      --                               .txClk
+      openmac_0_mii_rxError                 =>  PLNK_MII_RXERR,                      --                               .rxError
+      openmac_0_mii_rxDataValid             =>  PLNK_MII_RXDV,                       --                               .rxDataValid
+      openmac_0_mii_rxData                  =>  PLNK_MII_RXD,                        --                               .rxData
+      openmac_0_mii_rxClk                   =>  PLNK_MII_RXCLK,                      --                               .rxClk
+      openmac_0_smi_nPhyRst                 =>  PLNK_SMI_PHYRSTN,                    --                  openmac_0_smi.nPhyRst
+      openmac_0_smi_clk                     =>  PLNK_SMI_CLK,                        --                               .clk
+      openmac_0_smi_dio                     =>  PLNK_SMI_DIO,                        --                               .dio
+      openmac_0_mactimerout_export          =>  PLNK_MAC_TIMER                       --          openmac_0_mactimerout.export
     );  
-	 
-	 
+     
+     
 debounce_inst: component debounce
 generic map (
     WIDTH         => 2,
@@ -545,22 +545,22 @@ port map(
   pulse_reset_n    => pulse_resetn_ddr 
  );
 
-  test_pushbutton	          <= fpga_debounced_buttons(0); 
-  test_pllLocked	          <= pllLocked;
+  test_pushbutton             <= fpga_debounced_buttons(0); 
+  test_pllLocked              <= pllLocked;
   test_hps_fpga_reset_n_src <= hps_fpga_reset_n_src;
-  test_ddr3_afi_resetn	    <= ddr3_afi_resetn;
-  test_hps_fpga_reset_n	    <= hps_fpga_reset_n;
-  test_pulse_resetn_ddr	    <= pulse_resetn_ddr;
+  test_ddr3_afi_resetn      <= ddr3_afi_resetn;
+  test_hps_fpga_reset_n     <= hps_fpga_reset_n;
+  test_pulse_resetn_ddr     <= pulse_resetn_ddr;
 
 pllInst : pll 
 port map
-	(
-		inclk0 => fpga_clk_50,
-		c0		 => clk100,
-		c1		 => clk50,
-		c2		 => clk25,
-		c3		 => clk100_p,
-		locked => pllLocked		
-	);
-	
+    (
+        inclk0 => fpga_clk_50,
+        c0       => clk100,
+        c1       => clk50,
+        c2       => clk25,
+        c3       => clk100_p,
+        locked => pllLocked     
+    );
+    
 end rtl;
