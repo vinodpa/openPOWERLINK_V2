@@ -246,7 +246,11 @@
    dir="end" />
  <interface name="memory" internal="host_0.memory" type="conduit" dir="end" />
  <interface name="hps_io" internal="host_0.hps_0_hps_io" type="conduit" dir="end" />
- <interface name="host_0_hps_0_h2f_reset" internal="host_0.hps_0_h2f_reset" />
+ <interface
+   name="host_0_hps_0_h2f_reset"
+   internal="host_0.hps_0_h2f_reset"
+   type="reset"
+   dir="start" />
  <interface
    name="openmac_0_mii"
    internal="openmac_0.mii"

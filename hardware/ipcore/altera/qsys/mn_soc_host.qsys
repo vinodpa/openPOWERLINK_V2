@@ -42,7 +42,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -161,19 +161,19 @@
          type = "String";
       }
    }
-   element dipsw_pio.s1
-   {
-      datum baseAddress
-      {
-         value = "16";
-         type = "String";
-      }
-   }
    element button_pio.s1
    {
       datum baseAddress
       {
          value = "0";
+         type = "String";
+      }
+   }
+   element dipsw_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "16";
          type = "String";
       }
    }
@@ -241,6 +241,11 @@
    type="interrupt"
    dir="start" />
  <interface name="lw_bridge_m0" internal="lw_bridge.m0" type="avalon" dir="start" />
+ <interface
+   name="hps_0_h2f_reset"
+   internal="hps_0.h2f_reset"
+   type="reset"
+   dir="start" />
  <module kind="altera_hps" version="13.1" enabled="1" name="hps_0">
   <parameter name="MEM_VENDOR" value="JEDEC" />
   <parameter name="MEM_FORMAT" value="DISCRETE" />
@@ -941,11 +946,6 @@
    start="clk_50.clk_reset"
    end="timer_0.reset" />
  <connection
-   kind="reset"
-   version="13.1"
-   start="hps_0.h2f_reset"
-   end="timer_0.reset" />
- <connection
    kind="avalon"
    version="13.1"
    start="hps_0.h2f_lw_axi_master"
@@ -961,6 +961,11 @@
    end="timer_0.irq">
   <parameter name="irqNumber" value="1" />
  </connection>
+ <connection
+   kind="reset"
+   version="13.1"
+   start="clk_100.clk_reset"
+   end="timer_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
