@@ -539,8 +539,8 @@ generic map (
 )
 port map(
   clk              => clk50,
-  reset_n_src      => pllLocked & fpga_debounced_buttons(0) & ddr3_afi_resetn,
-  --reset_n_src      => pllLocked & hps_fpga_reset_n_src & ddr3_afi_resetn,
+  --reset_n_src      => pllLocked & fpga_debounced_buttons(0) & ddr3_afi_resetn,
+  reset_n_src      => pllLocked & hps_fpga_reset_n_src & ddr3_afi_resetn,
   combined_reset_n => hps_fpga_reset_n,
   pulse_reset_n    => pulse_resetn_ddr 
  );
@@ -556,8 +556,8 @@ pllInst : pll
 port map
     (
         inclk0 => fpga_clk_50,
-        c0       => clk100,
-        c1       => clk50,
+        c0       => clk50,
+        c1       => clk100,
         c2       => clk25,
         c3       => clk100_p,
         locked => pllLocked     
