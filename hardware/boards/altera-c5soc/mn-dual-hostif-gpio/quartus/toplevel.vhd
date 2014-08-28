@@ -116,47 +116,44 @@ entity toplevel is
     hps_gpio_GPIO42      : inout std_logic;
     hps_gpio_GPIO43      : inout std_logic;
     hps_gpio_GPIO44      : inout std_logic;
-   -- FPGA SDRAM
-  fpga_memory_mem_a    : out std_logic_vector (12 downto 0);
-  fpga_memory_mem_ba   : out std_logic_vector (2 downto 0);
-  fpga_memory_mem_ck   : out std_logic_vector (0 downto 0);
-  fpga_memory_mem_ck_n : out std_logic_vector (0 downto 0);
-  fpga_memory_mem_cke  : out std_logic_vector (0 downto 0);
-  fpga_memory_mem_cs_n : out std_logic_vector (0 downto 0);
-  fpga_memory_mem_dm   : out std_logic_vector (3 downto 0);
-  -- output wire [1:0]  fpga_memory_mem_dm,   
-  fpga_memory_mem_ras_n : out std_logic_vector (0 downto 0);
-  fpga_memory_mem_cas_n : out std_logic_vector (0 downto 0);
-  fpga_memory_mem_we_n  : out std_logic_vector (0 downto 0);
-  fpga_memory_mem_reset_n : out std_logic;
-  fpga_memory_mem_dq       : inout std_logic_vector (31 downto 0);     
-  fpga_memory_mem_dqs      : inout std_logic_vector (3 downto 0);
-  fpga_memory_mem_dqs_n    : inout std_logic_vector (3 downto 0);    
-  fpga_memory_mem_odt      : out std_logic_vector (0 downto 0);
-  fpga_oct_rzqin       : in std_logic;
-  -- FPGA clock and reset
-  fpga_clk_50         : in std_logic;
-  PLNK_MII_TXEN       : out   std_logic_vector(1 downto 0);                     -- txEnable
-  PLNK_MII_TXD       : out   std_logic_vector(7 downto 0);                     -- txData
-  PLNK_MII_TXCLK        : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- txClk
-  PLNK_MII_RXERR      : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxError
-  PLNK_MII_RXDV  : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxDataValid
-  PLNK_MII_RXD       : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- rxData
-  PLNK_MII_RXCLK        : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxClk
-  PLNK_SMI_PHYRSTN      : out   std_logic_vector(0 downto 0);                     -- nPhyRst
-  PLNK_SMI_CLK          : out   std_logic_vector(0 downto 0);                     -- clk
-  PLNK_SMI_DIO          : inout std_logic_vector(0 downto 0)  := (others => 'X'); -- dio
-  PLNK_MAC_TIMER : out   std_logic_vector(0 downto 0);                      -- export
-  
-  --TEST PORTS
-  test_pushbutton        : out  std_logic;
-  test_pllLocked         : out  std_logic;
-  test_hps_fpga_reset_n_src      : out  std_logic;
-  test_ddr3_afi_resetn       : out  std_logic;
-  test_hps_fpga_reset_n      : out  std_logic;
-  test_pulse_resetn_ddr      : out  std_logic
-    
-  
+    -- FPGA SDRAM
+   fpga_memory_mem_a    : out std_logic_vector (12 downto 0);
+   fpga_memory_mem_ba   : out std_logic_vector (2 downto 0);
+   fpga_memory_mem_ck   : out std_logic_vector (0 downto 0);
+   fpga_memory_mem_ck_n : out std_logic_vector (0 downto 0);
+   fpga_memory_mem_cke  : out std_logic_vector (0 downto 0);
+   fpga_memory_mem_cs_n : out std_logic_vector (0 downto 0);
+   fpga_memory_mem_dm   : out std_logic_vector (3 downto 0);
+   -- output wire [1:0]  fpga_memory_mem_dm,   
+   fpga_memory_mem_ras_n    : out std_logic_vector (0 downto 0);
+   fpga_memory_mem_cas_n    : out std_logic_vector (0 downto 0);
+   fpga_memory_mem_we_n     : out std_logic_vector (0 downto 0);
+   fpga_memory_mem_reset_n  : out std_logic;
+   fpga_memory_mem_dq       : inout std_logic_vector (31 downto 0);     
+   fpga_memory_mem_dqs      : inout std_logic_vector (3 downto 0);
+   fpga_memory_mem_dqs_n    : inout std_logic_vector (3 downto 0);    
+   fpga_memory_mem_odt      : out std_logic_vector (0 downto 0);
+   fpga_oct_rzqin           : in std_logic;
+   -- FPGA clock and reset
+   fpga_clk_50         : in    std_logic;
+   PLNK_MII_TXEN       : out   std_logic_vector(1 downto 0);                     -- txEnable
+   PLNK_MII_TXD        : out   std_logic_vector(7 downto 0);                     -- txData
+   PLNK_MII_TXCLK      : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- txClk
+   PLNK_MII_RXERR      : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxError
+   PLNK_MII_RXDV       : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxDataValid
+   PLNK_MII_RXD        : in    std_logic_vector(7 downto 0)  := (others => 'X'); -- rxData
+   PLNK_MII_RXCLK      : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxClk
+   PLNK_SMI_PHYRSTN    : out   std_logic_vector(0 downto 0);                     -- nPhyRst
+   PLNK_SMI_CLK        : out   std_logic_vector(0 downto 0);                     -- clk
+   PLNK_SMI_DIO        : inout std_logic_vector(0 downto 0)  := (others => 'X'); -- dio
+   PLNK_MAC_TIMER      : out   std_logic_vector(0 downto 0);                      -- export
+   --TEST PORTS
+   test_pushbutton            : out  std_logic;
+   test_pllLocked             : out  std_logic;
+   test_hps_fpga_reset_n_src  : out  std_logic;
+   test_ddr3_afi_resetn       : out  std_logic;
+   test_hps_fpga_reset_n      : out  std_logic;
+   test_pulse_resetn_ddr      : out  std_logic 
 );
 end toplevel;
 
@@ -358,14 +355,14 @@ architecture rtl of toplevel is
     );
     port(
         clk : in std_logic ;
-      reset_n_src : in std_logic_vector (RESET_SOURCE_COUNT-1 downto 0);
+        reset_n_src : in std_logic_vector (RESET_SOURCE_COUNT-1 downto 0);
         combined_reset_n : out std_logic;
-      pulse_reset_n : out std_logic 
-    );
+        pulse_reset_n : out std_logic 
+     );
     end component altera_reset_controller ;
  
-  component hps_reset 
-  port(
+    component hps_reset 
+    port(
     --probe     :   in std_logic;
     source_clk : in std_logic;
     source : out std_logic_vector (2 downto 0)
@@ -386,11 +383,9 @@ architecture rtl of toplevel is
 
  begin
  
- 
 -- connection of internal logics
   fpga_led_pio <= fpga_led_internal; 
   clock_in <= fpga_clk_50 ;
-
 
 soc_inst: component mnDualHostifGpio
    port map (
@@ -515,8 +510,7 @@ soc_inst: component mnDualHostifGpio
       openmac_0_smi_dio                     =>  PLNK_SMI_DIO,                        --                               .dio
       openmac_0_mactimerout_export          =>  PLNK_MAC_TIMER                       --          openmac_0_mactimerout.export
     );  
-     
-     
+          
 debounce_inst: component debounce
 generic map (
     WIDTH         => 2,
@@ -545,8 +539,8 @@ port map(
   pulse_reset_n    => pulse_resetn_ddr 
  );
 
-  test_pushbutton             <= fpga_debounced_buttons(0); 
-  test_pllLocked              <= pllLocked;
+  test_pushbutton           <= fpga_debounced_buttons(0); 
+  test_pllLocked            <= pllLocked;
   test_hps_fpga_reset_n_src <= hps_fpga_reset_n_src;
   test_ddr3_afi_resetn      <= ddr3_afi_resetn;
   test_hps_fpga_reset_n     <= hps_fpga_reset_n;
