@@ -47,7 +47,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -73,7 +73,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -86,7 +86,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -99,7 +99,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -180,12 +180,12 @@
    dir="end" />
  <interface
    name="dipsw_pio_external_connection"
-   internal="pcp.dipsw_pio_external_connection"
+   internal="host_0.dipsw_pio_external_connection"
    type="conduit"
    dir="end" />
  <interface
    name="button_pio_external_connection"
-   internal="pcp.button_pio_external_connection"
+   internal="host_0.button_pio_external_connection"
    type="conduit"
    dir="end" />
  <interface name="memory" internal="host_0.memory" type="conduit" dir="end" />

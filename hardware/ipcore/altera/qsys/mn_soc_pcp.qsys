@@ -158,8 +158,13 @@
          type = "boolean";
       }
    }
-   element slow_bridge.s0
+   element cpu_bridge.s0
    {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
       datum baseAddress
       {
          value = "0";
@@ -174,16 +179,35 @@
          type = "String";
       }
    }
-   element cpu_bridge.s0
+   element slow_bridge.s0
    {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
       datum baseAddress
       {
          value = "0";
+         type = "String";
+      }
+   }
+   element dipsw_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "131136";
+         type = "String";
+      }
+   }
+   element button_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "131152";
+         type = "String";
+      }
+   }
+   element timer_0.s1
+   {
+      datum baseAddress
+      {
+         value = "131104";
          type = "String";
       }
    }
@@ -210,30 +234,6 @@
       datum baseAddress
       {
          value = "150999040";
-         type = "String";
-      }
-   }
-   element dipsw_pio.s1
-   {
-      datum baseAddress
-      {
-         value = "131136";
-         type = "String";
-      }
-   }
-   element button_pio.s1
-   {
-      datum baseAddress
-      {
-         value = "131152";
-         type = "String";
-      }
-   }
-   element timer_0.s1
-   {
-      datum baseAddress
-      {
-         value = "131104";
          type = "String";
       }
    }
@@ -328,14 +328,10 @@
    dir="end" />
  <interface
    name="dipsw_pio_external_connection"
-   internal="dipsw_pio.external_connection"
-   type="conduit"
-   dir="end" />
+   internal="dipsw_pio.external_connection" />
  <interface
    name="button_pio_external_connection"
-   internal="button_pio.external_connection"
-   type="conduit"
-   dir="end" />
+   internal="button_pio.external_connection" />
  <interface name="clk100" internal="clk_100.clk_in" type="clock" dir="end" />
  <interface
    name="cpu_bridge_m0"
@@ -380,7 +376,7 @@
   <parameter name="writeIRQThreshold" value="8" />
   <parameter name="avalonSpec" value="2.0" />
  </module>
- <module kind="altera_avalon_pio" version="13.1" enabled="1" name="button_pio">
+ <module kind="altera_avalon_pio" version="13.1" enabled="0" name="button_pio">
   <parameter name="bitClearingEdgeCapReg" value="true" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="true" />
@@ -394,7 +390,7 @@
   <parameter name="width" value="2" />
   <parameter name="clockRate" value="100000000" />
  </module>
- <module kind="altera_avalon_pio" version="13.1" enabled="1" name="dipsw_pio">
+ <module kind="altera_avalon_pio" version="13.1" enabled="0" name="dipsw_pio">
   <parameter name="bitClearingEdgeCapReg" value="true" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="true" />
@@ -564,7 +560,7 @@
   <parameter name="tightlyCoupledInstructionMaster2AddrWidth" value="1" />
   <parameter name="tightlyCoupledInstructionMaster3AddrWidth" value="1" />
   <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='pcp.jtag_debug_module' start='0x8000800' end='0x8001000' /></address-map>]]></parameter>
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='pcp.jtag_debug_module' start='0x8000800' end='0x8001000' /><slave name='led_pio_flow_ctrl.s1' start='0x40020000' end='0x40020020' /><slave name='timer_0.s1' start='0x40020020' end='0x40020040' /><slave name='dipsw_pio.s1' start='0x40020040' end='0x40020050' /><slave name='button_pio.s1' start='0x40020050' end='0x40020060' /><slave name='jtag_uart.avalon_jtag_slave' start='0x40020060' end='0x40020068' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='pcp.jtag_debug_module' start='0x8000800' end='0x8001000' /><slave name='led_pio_flow_ctrl.s1' start='0x40020000' end='0x40020020' /><slave name='timer_0.s1' start='0x40020020' end='0x40020040' /><slave name='jtag_uart.avalon_jtag_slave' start='0x40020060' end='0x40020068' /></address-map>]]></parameter>
   <parameter name="clockFrequency" value="100000000" />
   <parameter name="deviceFamilyName" value="Cyclone V" />
   <parameter name="internalIrqMaskSystemInfo" value="15" />
