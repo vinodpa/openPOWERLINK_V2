@@ -12,14 +12,6 @@
    element $${FILENAME}
    {
    }
-   element ddr3_emif_0.avl_0
-   {
-      datum baseAddress
-      {
-         value = "0";
-         type = "String";
-      }
-   }
    element clk_100
    {
       datum _sortIndex
@@ -46,14 +38,6 @@
          type = "boolean";
       }
    }
-   element sysid_qsys.control_slave
-   {
-      datum baseAddress
-      {
-         value = "26640";
-         type = "String";
-      }
-   }
    element ddr3_emif_0
    {
       datum _sortIndex
@@ -63,16 +47,8 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
-      }
-   }
-   element hostinterface_0.host
-   {
-      datum baseAddress
-      {
-         value = "131072";
-         type = "String";
       }
    }
    element host_0
@@ -101,22 +77,6 @@
          type = "boolean";
       }
    }
-   element openmac_0.macReg
-   {
-      datum baseAddress
-      {
-         value = "16384";
-         type = "String";
-      }
-   }
-   element openmac_0.macTimer
-   {
-      datum baseAddress
-      {
-         value = "26624";
-         type = "String";
-      }
-   }
    element openmac_0
    {
       datum _sortIndex
@@ -130,14 +90,6 @@
          type = "boolean";
       }
    }
-   element hostinterface_0.pcp
-   {
-      datum baseAddress
-      {
-         value = "24576";
-         type = "String";
-      }
-   }
    element pcp
    {
       datum _sortIndex
@@ -149,14 +101,6 @@
       {
          value = "0";
          type = "boolean";
-      }
-   }
-   element openmac_0.pktBuf
-   {
-      datum baseAddress
-      {
-         value = "0";
-         type = "String";
       }
    }
    element sysid_qsys
