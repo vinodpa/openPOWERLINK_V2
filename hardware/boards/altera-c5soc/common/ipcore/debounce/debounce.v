@@ -21,17 +21,17 @@ module debounce (
   parameter POLARITY = "HIGH";    // set to be "HIGH" for active high debounce or "LOW" for active low debounce
   parameter TIMEOUT = 50000;      // number of input clock cycles the input signal needs to be in the active state
   parameter TIMEOUT_WIDTH = 16;   // set to be ceil(log2(TIMEOUT))
-  
+
   input wire clk;
   input wire reset_n;
-  
+
   input wire [WIDTH-1:0] data_in;
   output wire [WIDTH-1:0] data_out;
-  
+
   reg [TIMEOUT_WIDTH-1:0] counter [0:WIDTH-1];
   wire counter_reset [0:WIDTH-1];
   wire counter_enable [0:WIDTH-1];
-  
+
   // need one counter per input to debounce
   genvar i;
   generate for (i = 0; i < WIDTH; i = i+1)
@@ -65,10 +65,9 @@ module debounce (
     begin
       assign counter_reset[i] = (data_in[i] == 1);
       assign counter_enable[i] = (data_in[i] == 0) & (counter[i] < TIMEOUT);
-      assign data_out[i] = (counter[i] == TIMEOUT) ? 1'b0 : 1'b1;    
+      assign data_out[i] = (counter[i] == TIMEOUT) ? 1'b0 : 1'b1;
     end
-    
-  end  
+  end
   endgenerate
-  
+
 endmodule

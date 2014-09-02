@@ -11,7 +11,6 @@ output                          pulse_reset_n
 );
 
 wire   [RESET_SOURCE_COUNT-1:0] sync_reset_n;
-//wire   [RESET_SOURCE_COUNT-1:0] sync_reset_n_2cyc;
 wire   [RESET_SOURCE_COUNT-1:0] rst_pulse;
 genvar i;
 generate
@@ -30,13 +29,6 @@ endgenerate
 genvar k;
 generate if (GENERATE_PULSE_OUT) begin: has_valid_pulse
   for (k=0; k<RESET_SOURCE_COUNT; k=k+1) begin: pulse_rst_bus_inst
-//    rst_ctrl_bit_sync (
-//    .SYNC_LENGTH (PULSE_LENGTH)
-//    ) rst_sync_short_inst (
-//    .clk         (clk),
-//    .rst_n       (reset_n_src[k]),
-//    .sync_rst_n  (sync_reset_n_2cyc[k])
-//    );
     altera_edge_detector #(
     .PULSE_EXT (PULSE_LENGTH),
     .EDGE_TYPE (0),
