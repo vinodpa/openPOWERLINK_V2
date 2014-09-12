@@ -1,3 +1,4 @@
+
 ------------------------------------------------------------------------------
 --Copyright (c) 2014, Kalycito Infotech Pvt Ltd
 --All rights reserved.
@@ -275,6 +276,9 @@ architecture rtl of toplevel is
             hps_io_hps_io_gpio_inst_GPIO42              : inout std_logic := 'X';
             hps_io_hps_io_gpio_inst_GPIO43              : inout std_logic := 'X';
             hps_io_hps_io_gpio_inst_GPIO44              : inout std_logic := 'X';
+            hps_0_f2h_cold_reset_req_reset_n            : in    std_logic := 'X';
+				hps_0_f2h_debug_reset_req_reset_n           : in    std_logic := 'X';
+            hps_0_f2h_warm_reset_req_reset_n            : in    std_logic := 'X';
             led_pio_external_connection_in_port               : in    std_logic_vector(3 downto 0)  := (others => 'X');
             led_pio_external_connection_out_port              : out   std_logic_vector(3 downto 0);
             dipsw_pio_external_connection_export              : in    std_logic_vector(3 downto 0)  := (others => 'X');
@@ -369,6 +373,14 @@ architecture rtl of toplevel is
         locked      : OUT STD_LOGIC
     );
    end component pll;
+	
+   component hps_reset 
+   port(
+	     --probe		:	in std_logic;
+	     source_clk : in std_logic;
+	     source     : out std_logic_vector (2 downto 0)
+	);
+	end component hps_reset ;
 
  begin
  
@@ -464,8 +476,11 @@ architecture rtl of toplevel is
       hps_io_hps_io_gpio_inst_GPIO44  =>  hps_gpio_GPIO44,
       clk_50_clk                            =>  clk50,
       clk_100_clk                           =>  clk100,
-      host_0_hps_0_h2f_reset_reset_n        =>  hps_fpga_reset_n_src,
+      --host_0_hps_0_h2f_reset_reset_n        =>  hps_fpga_reset_n_src,
       reset_reset_n                         =>  hps_fpga_reset_n,
+		hps_0_f2h_cold_reset_req_reset_n      =>  not hps_cold_reset,
+		hps_0_f2h_debug_reset_req_reset_n     =>  not hps_debug_reset,
+      hps_0_f2h_warm_reset_req_reset_n      =>  not hps_warm_reset,
       memory_0_mem_a                        =>  fpga_memory_mem_a,
       memory_0_mem_ba                       =>  fpga_memory_mem_ba,
       memory_0_mem_ck                       =>  fpga_memory_mem_ck,
@@ -481,7 +496,8 @@ architecture rtl of toplevel is
       memory_0_mem_dqs                      =>  fpga_memory_mem_dqs,
       memory_0_mem_dqs_n                    =>  fpga_memory_mem_dqs_n,
       memory_0_mem_odt                      =>  fpga_memory_mem_odt,
-      ddr3_emif_0_global_reset_reset_n      =>  pulse_resetn_ddr,
+      --ddr3_emif_0_global_reset_reset_n      =>  pulse_resetn_ddr,
+		ddr3_emif_0_global_reset_reset_n      =>  '1',
       ddr3_emif_0_soft_reset_reset_n        =>  pulse_resetn_ddr,
       ddr3_emif_0_afi_reset_export_reset_n  =>  ddr3_afi_resetn,
       ddr3_emif_0_pll_ref_clk_clk           =>  fpga_clk_50,
@@ -517,17 +533,70 @@ architecture rtl of toplevel is
     --This act as a work-around for DDR and Nios Reset synchronization
     rst_ctrl_inst: component altera_reset_controller
     generic map (
-      RESET_SOURCE_COUNT => 3,
+      RESET_SOURCE_COUNT => 2,
       RESET_SYNC_LENGTH  => 10,
       GENERATE_PULSE_OUT => 1,
       PULSE_LENGTH       => 5
     )
     port map(
       clk              => clk50,
-      reset_n_src      => pllLocked & hps_fpga_reset_n_src & ddr3_afi_resetn,
+      --reset_n_src      => pllLocked & hps_fpga_reset_n_src & ddr3_afi_resetn,
+      reset_n_src      => pllLocked & ddr3_afi_resetn,
       combined_reset_n => hps_fpga_reset_n,
       pulse_reset_n    => pulse_resetn_ddr
      );
+
+	  --TODO: Remove or redesign altera reset controller.
+     --This act as a work-around for HPS & FPGA Reset synchronization
+     hps_reset_inst: component hps_reset  
+     port map(
+        source_clk => clk50,
+        source     => hps_reset_req
+     );
+
+	  --This act as a work-around for HPS & FPGA Reset synchronization
+    pulse_warm_reset: component altera_edge_detector  
+    generic map (
+        PULSE_EXT => 2, --2
+        EDGE_TYPE => 1,
+        IGNORE_RST_WHILE_BUSY => 1
+    )
+    port map (
+         clk       => clk50,
+         rst_n     => hps_fpga_reset_n,
+         signal_in => hps_reset_req(1),
+         pulse_out => hps_warm_reset
+    );
+	 
+	 --This act as a work-around for HPS & FPGA Reset synchronization
+	 pulse_cold_reset: component altera_edge_detector  
+     generic map (
+       PULSE_EXT     => 6, --6
+       EDGE_TYPE     => 1,
+       IGNORE_RST_WHILE_BUSY => 1
+     )
+     port map(
+        clk       => clk50,
+        rst_n     => hps_fpga_reset_n,
+        signal_in => hps_reset_req(0),
+        pulse_out => hps_cold_reset
+     );
+
+	 --This act as a work-around for HPS & FPGA Reset synchronization
+    pulse_debug_reset: component altera_edge_detector  
+    generic map (
+        PULSE_EXT => 32,  --32
+        EDGE_TYPE => 1,
+        IGNORE_RST_WHILE_BUSY => 1
+    )
+    port map(
+        clk       => clk50,
+        rst_n     => hps_fpga_reset_n,
+        signal_in => hps_reset_req(2),
+        pulse_out => hps_debug_reset
+   );
+
+	  
      --TEST PORTS
      --TODO: Remove test ports
       test_pushbutton           <= fpga_debounced_buttons(0);
