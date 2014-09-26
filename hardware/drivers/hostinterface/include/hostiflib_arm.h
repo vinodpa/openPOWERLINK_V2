@@ -1,15 +1,15 @@
 /**
 ********************************************************************************
-\file   oplkcfg.h
+\file   hostiflib_arm.h
 
-\brief  configuration file
+\brief  Host Interface Library - For ARM target
 
-This header file configures the POWERLINK node.
+This header file provides specific macros for Altera ARM CPU.
 
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
-Copyright (c) 2012, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -35,93 +35,57 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------*/
 
-
-#ifndef _INC_oplkcfg_H_
-#define _INC_oplkcfg_H_
+#ifndef _INC_hostiflib_arm_H_
+#define _INC_hostiflib_arm_H_
 
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
+#include <stdint.h>
+//#include <sys/alt_cache.h>
+#include <oplk/targetdefs/arm_altera.h>
+#include <unistd.h>
+#include <system.h>
 
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-
-/**
-\name Generic defines
-The generic defines are valid for the whole openPOWERLINK stack.
-*/
-/**@{*/
-
-// These macros define all modules which are included
-#define CONFIG_INCLUDE_PDO
-#define CONFIG_INCLUDE_NMT_MN
-#define CONFIG_INCLUDE_SDOS
-#define CONFIG_INCLUDE_SDOC
-#define CONFIG_INCLUDE_SDO_ASND
-//#define CONFIG_INCLUDE_LEDU
-#define CONFIG_INCLUDE_CFM
-#define CONFIG_INCLUDE_VETH
-
-#ifndef BENCHMARK_MODULES
-#define BENCHMARK_MODULES                   (0 \
-                                            | BENCHMARK_MOD_32 \
-                                            )
-    ///< enable benchmark for specific stack modules
+// Get hostinterface base address from system.h
+#if defined(__HOSTINTERFACE)
+#define HOSTIF_BASE         HOSTINTERFACE_0_BASE
+#else
+#define HOSTIF_BASE         0x10000000  //FIXME: Use multiplex ipcore base here
 #endif
-#ifndef DEF_DEBUG_LVL
-#define DEF_DEBUG_LVL                       0x4C000001L
-    ///< determine debug level for specific stack modules
-#endif
-/**@}*/
 
-#define CONFIG_VETH_SET_DEFAULT_GATEWAY        FALSE
+#define HOSTIF_IRQ_IC_ID    0           ///< Irq Controller Id
+#define HOSTIF_IRQ          0           ///< Irq Id
 
-#define CONFIG_CHECK_HEARTBEAT_PERIOD           1000        // 1000 ms
+/// cache
+#define HOSTIF_MAKE_NONCACHEABLE(ptr)       (void*)(((unsigned long)ptr))
 
-/**
-\name Object Dictionary defines
-The OBD defines determine the Object Dictionary.
-*/
-/**@{*/
-    ///< enable OBD in kernel layer
-#define CONFIG_OBD_CHECK_OBJECT_RANGE              TRUE
-    ///< support automatic object range check
-#define CONFIG_OBD_USE_STRING_DOMAIN_IN_RAM        TRUE
-    ///< support variable subindex
-#define CONFIG_OBD_INCLUDE_A000_TO_DEVICE_PART     TRUE
-#define CONFIG_OBD_USE_LOAD_CONCISEDCF             TRUE
-/**@}*/
+#define HOSTIF_UNCACHED_MALLOC(size)        malloc(size)
+#define HOSTIF_UNCACHED_FREE(ptr)           free(ptr)
 
-#define CONFIG_CFM_CONFIGURE_CYCLE_LENGTH          TRUE
+/// sleep
+#define HOSTIF_USLEEP(x)                    usleep((useconds_t)x)
 
-/**
-\name Service Date Object defines
-The SDO defines determine the SDO stack configuration.
-*/
-/**@{*/
-#define CONFIG_SDO_MAX_CONNECTION_ASND             100
-    ///< max. supported ASND SDO connections
-#define CONFIG_SDO_MAX_CONNECTION_SEQ              100
-    ///< max. supported SDO sequence connections
-#define CONFIG_SDO_MAX_CONNECTION_COM              100
-    ///< max. supported SDO command connections
-/**@}*/
+/// hw access
+#define HOSTIF_RD32(base, offset)           IORD_32DIRECT(base, offset)
+#define HOSTIF_RD16(base, offset)           IORD_16DIRECT(base, offset)
+#define HOSTIF_RD8(base, offset)            IORD_8DIRECT(base, offset)
 
+#define HOSTIF_WR32(base, offset, dword)    IOWR_32DIRECT(base, offset, dword)
+#define HOSTIF_WR16(base, offset, word)     IOWR_16DIRECT(base, offset, word)
+#define HOSTIF_WR8(base, offset, byte)      IOWR_8DIRECT(base, offset, byte)
+
+#define HOSTIF_INLINE    inline
 //------------------------------------------------------------------------------
 // typedef
 //------------------------------------------------------------------------------
+void hostif_msleep(UINT32 milliSeconds_p);
 
 //------------------------------------------------------------------------------
 // function prototypes
 //------------------------------------------------------------------------------
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* _INC_oplkcfg_H_ */
+#endif /* _INC_hostiflib_arm_H_ */

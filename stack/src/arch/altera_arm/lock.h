@@ -1,14 +1,13 @@
 /**
 ********************************************************************************
-\file   oplkcfg.h
+\file   altera_arm/lock.h
 
-\brief  configuration file
-
-This header file configures the POWERLINK node.
+\brief  Include file Altera_ARM lock
 
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
+Copyright (c) 2012, SYSTEC electronic GmbH
 Copyright (c) 2012, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
 All rights reserved.
 
@@ -35,82 +34,28 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------*/
 
-
-#ifndef _INC_oplkcfg_H_
-#define _INC_oplkcfg_H_
-
+#ifndef _INC_lock_H_
+#define _INC_lock_H_
+#include <stdint.h>
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
+//#include <xil_types.h>
 
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-
-/**
-\name Generic defines
-The generic defines are valid for the whole openPOWERLINK stack.
-*/
-/**@{*/
-
-// These macros define all modules which are included
-#define CONFIG_INCLUDE_PDO
-#define CONFIG_INCLUDE_NMT_MN
-#define CONFIG_INCLUDE_SDOS
-#define CONFIG_INCLUDE_SDOC
-#define CONFIG_INCLUDE_SDO_ASND
-//#define CONFIG_INCLUDE_LEDU
-#define CONFIG_INCLUDE_CFM
-#define CONFIG_INCLUDE_VETH
-
-#ifndef BENCHMARK_MODULES
-#define BENCHMARK_MODULES                   (0 \
-                                            | BENCHMARK_MOD_32 \
-                                            )
-    ///< enable benchmark for specific stack modules
+#ifndef LOCK_UNLOCKED_C
+#define LOCK_UNLOCKED_C    0
 #endif
-#ifndef DEF_DEBUG_LVL
-#define DEF_DEBUG_LVL                       0x4C000001L
-    ///< determine debug level for specific stack modules
-#endif
-/**@}*/
-
-#define CONFIG_VETH_SET_DEFAULT_GATEWAY        FALSE
-
-#define CONFIG_CHECK_HEARTBEAT_PERIOD           1000        // 1000 ms
-
-/**
-\name Object Dictionary defines
-The OBD defines determine the Object Dictionary.
-*/
-/**@{*/
-    ///< enable OBD in kernel layer
-#define CONFIG_OBD_CHECK_OBJECT_RANGE              TRUE
-    ///< support automatic object range check
-#define CONFIG_OBD_USE_STRING_DOMAIN_IN_RAM        TRUE
-    ///< support variable subindex
-#define CONFIG_OBD_INCLUDE_A000_TO_DEVICE_PART     TRUE
-#define CONFIG_OBD_USE_LOAD_CONCISEDCF             TRUE
-/**@}*/
-
-#define CONFIG_CFM_CONFIGURE_CYCLE_LENGTH          TRUE
-
-/**
-\name Service Date Object defines
-The SDO defines determine the SDO stack configuration.
-*/
-/**@{*/
-#define CONFIG_SDO_MAX_CONNECTION_ASND             100
-    ///< max. supported ASND SDO connections
-#define CONFIG_SDO_MAX_CONNECTION_SEQ              100
-    ///< max. supported SDO sequence connections
-#define CONFIG_SDO_MAX_CONNECTION_COM              100
-    ///< max. supported SDO command connections
-/**@}*/
 
 //------------------------------------------------------------------------------
 // typedef
 //------------------------------------------------------------------------------
+#ifndef LOCK_T
+//#define LOCK_T              uint8_t
+typedef uint8_t LOCK_T;
+#endif
 
 //------------------------------------------------------------------------------
 // function prototypes
@@ -120,8 +65,12 @@ The SDO defines determine the SDO stack configuration.
 extern "C" {
 #endif
 
+int target_initLock(LOCK_T* pSlock_p);
+int target_lock(void);
+int target_unlock(void);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _INC_oplkcfg_H_ */
+#endif /* _INC_lock_H_ */

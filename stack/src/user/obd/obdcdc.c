@@ -82,6 +82,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #include <unistd.h>
 #endif
 
+#if (TARGET_SYSTEM == _NO_OS_ && DEV_SYSTEM == _DEV_ARM_ALTERA_EABI_)
+#include <sys/unistd.h>
+#endif
+
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -127,10 +131,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define O_BINARY 0 //FIXME: If file system is used, you have to fix that!
 #endif
 
+#if (TARGET_SYSTEM == _NO_OS_ && DEV_SYSTEM == _DEV_ARM_ALTERA_EABI_)
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#endif
+
 #if (TARGET_SYSTEM == _NO_OS_ && (DEV_SYSTEM == _DEV_MICROBLAZE_LITTLE_ || DEV_SYSTEM == _DEV_MICROBLAZE_BIG_))
 #define O_BINARY    0 // FIXME: If file system is used, you have to fix that!
 #endif
-
 #ifndef FD_TYPE
 #define FD_TYPE     int
 #endif

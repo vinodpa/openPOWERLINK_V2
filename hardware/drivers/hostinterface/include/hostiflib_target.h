@@ -53,6 +53,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "hostiflib_microblaze.h"
 
+#elif defined(__arm__)
+
+#include "hostiflib_arm.h"
+
 #else
 
 #error "Target is not supported! Please revise hostiflib_target.h"
@@ -103,7 +107,7 @@ set to those provided by stdint.h.
 /**@}*/
 
 #ifndef UNUSED_PARAMETER
-#define UNUSED_PARAMETER(par)   (void)par
+#define UNUSED_PARAMETER(par)    (void)par
 #endif
 
 //------------------------------------------------------------------------------

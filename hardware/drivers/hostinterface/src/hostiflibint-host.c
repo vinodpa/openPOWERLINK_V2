@@ -89,9 +89,9 @@ modules.
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
-static void hostifIrqHandler(void* pArg_p);
-static tHostifReturn controlIrqMaster(tHostif* pHostif_p, BOOL fEnable_p);
-HOSTIF_INLINE static BOOL getBridgeEnabled(tHostif* pHostif_p);
+static void                 hostifIrqHandler(void* pArg_p);
+static tHostifReturn        controlIrqMaster(tHostif* pHostif_p, BOOL fEnable_p);
+HOSTIF_INLINE static BOOL   getBridgeEnabled(tHostif* pHostif_p);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -120,11 +120,24 @@ tHostifReturn hostif_createInt(tHostif* pHostif_p)
     UINT32              pcpAddr;
     tHostifInitParam*   pInitParam;
     UINT                i;
-
+#define HOSTIF_BRIDGE_INIT_TIMEOUT_MS    10
     // Busy wait for enabled bridge
-    while (getBridgeEnabled(pHostif_p) == FALSE)
+    //while (getBridgeEnabled(pHostif_p) == FALSE)
+    for (i = HOSTIF_BRIDGE_INIT_TIMEOUT_MS; i > 0; i--)
     {
+        if (getBridgeEnabled(pHostif_p) == TRUE)
+        {
+            break;
+        }
+
+        hostif_msleep(1000);
         //jz Use timeout?
+    }
+
+    if (i == 0)
+    {
+        ret = kHostifBridgeDisabled;
+        goto Exit;
     }
 
     // Get init param address in pcp memory space and write it to dyn buf 0
@@ -241,9 +254,9 @@ If the provided callback is NULL, then the IRQ source is disabled.
 tHostifReturn hostif_irqRegHdl(tHostifInstance pInstance_p,
                                tHostifIrqSrc irqSrc_p, tHostifIrqCb pfnCb_p)
 {
-    tHostifReturn ret = kHostifSuccessful;
-    tHostif*      pHostif = (tHostif*)pInstance_p;
-    UINT16        irqEnableVal;
+    tHostifReturn       ret = kHostifSuccessful;
+    tHostif*            pHostif = (tHostif*)pInstance_p;
+    UINT16              irqEnableVal;
 
     if (pInstance_p == NULL || irqSrc_p >= kHostifIrqSrcLast)
     {
@@ -290,8 +303,8 @@ host interface.
 tHostifReturn hostif_irqMasterEnable(tHostifInstance pInstance_p,
                                      BOOL fEnable_p)
 {
-    tHostifReturn ret = kHostifSuccessful;
-    tHostif*      pHostif = pInstance_p;
+    tHostifReturn       ret = kHostifSuccessful;
+    tHostif*            pHostif = pInstance_p;
 
     if (pInstance_p == NULL)
     {
@@ -327,8 +340,8 @@ Exit:
 //------------------------------------------------------------------------------
 tHostifReturn hostif_getState(tHostifInstance pInstance_p, tHostifState* pSta_p)
 {
-    tHostifReturn ret = kHostifSuccessful;
-    tHostif*      pHostif = (tHostif*)pInstance_p;
+    tHostifReturn       ret = kHostifSuccessful;
+    tHostif*            pHostif = (tHostif*)pInstance_p;
 
     if (pInstance_p == NULL || pSta_p == NULL)
     {
@@ -358,8 +371,8 @@ Exit:
 //------------------------------------------------------------------------------
 tHostifReturn hostif_getError(tHostifInstance pInstance_p, tHostifError* pErr_p)
 {
-    tHostifReturn ret = kHostifSuccessful;
-    tHostif*      pHostif = (tHostif*)pInstance_p;
+    tHostifReturn       ret = kHostifSuccessful;
+    tHostif*            pHostif = (tHostif*)pInstance_p;
 
     if (pInstance_p == NULL || pErr_p == NULL)
     {
@@ -389,8 +402,8 @@ Exit:
 //------------------------------------------------------------------------------
 tHostifReturn hostif_getHeartbeat(tHostifInstance pInstance_p, UINT16* pHeartbeat_p)
 {
-    tHostifReturn ret = kHostifSuccessful;
-    tHostif*      pHostif = (tHostif*)pInstance_p;
+    tHostifReturn       ret = kHostifSuccessful;
+    tHostif*            pHostif = (tHostif*)pInstance_p;
 
     if (pInstance_p == NULL || pHeartbeat_p == NULL)
     {
@@ -424,9 +437,9 @@ Exit:
 tHostifReturn hostif_dynBufAcquire(tHostifInstance pInstance_p, UINT32 pcpBaseAddr_p,
                                    UINT8** ppBufBase_p)
 {
-    tHostifReturn ret;
-    tHostif*      pHostif = (tHostif*)pInstance_p;
-    UINT          i;
+    tHostifReturn       ret;
+    tHostif*            pHostif = (tHostif*)pInstance_p;
+    UINT                i;
 
     if (pInstance_p == NULL || ppBufBase_p == NULL)
     {
@@ -480,9 +493,9 @@ Exit:
 //------------------------------------------------------------------------------
 tHostifReturn hostif_dynBufFree(tHostifInstance pInstance_p, UINT8* pBufBase_p)
 {
-    tHostifReturn ret = kHostifSuccessful;
-    tHostif*      pHostif = (tHostif*)pInstance_p;
-    UINT          i;
+    tHostifReturn       ret = kHostifSuccessful;
+    tHostif*            pHostif = (tHostif*)pInstance_p;
+    UINT                i;
 
     if (pInstance_p == NULL)
     {
@@ -527,8 +540,8 @@ This function returns the user part of the initialization parameters.
 //------------------------------------------------------------------------------
 tHostifReturn hostif_getInitParam(tHostifInstance pInstance_p, UINT8** ppBase_p)
 {
-    tHostifReturn   ret = kHostifSuccessful;
-    tHostif*        pHostif = (tHostif*)pInstance_p;
+    tHostifReturn       ret = kHostifSuccessful;
+    tHostif*            pHostif = (tHostif*)pInstance_p;
 
     if (pInstance_p == NULL || ppBase_p == NULL)
     {
@@ -561,10 +574,10 @@ hostif_irqRegHdl().
 //------------------------------------------------------------------------------
 static void hostifIrqHandler(void* pArg_p)
 {
-    tHostif* pHostif = (tHostif*)pArg_p;
-    UINT16   pendings;
-    UINT16   mask;
-    int      i;
+    tHostif*    pHostif = (tHostif*)pArg_p;
+    UINT16      pendings;
+    UINT16      mask;
+    int         i;
 
     if (pArg_p == NULL)
     {
@@ -606,9 +619,9 @@ again.
 //------------------------------------------------------------------------------
 static tHostifReturn controlIrqMaster(tHostif* pHostif_p, BOOL fEnable_p)
 {
-    tHostifReturn ret = kHostifSuccessful;
-    UINT16        dst = 0;
-    UINT16        src;
+    tHostifReturn       ret = kHostifSuccessful;
+    UINT16              dst = 0;
+    UINT16              src;
 
     if (fEnable_p != FALSE)
     {
@@ -644,7 +657,7 @@ This getter returns whether the bridge is turned on or off.
 //------------------------------------------------------------------------------
 static BOOL getBridgeEnabled(tHostif* pHostif_p)
 {
-    UINT16 val;
+    UINT16    val;
 
     val = hostif_readBridgeEnable(pHostif_p->pBase);
 
@@ -653,4 +666,3 @@ static BOOL getBridgeEnabled(tHostif* pHostif_p)
     else
         return FALSE;
 }
-
