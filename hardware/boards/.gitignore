@@ -1,5 +1,8 @@
 # Gitignore for boards
 
+#AlteraSoC
+software/
+hps_isw_handoff/
 # Altera Quartus with Qsys
 ## Dirs
 .qsys_edit/
