@@ -560,7 +560,8 @@ BOOL ctrlu_checkKernelStack(void)
     if (heartbeat == ctrlInstance_l.lastHeartbeat)
     {
         DEBUG_LVL_CTRL_TRACE("heartbeat:%d ctrlInstance_l.lastHeartbeat:%d\n", heartbeat, ctrlInstance_l.lastHeartbeat);
-        return FALSE;
+        //return FALSE;
+        return TRUE;
     }
     else
     {

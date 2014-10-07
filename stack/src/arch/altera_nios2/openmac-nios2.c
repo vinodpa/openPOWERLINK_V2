@@ -79,7 +79,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 #define OPENMAC_SYNC_IRQ    0
 #define OPENMAC_TXRX_IRQ    1
-#define OPENMAC_IRQ_IC_ID   0
+#define OPENMAC_IRQ_IC_ID   OPENMAC_0_MACREG_IRQ
 
 #define OPENMAC_TIMER_OFFSET_CMP_VAL        0
 #define OPENMAC_TIMER_OFFSET_TIME_VAL       0
@@ -153,6 +153,7 @@ tOplkError openmac_isrReg(tOpenmacIrqSource irqSource_p, tOpenmacIrqCb pfnIsrCb_
             goto Exit;
     }
 
+//    if (alt_irq_register(irqId,(void*)irqSource_p,irqHandler)) //TODO: Vinod
     if (alt_ic_isr_register(icId, irqId, irqHandler, (void*)irqSource_p, NULL))
     {
         return kErrorNoResource;
@@ -441,7 +442,7 @@ static void irqHandler(void* pArg_p
         )
 {
     tOpenmacIrqSource   irqSource = (tOpenmacIrqSource)pArg_p;
-
+//printf("I:%x\n",irqSource);
 #ifndef ALT_ENHANCED_INTERRUPT_API_PRESENT
     UNUSED_PARAMETER(int_p);
 #endif
