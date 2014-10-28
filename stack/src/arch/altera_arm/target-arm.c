@@ -54,6 +54,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <common/target.h>
 #include <alt_clock_manager.h>
+
+#include <system.h>
 //#include <xparameters.h>
 
 //============================================================================//
@@ -80,6 +82,124 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 #define SECS_TO_MILLISECS    1000
+
+#define FPGA_BUS_WIDTH          32
+#define __IO_CALC_ADDRESS_NATIVE(base, offset) \
+                                            (base + offset * (FPGA_BUS_WIDTH/8))
+#define IORD16(base, offset)                alt_read_word(base + offset * (FPGA_BUS_WIDTH/8))
+#define IORD32(base, offset)               alt_read_word(base + offset * (FPGA_BUS_WIDTH/8))
+#define IOWR16(base, offset, val)           alt_write_word(base + offset * (FPGA_BUS_WIDTH/8), val)
+#define IOWR32(base, offset, val)           alt_write_word(base + offset * (FPGA_BUS_WIDTH/8), val)
+
+/* STATUS register */
+#define ALTERA_AVALON_TIMER_STATUS_REG              0
+#define IOADDR_ALTERA_AVALON_TIMER_STATUS(base) \
+  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_STATUS_REG)
+#define IORD_ALTERA_AVALON_TIMER_STATUS(base) \
+  IORD16(base, ALTERA_AVALON_TIMER_STATUS_REG)
+#define IOWR_ALTERA_AVALON_TIMER_STATUS(base, data) \
+  IOWR16(base, ALTERA_AVALON_TIMER_STATUS_REG, data)
+#define ALTERA_AVALON_TIMER_STATUS_TO_MSK           (0x1)
+#define ALTERA_AVALON_TIMER_STATUS_TO_OFST          (0)
+#define ALTERA_AVALON_TIMER_STATUS_RUN_MSK          (0x2)
+#define ALTERA_AVALON_TIMER_STATUS_RUN_OFST         (1)
+
+/* CONTROL register */
+#define ALTERA_AVALON_TIMER_CONTROL_REG             1
+#define IOADDR_ALTERA_AVALON_TIMER_CONTROL(base) \
+  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_CONTROL_REG)
+#define IORD_ALTERA_AVALON_TIMER_CONTROL(base) \
+  IORD16(base, ALTERA_AVALON_TIMER_CONTROL_REG)
+#define IOWR_ALTERA_AVALON_TIMER_CONTROL(base, data) \
+  IOWR16(base, ALTERA_AVALON_TIMER_CONTROL_REG, data)
+#define ALTERA_AVALON_TIMER_CONTROL_ITO_MSK         (0x1)
+#define ALTERA_AVALON_TIMER_CONTROL_ITO_OFST        (0)
+#define ALTERA_AVALON_TIMER_CONTROL_CONT_MSK        (0x2)
+#define ALTERA_AVALON_TIMER_CONTROL_CONT_OFST       (1)
+#define ALTERA_AVALON_TIMER_CONTROL_START_MSK       (0x4)
+#define ALTERA_AVALON_TIMER_CONTROL_START_OFST      (2)
+#define ALTERA_AVALON_TIMER_CONTROL_STOP_MSK        (0x8)
+#define ALTERA_AVALON_TIMER_CONTROL_STOP_OFST       (3)
+
+/* Period and SnapShot Register for COUNTER_SIZE = 32 */
+/*----------------------------------------------------*/
+/* PERIODL register */
+#define ALTERA_AVALON_TIMER_PERIODL_REG             2
+#define IOADDR_ALTERA_AVALON_TIMER_PERIODL(base) \
+  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODL_REG)
+#define IORD_ALTERA_AVALON_TIMER_PERIODL(base) \
+  IORD16(base, ALTERA_AVALON_TIMER_PERIODL_REG)
+#define IOWR_ALTERA_AVALON_TIMER_PERIODL(base, data) \
+  IOWR16(base, ALTERA_AVALON_TIMER_PERIODL_REG, data)
+#define ALTERA_AVALON_TIMER_PERIODL_MSK             (0xFFFF)
+#define ALTERA_AVALON_TIMER_PERIODL_OFST            (0)
+
+/* PERIODH register */
+#define ALTERA_AVALON_TIMER_PERIODH_REG             3
+#define IOADDR_ALTERA_AVALON_TIMER_PERIODH(base) \
+  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODH_REG)
+#define IORD_ALTERA_AVALON_TIMER_PERIODH(base) \
+  IORD16(base, ALTERA_AVALON_TIMER_PERIODH_REG)
+#define IOWR_ALTERA_AVALON_TIMER_PERIODH(base, data) \
+  IOWR16(base, ALTERA_AVALON_TIMER_PERIODH_REG, data)
+#define ALTERA_AVALON_TIMER_PERIODH_MSK             (0xFFFF)
+#define ALTERA_AVALON_TIMER_PERIODH_OFST            (0)
+
+/* SNAPL register */
+#define ALTERA_AVALON_TIMER_SNAPL_REG               4
+#define IOADDR_ALTERA_AVALON_TIMER_SNAPL(base) \
+  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPL_REG)
+#define IORD_ALTERA_AVALON_TIMER_SNAPL(base) \
+  IORD16(base, ALTERA_AVALON_TIMER_SNAPL_REG)
+#define IOWR_ALTERA_AVALON_TIMER_SNAPL(base, data) \
+  IOWR16(base, ALTERA_AVALON_TIMER_SNAPL_REG, data)
+#define ALTERA_AVALON_TIMER_SNAPL_MSK               (0xFFFF)
+#define ALTERA_AVALON_TIMER_SNAPL_OFST              (0)
+
+/* SNAPH register */
+#define ALTERA_AVALON_TIMER_SNAPH_REG               5
+#define IOADDR_ALTERA_AVALON_TIMER_SNAPH(base) \
+  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPH_REG)
+#define IORD_ALTERA_AVALON_TIMER_SNAPH(base) \
+  IORD16(base, ALTERA_AVALON_TIMER_SNAPH_REG)
+#define IOWR_ALTERA_AVALON_TIMER_SNAPH(base, data) \
+  IOWR16(base, ALTERA_AVALON_TIMER_SNAPH_REG, data)
+#define ALTERA_AVALON_TIMER_SNAPH_MSK               (0xFFFF)
+#define ALTERA_AVALON_TIMER_SNAPH_OFST              (0)
+
+
+
+#define IOADDR_ALTERA_AVALON_PIO_DATA(base)           __IO_CALC_ADDRESS_NATIVE(base, 0)
+#define IORD_ALTERA_AVALON_PIO_DATA(base)             IORD32(base, 0)
+#define IOWR_ALTERA_AVALON_PIO_DATA(base, data)       IOWR32(base, 0, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_DIRECTION(base)      __IO_CALC_ADDRESS_NATIVE(base, 1)
+#define IORD_ALTERA_AVALON_PIO_DIRECTION(base)        IORD32(base, 1)
+#define IOWR_ALTERA_AVALON_PIO_DIRECTION(base, data)  IOWR32(base, 1, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_IRQ_MASK(base)       __IO_CALC_ADDRESS_NATIVE(base, 2)
+#define IORD_ALTERA_AVALON_PIO_IRQ_MASK(base)         IORD32(base, 2)
+#define IOWR_ALTERA_AVALON_PIO_IRQ_MASK(base, data)   IOWR32(base, 2, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_EDGE_CAP(base)       __IO_CALC_ADDRESS_NATIVE(base, 3)
+#define IORD_ALTERA_AVALON_PIO_EDGE_CAP(base)         IORD32(base, 3)
+#define IOWR_ALTERA_AVALON_PIO_EDGE_CAP(base, data)   IOWR32(base, 3, data)
+
+
+#define IOADDR_ALTERA_AVALON_PIO_SET_BIT(base)       __IO_CALC_ADDRESS_NATIVE(base, 4)
+#define IORD_ALTERA_AVALON_PIO_SET_BITS(base)         IORD32(base, 4)
+#define IOWR_ALTERA_AVALON_PIO_SET_BITS(base, data)   IOWR32(base, 4, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_CLEAR_BITS(base)       __IO_CALC_ADDRESS_NATIVE(base, 5)
+#define IORD_ALTERA_AVALON_PIO_CLEAR_BITS(base)         IORD32(base, 5)
+#define IOWR_ALTERA_AVALON_PIO_CLEAR_BITS(base, data)   IOWR32(base, 5, data)
+
+
+
+/* Defintions for direction-register operation with bi-directional PIOs */
+#define ALTERA_AVALON_PIO_DIRECTION_INPUT  0
+#define ALTERA_AVALON_PIO_DIRECTION_OUTPUT 1
+
 //------------------------------------------------------------------------------
 // local types
 //------------------------------------------------------------------------------
@@ -91,6 +211,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // local vars
 //------------------------------------------------------------------------------
 
+    volatile int a = 0;
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
@@ -127,12 +248,13 @@ UINT32 target_getTickCount(void)
     /* Select the lower 32 bit of the timer value */
     //ticks = alt_gpt_counter_get(ALT_GPT_CPU_GLOBAL_TMR);
     //ticks = alt_gpt_time_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR);
-    if (alt_globaltmr_get(&ticks_h, &ticks_l) != ALT_E_SUCCESS)
-    {
-        DEBUG_LVL_ERROR_TRACE("Timer is returning junk!\n");
-    }
-
-    return ticks_l;
+//    if (alt_globaltmr_get(&ticks_h, &ticks_l) != ALT_E_SUCCESS)
+//    {
+//        DEBUG_LVL_ERROR_TRACE("Timer is returning junk!\n");
+//    }
+//
+//    return ticks_l;
+    return (uint32_t) getTimerCurrentScaledCount(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS);
 }
 
 //------------------------------------------------------------------------------
@@ -155,6 +277,7 @@ void target_enableGlobalInterrupt(UINT8 fEnable_p)
     {
         if (--lockCount == 0)
         {
+           // printf("e");
             enableInterruptMaster();
         }
     }
@@ -162,6 +285,7 @@ void target_enableGlobalInterrupt(UINT8 fEnable_p)
     {                       // disable interrupts
         if (lockCount == 0)
         {
+           //printf("%d\n", a);
             disableInterruptMaster();
         }
 
@@ -181,6 +305,21 @@ openPOWERLINK stack.
 \ingroup module_target
 */
 //------------------------------------------------------------------------------
+
+
+void cs3_isr_1(uint32_t icciar_p, void* context_p)
+{
+    alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ1);
+    alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ3);
+    alt_globaltmr_int_clear_pending();
+    IOWR_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE, 0x3);
+    printf("ISR\n");
+    *(volatile int *)context_p = 1;
+
+    a = 2;
+    return;
+}
+
 tOplkError target_init(void)
 {
     tOplkError          oplkRet = kErrorOk;
@@ -229,6 +368,35 @@ tOplkError target_init(void)
         oplkRet = kErrorGeneralError;
         printf("FPGA initialization Failed!!\n");
     }
+
+    if (alt_bridge_init(ALT_BRIDGE_LWH2F, NULL, NULL) != ALT_E_SUCCESS)
+    {
+        oplkRet = kErrorGeneralError;
+        printf("LWH2F initialization Failed!!: 0x%X\n", alt_bridge_init(ALT_BRIDGE_LWH2F, NULL, NULL));
+    }
+
+    if (alt_bridge_init(ALT_BRIDGE_H2F, NULL, NULL) != ALT_E_SUCCESS)
+    {
+        oplkRet = kErrorGeneralError;
+        printf("H2F initialization Failed!!: 0x%X\n", alt_bridge_init(ALT_BRIDGE_H2F, NULL, NULL));
+    }
+
+//    if (alt_addr_space_remap(ALT_ADDR_SPACE_MPU_ZERO_AT_BOOTROM,
+//                             ALT_ADDR_SPACE_NONMPU_ZERO_AT_SDRAM,
+//                             ALT_ADDR_SPACE_H2F_ACCESSIBLE,
+//                             ALT_ADDR_SPACE_LWH2F_ACCESSIBLE)
+//        == ALT_E_SUCCESS)
+//    {
+//        oplkRet = kErrorGeneralError;
+//        printf("Address remapping Failed!!\n");
+//    }
+    // test code
+
+    target_enableSyncIrq(FALSE);
+    target_regSyncIrqHdl(cs3_isr_1, &a);
+    target_enableSyncIrq(TRUE);
+    //enableInterruptMaster();
+
 
 Exit:
     return oplkRet;
@@ -281,7 +449,7 @@ void target_msleep(UINT32 milliSeconds_p)
 
     //printf("CurTime: %llu, startTime: %llu, waitCountLimit: %lu\n", curTickStamp, startTickStamp, waitCountLimit);
     curTickStamp = alt_globaltmr_get64();
-    printf("CurTime: %llu, startTime: %llu, waitTickCount: %llu\n", curTickStamp, startTickStamp, waitTickCount);
+    //printf("CurTime: %llu, startTime: %llu, waitTickCount: %llu\n", curTickStamp, startTickStamp, waitTickCount);
     //printf("s");
     while (fExit != TRUE)
     {
@@ -341,7 +509,7 @@ void target_msleep(UINT32 milliSeconds_p)
     }
 
     //printf("\n");
-    printf("CurTime: %llu, startTime: %llu, entryCount: %lu\n", curTickStamp, startTickStamp, entryCount);
+    //printf("CurTime: %llu, startTime: %llu, entryCount: %lu\n", curTickStamp, startTickStamp, entryCount);
 }
 
 //void target_msleep(UINT32 milliSeconds_p)
@@ -452,8 +620,31 @@ used by the application for PDO and event synchronization.
 \ingroup module_target
 */
 //------------------------------------------------------------------------------
+
+
 void target_regSyncIrqHdl(void* callback_p, void* pArg_p)
 {
+    ALT_INT_INTERRUPT_t    irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + 1;
+
+    if (callback_p == NULL)
+    {
+        printf("UnReg Hostif ISR\n");
+        alt_int_isr_unregister(irqId);
+    }
+    else
+    {
+        printf("Reg Hostif ISR\n");
+        if ( alt_int_isr_register(irqId, callback_p, pArg_p) != ALT_E_SUCCESS)
+        {
+            printf("isr registration failed\n");
+        }
+        else
+        {
+            printf("isr registration successful\n");
+        }
+    }
+
+    alt_int_isr_register(ALT_INT_INTERRUPT_PPI_TIMER_GLOBAL, callback_p, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -469,6 +660,72 @@ The function is used to enable or disable the sync interrupt
 //------------------------------------------------------------------------------
 void target_enableSyncIrq(BOOL fEnable_p)
 {
+    ALT_STATUS_CODE         ret;
+    ALT_INT_INTERRUPT_t     irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + 1;
+    int                     cpu_target = 0x1;                                             // cortexA9_0
+
+    if (fEnable_p)
+    {
+        alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ0);
+        alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ1);
+        alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ3);
+        for (irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ1; irqId <= ALT_INT_INTERRUPT_F2S_FPGA_IRQ1; irqId++)
+        {
+            printf("Enable IRQ: %X(%X)\n", fEnable_p,irqId);
+            if (alt_int_dist_target_set(irqId, cpu_target) != ALT_E_SUCCESS)
+            {
+                printf("trigger set failed\n");
+            }
+            //else if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_EDGE) != ALT_E_SUCCESS)
+            else if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_EDGE) != ALT_E_SUCCESS)
+            {
+                printf("trigger set failed\n");
+            }
+            else if (alt_int_dist_enable(irqId) != ALT_E_SUCCESS)
+            {
+                // Set interrupt distributor target
+                printf("distributor set failed\n");
+            }
+            else
+                printf("Irq enabled\n");
+        }
+
+        printf("PIO data status: 0x%X\n", IORD_ALTERA_AVALON_PIO_DATA(BUTTON_PIO_BASE));
+        printf("PIO edge capture status: 0x%X\n", IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE));
+        printf("PIO irq status: 0x%X\n", IORD_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE));
+        IOWR_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE, 0x3);
+        IOWR_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE, 0x3);
+        printf("PIO edge capture status: 0x%X\n", IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE));
+        printf("PIO irq status: 0x%X\n", IORD_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE));
+
+        // Set interrupt trigger type
+        if (alt_int_dist_trigger_set(ALT_INT_INTERRUPT_PPI_TIMER_GLOBAL, ALT_INT_TRIGGER_AUTODETECT) != ALT_E_SUCCESS)
+        {
+            printf("trigger set failed\n");
+        }
+
+        // Enable interrupt at the distributor level
+        //if (alt_int_dist_enable(ALT_INT_INTERRUPT_PPI_TIMER_GLOBAL) != ALT_E_SUCCESS)
+        {
+            //printf("distributor set failed\n");
+        }
+
+    }
+    else
+    {
+        if (alt_int_dist_disable(irqId) == ALT_E_SUCCESS)
+            printf("disable irq\n");
+        else
+            printf("nothing to disable irq\n");
+
+        printf("PIO data status: 0x%X\n", IORD_ALTERA_AVALON_PIO_DATA(BUTTON_PIO_BASE));
+        printf("PIO edge capture status: 0x%X\n", IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE));
+        printf("PIO irq status: 0x%X\n", IORD_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE));
+        IOWR_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE, 0x0);
+        IOWR_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE, 0x3);
+        printf("PIO edge capture status: 0x%X\n", IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE));
+        printf("PIO irq status: 0x%X\n", IORD_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE));
+    }
 }
 
 //============================================================================//
@@ -490,17 +747,19 @@ static int enableInterruptMaster(void)
 
     // enable global interrupt master
     // Global interrupt enable
-    retStatus = alt_int_global_enable_all();
+    retStatus = alt_int_global_enable();
     if (retStatus != ALT_E_SUCCESS)
     {
+        printf("enabling interrupts failed\n");
         ret = -1;
         goto Exit;
     }
 
     // CPU interface global enable
-    retStatus = alt_int_cpu_enable_all();
+    retStatus = alt_int_cpu_enable();
     if (retStatus != ALT_E_SUCCESS)
     {
+        printf("enabling interrupts failed\n");
         ret = -1;
         goto Exit;
     }
@@ -521,7 +780,7 @@ static int disableInterruptMaster(void)
     int                 ret = 0;
 
     // Disable all interrupts from the distributor
-    retStatus = alt_int_global_disable_all();
+    retStatus = alt_int_global_disable();
     if (retStatus != ALT_E_SUCCESS)
     {
         ret = -1;
@@ -529,7 +788,7 @@ static int disableInterruptMaster(void)
     }
 
     // Reset the CPU interface
-    retStatus = alt_int_cpu_disable_all();
+    retStatus = alt_int_cpu_disable();
     if (retStatus != ALT_E_SUCCESS)
     {
         ret = -1;
@@ -847,6 +1106,61 @@ static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t s
 
 Exit:
     return maxScaledTime;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+\brief  Set IP address of specified Ethernet interface
+
+The function sets the IP address, subnetMask and MTU of an Ethernet
+interface.
+
+\param  ifName_p                Name of Ethernet interface.
+\param  ipAddress_p             IP address to set for interface.
+\param  subnetMask_p            Subnet mask to set for interface.
+\param  mtu_p                   MTU to set for interface.
+
+\return The function returns a tOplkError error code.
+
+\ingroup module_target
+*/
+//------------------------------------------------------------------------------
+tOplkError target_setIpAdrs(char* ifName_p, UINT32 ipAddress_p, UINT32 subnetMask_p,
+                            UINT16 mtu_p)
+{
+    UNUSED_PARAMETER(ifName_p);
+    UNUSED_PARAMETER(ipAddress_p);
+    UNUSED_PARAMETER(subnetMask_p);
+    UNUSED_PARAMETER(mtu_p);
+
+    //Note: The given parameters are ignored because the application must set
+    //      these settings to the used IP stack by itself!
+
+    return kErrorOk;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief  Set default gateway for Ethernet interface
+
+The function sets the default gateway of an Ethernet interface.
+
+\param  defaultGateway_p            Default gateway to set.
+
+\return The function returns a tOplkError error code.
+
+\ingroup module_target
+*/
+//------------------------------------------------------------------------------
+tOplkError target_setDefaultGateway(UINT32 defaultGateway_p)
+{
+    UNUSED_PARAMETER(defaultGateway_p);
+
+    //Note: The given parameters are ignored because the application must set
+    //      these settings to the used IP stack by itself!
+
+    return kErrorOk;
 }
 
 ///\}

@@ -213,7 +213,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  definition of TRACE
 //------------------------------------------------------------------------------
 #ifndef NDEBUG
-#define TRACE(...) trace(__VA_ARGS__)
+#define TRACE(...) printf(__VA_ARGS__)
 
 #ifdef __cplusplus
 extern "C" {

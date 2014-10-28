@@ -2629,6 +2629,8 @@ void            omethRxTxIrqHandlerMux
         pending = pRegBase->rxStatus.value & OMETH_REG_PENDING;
         if(pending > maxPending)
         {
+            //printf("Rx\n");
+            //printf(".");
             hEthProcess = hEth;
             maxPending = pending;
         }
@@ -2636,6 +2638,7 @@ void            omethRxTxIrqHandlerMux
         pending = pRegBase->txStatus.value & OMETH_REG_PENDING;
         if(pending > maxPending)
         {
+        	//printf("-");
             hEthProcess = (OMETH_H)((size_t)hEth | 1);    // use bit 0 to mark that this is a tx-IRQ
             maxPending = pending;
         }

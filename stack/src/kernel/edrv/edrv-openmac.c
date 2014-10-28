@@ -1196,6 +1196,7 @@ static void irqHandler(void* pArg_p)
     }
 #endif
 
+    //printf("-");
     omethRxTxIrqHandlerMux();
 
     BENCHMARK_MOD_01_RESET(1);

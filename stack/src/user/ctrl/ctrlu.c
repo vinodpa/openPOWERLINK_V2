@@ -398,6 +398,7 @@ tOplkError ctrlu_initStack(tOplkApiInitParam* pInitParam_p)
 
 #if defined (CONFIG_INCLUDE_CFM)
     DEBUG_LVL_CTRL_TRACE("Initialize Cfm module...\n");
+    //printf("Initialize Cfm module...\n");
     ret = cfmu_init(cbCfmEventCnProgress, cbCfmEventCnResult);
     if (ret != kErrorOk)
     {
@@ -559,14 +560,16 @@ BOOL ctrlu_checkKernelStack(void)
     heartbeat = ctrlucal_getHeartbeat();
     if (heartbeat == ctrlInstance_l.lastHeartbeat)
     {
-        DEBUG_LVL_CTRL_TRACE("heartbeat:%d ctrlInstance_l.lastHeartbeat:%d\n", heartbeat, ctrlInstance_l.lastHeartbeat);
-        //return FALSE;
-        return TRUE;
+        DEBUG_LVL_CTRL_TRACE("if part heartbeat:%d ctrlInstance_l.lastHeartbeat:%d\n", heartbeat, ctrlInstance_l.lastHeartbeat);
+        //printf("heartbeat:%x ctrlInstance_l.lastHeartbeat:%x\n", heartbeat, ctrlInstance_l.lastHeartbeat);
+        return FALSE;
+        //return TRUE;
     }
     else
     {
         ctrlInstance_l.lastHeartbeat = heartbeat;
         return (ctrlucal_getStatus() == kCtrlStatusRunning);
+        printf("else part heartbeat:%x ctrlInstance_l.lastHeartbeat:%x\n", heartbeat, ctrlInstance_l.lastHeartbeat);
     }
 }
 

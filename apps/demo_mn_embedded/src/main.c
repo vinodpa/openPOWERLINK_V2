@@ -42,7 +42,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
-#include <oplk/oplk.h>
+//#include <oplk/oplk.h>
+#include <common/oplkinc.h>
 
 #include <gpio.h>
 #include <lcd.h>
@@ -90,7 +91,7 @@ static char*            pszCdcFilename_g = "mnobd.cdc";
 #else
 const unsigned char     aCdcBuffer[] =
 {
-    #include "mnobd.txt"
+    #include "C:\my-WS\OPLK\WRK\openPOWERLINK_V2_JB\apps\demo_mn_embedded\src\mnobd.txt"
 };
 
 #endif
@@ -137,6 +138,9 @@ This is the main function of the openPOWERLINK console MN demo application.
 \ingroup module_demo_mn_embedded
 */
 //------------------------------------------------------------------------------
+
+#include <system.h>
+#include <common/target.h>
 int main(void)
 {
     tOplkError      ret = kErrorOk;
@@ -150,6 +154,14 @@ int main(void)
     // get node ID from input
     nodeid = gpio_getNodeid();
 
+//    target_init();
+//while (1)
+//{
+//    target_msleep(100);
+//    printf("PIO data status: 0x%X\n", alt_read_word(BUTTON_PIO_BASE));
+//    printf("PIO edge capture status: 0x%X\n", alt_read_word(BUTTON_PIO_BASE + 0x0C));
+//    printf("PIO irq status: 0x%X\n", alt_read_word(BUTTON_PIO_BASE + 0x08));
+//}
     // initialize instance
     memset(&instance_l, 0, sizeof(instance_l));
 
@@ -190,11 +202,12 @@ int main(void)
     if ((ret = initApp()) != kErrorOk)
         goto Exit;
 
-    if ((ret = oplk_setNonPlkForward(TRUE)) != kErrorOk)
-        goto Exit;
+    // TODO: Vinod
+    //if ((ret = oplk_setNonPlkForward(TRUE)) != kErrorOk)
+    //    goto Exit;
 
     loopMain(&instance_l);
-
+printf("control goes out of loopMain");
 Exit:
 #if (CONFIG_CDC_ON_SD != FALSE)
     sdcard_freeCdcBuffer(&cdcBuffInfo);
@@ -284,12 +297,13 @@ static tOplkError initPowerlink(tInstance* pInstance_p)
         return ret;
     }
 
+    //TODO: Vinod
     // Set real MAC address to ARP module
-    oplk_getEthMacAddr(initParam.aMacAddress);
-    arp_setMacAddr(initParam.aMacAddress);
+    //ret = oplk_getEthMacAddr(initParam.aMacAddress);
+    //ret = arp_setMacAddr(initParam.aMacAddress);
 
     // Set IP address to ARP module
-    arp_setIpAddr(initParam.ipAddress);
+    //ret = arp_setIpAddr(initParam.ipAddress);
 
     // Set default gateway to ARP module
     arp_setDefGateway(initParam.defaultGateway);
@@ -309,6 +323,17 @@ This function implements the main loop of the demo application.
 \return The function returns a tOplkError error code.
 */
 //------------------------------------------------------------------------------
+#include <alt_timers.h>
+#include <alt_globaltmr.h>
+#include <alt_interrupt.h>
+#include <alt_cache.h>
+#include <alt_fpga_manager.h>
+#include <alt_bridge_manager.h>
+#include <alt_address_space.h>
+#include <alt_mpu_registers.h>
+
+#include <common/target.h>
+#include <alt_clock_manager.h>
 static tOplkError loopMain(tInstance* pInstance_p)
 {
     tOplkError    ret = kErrorOk;
@@ -319,16 +344,19 @@ static tOplkError loopMain(tInstance* pInstance_p)
 
     while (1)
     {
+        alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ0);
         // do background tasks
         if ((ret = oplk_process()) != kErrorOk)
             break;
 
+        //printf("1 \n");
         if (oplk_checkKernelStack() == FALSE)
         {
             PRINTF("Kernel stack has gone! Exiting...\n");
             instance_l.fShutdown = TRUE;
         }
 
+        //printf("2 \n");
         // trigger switch off
         if (pInstance_p->fShutdown != FALSE)
         {
@@ -337,11 +365,12 @@ static tOplkError loopMain(tInstance* pInstance_p)
             // reset shutdown flag to generate only one switch off command
             pInstance_p->fShutdown = FALSE;
         }
-
+        //printf("3 \n");
         // exit loop if NMT is in off state
         if (pInstance_p->fGsOff != FALSE)
             break;
 
+        //printf("4 \n");
         switch (gpio_getAppInput())
         {
             case 0x01:
@@ -361,6 +390,7 @@ static tOplkError loopMain(tInstance* pInstance_p)
         }
 
         while (gpio_getAppInput() != 0);
+        //printf("E \n");
     }
 
     return ret;
@@ -429,10 +459,11 @@ static tOplkError eventCbPowerlink(tOplkApiEventType EventType_p,
         //       stack to lower layers must be forwarded with the function
         //       \ref oplk_sendEthFrame.
 
+        //TODO:vinod- node found but not working
         // Forward received frame to ARP processing
-        ret = arp_processReceive(pFrameInfo->pFrame, pFrameInfo->frameSize);
-         if (ret != kErrorRetry)
-             return ret;
+        //ret = arp_processReceive(pFrameInfo->pFrame, pFrameInfo->frameSize);
+       //  if (ret != kErrorRetry)
+        //     return ret;
 
          // If you get here, the received Ethernet frame is no ARP frame.
          // Here you can call other protocol stacks for processing.

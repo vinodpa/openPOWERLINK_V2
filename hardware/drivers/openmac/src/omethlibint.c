@@ -246,7 +246,6 @@ void            omethTxIrqHandler
     ometh_desc_typ        *pDesc    = pInfo->pDesc;        // access to tx descriptor
     unsigned long        i;
 
-
 #if (OMETH_ENABLE_SOFT_IRQ==1)
     // check if soft IRQ was triggered
     if(hEth->pRegBase->txStatus.value & OMETH_REG_SOFTIRQ)

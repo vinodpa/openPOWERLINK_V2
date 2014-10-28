@@ -138,7 +138,7 @@ int target_lock(void)
     if (pLock_l == NULL)
         return -1;
 
-    printf("Locking..\n");
+    //printf("Locking..\n");
     // spin if id is not written to shared memory
     do
     {

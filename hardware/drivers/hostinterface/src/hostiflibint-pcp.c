@@ -240,6 +240,8 @@ tHostifReturn hostif_checkVersion(UINT8* pBase_p, tHostifVersion* pSwVersion_p)
     if (pHwVersion->version.major != pSwVersion_p->major)
         ret = kHostifWrongVersion;
 
+//    printf("cnt %d revision %d minor %d major %d \n\r",pHwVersion->cnt, pHwVersion->version.revision,pHwVersion->version.minor, pHwVersion->version.major  );
+
     return ret;
 }
 
@@ -349,7 +351,10 @@ tHostifReturn hostif_setHeartbeat(tHostifInstance pInstance_p, UINT16 heartbeat_
         goto Exit;
     }
 
+    //alt_dcache_flush_all();
     hostif_writeHeartbeat(pHostif->pBase, heartbeat_p);
+
+    //printf("HB:%x \n",heartbeat_p);
 
 Exit:
     return ret;

@@ -117,7 +117,7 @@ interrupt services.
 
 void __cs3_isr(uint32_t icciar_p, void* context_p)
 {
-    printf("Hostif ISR\n");
+    alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + HOSTIF_IRQ);
     if (pfnIrqCb_l != NULL)
         pfnIrqCb_l(context_p);
     return;
@@ -168,10 +168,15 @@ tHostifReturn hostif_sysIrqEnable(BOOL fEnable_p)
     ALT_INT_INTERRUPT_t     irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + HOSTIF_IRQ;
     int                     cpu_target = 0x1;                                             // cortexA9_0
 
-    printf("Enable Hostif IRQ: %X\n", fEnable_p);
+    printf("Enable Hostif IRQ: %X(%X)\n", fEnable_p,irqId);
     if (fEnable_p)
     {
         if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_LEVEL) != ALT_E_SUCCESS)
+        {
+            printf("trigger set failed\n");
+            return kHostifNoResource;
+        }
+        else if (alt_int_dist_target_set(irqId, cpu_target) != ALT_E_SUCCESS)
         {
             printf("trigger set failed\n");
             return kHostifNoResource;
@@ -180,11 +185,6 @@ tHostifReturn hostif_sysIrqEnable(BOOL fEnable_p)
         {
             // Set interrupt distributor target
             printf("distributor set failed\n");
-            return kHostifNoResource;
-        }
-        else if (alt_int_dist_target_set(irqId, cpu_target) != ALT_E_SUCCESS)
-        {
-            printf("trigger set failed\n");
             return kHostifNoResource;
         }
         else
