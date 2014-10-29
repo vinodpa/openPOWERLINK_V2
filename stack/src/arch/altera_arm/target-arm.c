@@ -54,6 +54,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <common/target.h>
 #include <alt_clock_manager.h>
+#include <gpio.h>
 
 #include <system.h>
 //#include <xparameters.h>
@@ -212,6 +213,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 
     volatile int a = 0;
+static unsigned char fTargetInitStatus = FALSE;
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
@@ -325,6 +327,12 @@ tOplkError target_init(void)
     tOplkError          oplkRet = kErrorOk;
     ALT_STATUS_CODE     halRet = ALT_E_SUCCESS;
 
+    if (fTargetInitStatus)
+    {
+        oplkRet = kErrorIllegalInstance;
+        goto Exit;
+    }
+
     // Enable Cache
     //halRet = alt_cache_system_enable();
     halRet = alt_cache_system_disable();
@@ -392,11 +400,13 @@ tOplkError target_init(void)
 //    }
     // test code
 
-    target_enableSyncIrq(FALSE);
-    target_regSyncIrqHdl(cs3_isr_1, &a);
-    target_enableSyncIrq(TRUE);
+    //target_enableSyncIrq(FALSE);
+    //target_regSyncIrqHdl(cs3_isr_1, &a);
+    //target_enableSyncIrq(TRUE);
     //enableInterruptMaster();
+    gpio_init();
 
+    fTargetInitStatus = TRUE;
 
 Exit:
     return oplkRet;
@@ -416,6 +426,7 @@ The function cleans-up target specific stuff.
 tOplkError target_cleanup(void)
 {
     //FIXME
+    fTargetInitStatus = FALSE;
     return kErrorOk;
 }
 

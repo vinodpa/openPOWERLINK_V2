@@ -143,18 +143,26 @@ This is the main function of the openPOWERLINK console MN demo application.
 #include <common/target.h>
 int main(void)
 {
+<<<<<<< HEAD
     tOplkError      ret = kErrorOk;
     const UINT8     aMacAddr[] = {MAC_ADDR};
     UINT8           nodeid;
 #if (CONFIG_CDC_ON_SD != FALSE)
     tCdcBuffInfo    cdcBuffInfo;
 #endif
+=======
+    tOplkError  ret = kErrorOk;
+    const UINT8 aMacAddr[] = {MAC_ADDR};
+    UINT8       nodeid;
+
+
+    target_init();
+>>>>>>> e759b04... Working MN with gpio and LCD integrated
     lcd_init();
 
     // get node ID from input
     nodeid = gpio_getNodeid();
 
-//    target_init();
 //while (1)
 //{
 //    target_msleep(100);

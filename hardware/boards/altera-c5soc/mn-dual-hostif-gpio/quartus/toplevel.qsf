@@ -1012,7 +1012,6 @@ set_location_assignment PIN_M17 -to hps_usb1_D7
 set_location_assignment PIN_C23 -to hps_i2c0_SDA
 set_location_assignment PIN_D22 -to hps_i2c0_SCL
 set_location_assignment PIN_B15 -to hps_gpio_GPIO09
-set_location_assignment PIN_C19 -to hps_gpio_GPIO35
 set_location_assignment PIN_C18 -to hps_gpio_GPIO41
 set_location_assignment PIN_G17 -to hps_gpio_GPIO42
 set_location_assignment PIN_E18 -to hps_gpio_GPIO43
