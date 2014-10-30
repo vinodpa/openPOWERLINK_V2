@@ -77,9 +77,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-#define OPENMAC_SYNC_IRQ    0
-#define OPENMAC_TXRX_IRQ    1
-#define OPENMAC_IRQ_IC_ID   OPENMAC_0_MACREG_IRQ
+#define OPENMAC_SYNC_IRQ    0 // OPENMAC_0_MACTIMER_IRQ
+#define OPENMAC_TXRX_IRQ    1 // OPENMAC_0_MACREG_IRQ
+#define OPENMAC_IRQ_IC_ID   0
 
 #define OPENMAC_TIMER_OFFSET_CMP_VAL        0
 #define OPENMAC_TIMER_OFFSET_TIME_VAL       0

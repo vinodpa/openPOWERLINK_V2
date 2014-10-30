@@ -297,6 +297,7 @@ static tOplkError initPowerlink(tInstance* pInstance_p)
     // Set real MAC address to ARP module
     oplk_getEthMacAddr(initParam.aMacAddress);
     arp_setMacAddr(initParam.aMacAddress);
+
     // Set IP address to ARP module
     arp_setIpAddr(initParam.ipAddress);
 
@@ -442,6 +443,9 @@ static tOplkError eventCbPowerlink(tOplkApiEventType EventType_p,
         ret = arp_processReceive(pFrameInfo->pFrame, pFrameInfo->frameSize);
         if (ret != kErrorRetry)
             return ret;
+        else        //FIXME Throws error in eventu going all the way through main-> event-> generic-> dllu and eventu then back to event :)
+                    // either handle it here or handle kErrorRetry in dllu or eventu, as its not a terminating error
+            ret = kErrorOk; // till another handler for IP(0x800) is implemented
 
          // If you get here, the received Ethernet frame is no ARP frame.
          // Here you can call other protocol stacks for processing.
