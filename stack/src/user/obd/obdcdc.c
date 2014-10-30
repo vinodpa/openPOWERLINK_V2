@@ -82,8 +82,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #include <unistd.h>
 #endif
 
-#if (TARGET_SYSTEM == _NO_OS_ && DEV_SYSTEM == _DEV_ARM_ALTERA_EABI_)
-#include <sys/unistd.h>
+#if ((TARGET_SYSTEM == _NO_OS_) && (DEV_SYSTEM == _DEV_ARM_ALTERA_EABI_))
+    #include <sys/unistd.h>
 #endif
 
 //============================================================================//
@@ -131,7 +131,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define O_BINARY 0 //FIXME: If file system is used, you have to fix that!
 #endif
 
-#if (TARGET_SYSTEM == _NO_OS_ && DEV_SYSTEM == _DEV_ARM_ALTERA_EABI_)
+#if ((TARGET_SYSTEM == _NO_OS_) && (DEV_SYSTEM == _DEV_ARM_ALTERA_EABI_))
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif

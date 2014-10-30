@@ -281,6 +281,7 @@ tOplkError arp_sendRequest(UINT32 ipAddr_p)
     // Set Destination MAC address (broadcast)
     memset(pFrame->aDstMac, 0xFF, ARP_HWADDR_LENGTH);
 
+    // Set ARP operation
     pFrame->operation = htons(ARP_OP_REQUEST);
 
     // Sender IP Address

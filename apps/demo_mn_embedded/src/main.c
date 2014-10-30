@@ -443,7 +443,7 @@ static tOplkError eventCbPowerlink(tOplkApiEventType EventType_p,
         ret = arp_processReceive(pFrameInfo->pFrame, pFrameInfo->frameSize);
         if (ret != kErrorRetry)
             return ret;
-        else        //FIXME Throws error in eventu going all the way through main-> event-> generic-> dllu and eventu then back to event :)
+        else        // FIXME Throws error in eventu going all the way through main-> event-> generic-> dllu and eventu then back to event :)
                     // either handle it here or handle kErrorRetry in dllu or eventu, as its not a terminating error
             ret = kErrorOk; // till another handler for IP(0x800) is implemented
 

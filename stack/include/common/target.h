@@ -69,8 +69,8 @@ ULONGLONG  target_getCurrentTimestamp(void);
 void       target_enableGlobalInterrupt(BYTE fEnable_p) SECTION_TARGET_GLOBAL_INT;
 UINT32     target_getTickCount(void);
 
-void target_enableSyncIrq(BOOL fEnable_p);
-void target_regSyncIrqHdl(void* callback_p, void* pArg_p);
+void       target_enableSyncIrq(BOOL fEnable_p);
+void       target_regSyncIrqHdl(void* callback_p, void* pArg_p);
 
 /* functions for mutex implementation */
 tOplkError target_createMutex(char* mutexName_p, OPLK_MUTEX_T* pMutex_p);
