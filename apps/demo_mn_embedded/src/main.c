@@ -200,9 +200,8 @@ int main(void)
     if ((ret = initApp()) != kErrorOk)
         goto Exit;
 
-    // TODO: Vinod
-    //if ((ret = oplk_setNonPlkForward(TRUE)) != kErrorOk)
-    //    goto Exit;
+    if ((ret = oplk_setNonPlkForward(TRUE)) != kErrorOk)
+        goto Exit;
 
     loopMain(&instance_l);
 
@@ -295,13 +294,11 @@ static tOplkError initPowerlink(tInstance* pInstance_p)
         return ret;
     }
 
-    //TODO: Vinod
     // Set real MAC address to ARP module
-    //ret = oplk_getEthMacAddr(initParam.aMacAddress);
-    //ret = arp_setMacAddr(initParam.aMacAddress);
-
+    oplk_getEthMacAddr(initParam.aMacAddress);
+    arp_setMacAddr(initParam.aMacAddress);
     // Set IP address to ARP module
-    //ret = arp_setIpAddr(initParam.ipAddress);
+    arp_setIpAddr(initParam.ipAddress);
 
     // Set default gateway to ARP module
     arp_setDefGateway(initParam.defaultGateway);
@@ -441,11 +438,10 @@ static tOplkError eventCbPowerlink(tOplkApiEventType EventType_p,
         //       stack to lower layers must be forwarded with the function
         //       \ref oplk_sendEthFrame.
 
-        //TODO:vinod- node found but not working
         // Forward received frame to ARP processing
-        //ret = arp_processReceive(pFrameInfo->pFrame, pFrameInfo->frameSize);
-       //  if (ret != kErrorRetry)
-        //     return ret;
+        ret = arp_processReceive(pFrameInfo->pFrame, pFrameInfo->frameSize);
+        if (ret != kErrorRetry)
+            return ret;
 
          // If you get here, the received Ethernet frame is no ARP frame.
          // Here you can call other protocol stacks for processing.

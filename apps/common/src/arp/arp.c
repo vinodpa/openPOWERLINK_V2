@@ -203,15 +203,8 @@ The function sets the local node's MAC address.
 //------------------------------------------------------------------------------
 tOplkError arp_setMacAddr(UINT8* pMacAddr_p)
 {
-	UINT8 arg[ARP_HWADDR_LENGTH];
-	UINT8 i =0;
-	//TODO: Check Address
-    printf("arpInstance_l.aMacAddr =%x , pMacAddr_p = %x \n", arpInstance_l.aMacAddr, pMacAddr_p);
-    //memcpy(arg, pMacAddr_p, ARP_HWADDR_LENGTH);
-	//memcpy(arpInstance_l.aMacAddr, pMacAddr_p, ARP_HWADDR_LENGTH);
-printf("size of arpInstance_l %d\n",sizeof(arpInstance_l.aMacAddr));
-printf("size of pMacAddr_p %d\n",sizeof(pMacAddr_p));
-printf("size of arg %d\n",sizeof(arg));
+    memcpy(&arpInstance_l.aMacAddr[0], pMacAddr_p, ARP_HWADDR_LENGTH);
+
     return kErrorOk;
 }
 
@@ -232,13 +225,8 @@ tOplkError arp_setIpAddr(UINT32 ipAddr_p)
 {
     UINT32 ipAddr = htonl(ipAddr_p); // Swap to get network order
 
-    UINT8 i =0;
+    memcpy(&arpInstance_l.aIpAddr[0], (UINT8*) &ipAddr, ARP_PROADDR_LENGTH);
 
-    //TODO: Check Address
-     printf("arpInstance_l.aIpAddr =%x , ipAddr = %x \n ", arpInstance_l.aIpAddr, (UINT8*) &ipAddr);
-    //memcpy(arpInstance_l.aIpAddr, (UINT8*)&ipAddr, ARP_PROADDR_LENGTH);
-    printf("size of arpInstance_l.aIpAddr %d\n",sizeof(arpInstance_l.aIpAddr));
-    printf("size of (UINT8*) &ipAddr %d\n",sizeof((UINT8*) &ipAddr));
     return kErrorOk;
 }
 
@@ -293,11 +281,10 @@ tOplkError arp_sendRequest(UINT32 ipAddr_p)
     // Set Destination MAC address (broadcast)
     memset(pFrame->aDstMac, 0xFF, ARP_HWADDR_LENGTH);
 
-    // Set ARP operation
     pFrame->operation = htons(ARP_OP_REQUEST);
 
     // Sender IP Address
-    memcpy(pFrame->aSenderProtocolAddress, arpInstance_l.aIpAddr, ARP_PROADDR_LENGTH);
+    memcpy(pFrame->aSenderProtocolAddress, &arpInstance_l.aIpAddr[0], ARP_PROADDR_LENGTH);
 
     // Overwrite last byte with node ID
     pFrame->aSenderProtocolAddress[3] = arpInstance_l.nodeId;

@@ -1153,23 +1153,14 @@ Ethernet controller.
 //------------------------------------------------------------------------------
 tOplkError oplk_getEthMacAddr(UINT8* pMacAddr_p)
 {
-    //tOplkError ret = kErrorOk;
-	//int ret;
-    //ret = kErrorOk;
+    tOplkError ret = kErrorOk;
 
-    printf("Get MAC Address Called \n");
     if (pMacAddr_p != NULL)
-    {
-    	printf("checking\n");
         OPLK_MEMCPY(pMacAddr_p, ctrlu_getEthMacAddr(), 6);
-    }
-        else
-    {
-        return kErrorInvalidOperation;
-    }
+    else
+        ret = kErrorInvalidOperation;
 
-    return kErrorOk;
-    ///return ret;
+    return ret;
 }
 
 //------------------------------------------------------------------------------

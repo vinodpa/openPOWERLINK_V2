@@ -411,7 +411,6 @@ tHostifReturn hostif_getHeartbeat(tHostifInstance pInstance_p, UINT16* pHeartbea
         goto Exit;
     }
 
-    //*pHeartbeat_p = 0; //TODO:Vinod PA To check cache issue
     *pHeartbeat_p = hostif_readHeartbeat(pHostif->pBase);
 
 Exit:
