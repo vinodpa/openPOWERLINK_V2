@@ -168,7 +168,7 @@ tHostifReturn hostif_sysIrqEnable(BOOL fEnable_p)
     ALT_INT_INTERRUPT_t     irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + HOSTIF_IRQ;
     int                     cpu_target = 0x1;                                             // cortexA9_0
 
-    printf("Enable Hostif IRQ: %X(%X)\n", fEnable_p,irqId);
+    printf("Enable Hostif IRQ: %X(%X)\n", fEnable_p, irqId);
     if (fEnable_p)
     {
         if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_LEVEL) != ALT_E_SUCCESS)

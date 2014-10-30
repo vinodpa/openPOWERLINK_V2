@@ -82,24 +82,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-#define SECS_TO_MILLISECS    1000
+#define SECS_TO_MILLISECS                           1000
 
-#define FPGA_BUS_WIDTH          32
+#define FPGA_BUS_WIDTH                              32
 #define __IO_CALC_ADDRESS_NATIVE(base, offset) \
-                                            (base + offset * (FPGA_BUS_WIDTH/8))
-#define IORD16(base, offset)                alt_read_word(base + offset * (FPGA_BUS_WIDTH/8))
-#define IORD32(base, offset)               alt_read_word(base + offset * (FPGA_BUS_WIDTH/8))
-#define IOWR16(base, offset, val)           alt_write_word(base + offset * (FPGA_BUS_WIDTH/8), val)
-#define IOWR32(base, offset, val)           alt_write_word(base + offset * (FPGA_BUS_WIDTH/8), val)
+    (base + offset * (FPGA_BUS_WIDTH / 8))
+#define IORD16(base, offset)            alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
+#define IORD32(base, offset)            alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
+#define IOWR16(base, offset, val)       alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
+#define IOWR32(base, offset, val)       alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
 
 /* STATUS register */
 #define ALTERA_AVALON_TIMER_STATUS_REG              0
 #define IOADDR_ALTERA_AVALON_TIMER_STATUS(base) \
-  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_STATUS_REG)
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_STATUS_REG)
 #define IORD_ALTERA_AVALON_TIMER_STATUS(base) \
-  IORD16(base, ALTERA_AVALON_TIMER_STATUS_REG)
+    IORD16(base, ALTERA_AVALON_TIMER_STATUS_REG)
 #define IOWR_ALTERA_AVALON_TIMER_STATUS(base, data) \
-  IOWR16(base, ALTERA_AVALON_TIMER_STATUS_REG, data)
+    IOWR16(base, ALTERA_AVALON_TIMER_STATUS_REG, data)
 #define ALTERA_AVALON_TIMER_STATUS_TO_MSK           (0x1)
 #define ALTERA_AVALON_TIMER_STATUS_TO_OFST          (0)
 #define ALTERA_AVALON_TIMER_STATUS_RUN_MSK          (0x2)
@@ -108,11 +108,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* CONTROL register */
 #define ALTERA_AVALON_TIMER_CONTROL_REG             1
 #define IOADDR_ALTERA_AVALON_TIMER_CONTROL(base) \
-  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_CONTROL_REG)
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_CONTROL_REG)
 #define IORD_ALTERA_AVALON_TIMER_CONTROL(base) \
-  IORD16(base, ALTERA_AVALON_TIMER_CONTROL_REG)
+    IORD16(base, ALTERA_AVALON_TIMER_CONTROL_REG)
 #define IOWR_ALTERA_AVALON_TIMER_CONTROL(base, data) \
-  IOWR16(base, ALTERA_AVALON_TIMER_CONTROL_REG, data)
+    IOWR16(base, ALTERA_AVALON_TIMER_CONTROL_REG, data)
 #define ALTERA_AVALON_TIMER_CONTROL_ITO_MSK         (0x1)
 #define ALTERA_AVALON_TIMER_CONTROL_ITO_OFST        (0)
 #define ALTERA_AVALON_TIMER_CONTROL_CONT_MSK        (0x2)
@@ -127,79 +127,74 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* PERIODL register */
 #define ALTERA_AVALON_TIMER_PERIODL_REG             2
 #define IOADDR_ALTERA_AVALON_TIMER_PERIODL(base) \
-  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODL_REG)
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODL_REG)
 #define IORD_ALTERA_AVALON_TIMER_PERIODL(base) \
-  IORD16(base, ALTERA_AVALON_TIMER_PERIODL_REG)
+    IORD16(base, ALTERA_AVALON_TIMER_PERIODL_REG)
 #define IOWR_ALTERA_AVALON_TIMER_PERIODL(base, data) \
-  IOWR16(base, ALTERA_AVALON_TIMER_PERIODL_REG, data)
+    IOWR16(base, ALTERA_AVALON_TIMER_PERIODL_REG, data)
 #define ALTERA_AVALON_TIMER_PERIODL_MSK             (0xFFFF)
 #define ALTERA_AVALON_TIMER_PERIODL_OFST            (0)
 
 /* PERIODH register */
 #define ALTERA_AVALON_TIMER_PERIODH_REG             3
 #define IOADDR_ALTERA_AVALON_TIMER_PERIODH(base) \
-  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODH_REG)
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODH_REG)
 #define IORD_ALTERA_AVALON_TIMER_PERIODH(base) \
-  IORD16(base, ALTERA_AVALON_TIMER_PERIODH_REG)
+    IORD16(base, ALTERA_AVALON_TIMER_PERIODH_REG)
 #define IOWR_ALTERA_AVALON_TIMER_PERIODH(base, data) \
-  IOWR16(base, ALTERA_AVALON_TIMER_PERIODH_REG, data)
+    IOWR16(base, ALTERA_AVALON_TIMER_PERIODH_REG, data)
 #define ALTERA_AVALON_TIMER_PERIODH_MSK             (0xFFFF)
 #define ALTERA_AVALON_TIMER_PERIODH_OFST            (0)
 
 /* SNAPL register */
 #define ALTERA_AVALON_TIMER_SNAPL_REG               4
 #define IOADDR_ALTERA_AVALON_TIMER_SNAPL(base) \
-  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPL_REG)
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPL_REG)
 #define IORD_ALTERA_AVALON_TIMER_SNAPL(base) \
-  IORD16(base, ALTERA_AVALON_TIMER_SNAPL_REG)
+    IORD16(base, ALTERA_AVALON_TIMER_SNAPL_REG)
 #define IOWR_ALTERA_AVALON_TIMER_SNAPL(base, data) \
-  IOWR16(base, ALTERA_AVALON_TIMER_SNAPL_REG, data)
+    IOWR16(base, ALTERA_AVALON_TIMER_SNAPL_REG, data)
 #define ALTERA_AVALON_TIMER_SNAPL_MSK               (0xFFFF)
 #define ALTERA_AVALON_TIMER_SNAPL_OFST              (0)
 
 /* SNAPH register */
 #define ALTERA_AVALON_TIMER_SNAPH_REG               5
 #define IOADDR_ALTERA_AVALON_TIMER_SNAPH(base) \
-  __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPH_REG)
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPH_REG)
 #define IORD_ALTERA_AVALON_TIMER_SNAPH(base) \
-  IORD16(base, ALTERA_AVALON_TIMER_SNAPH_REG)
+    IORD16(base, ALTERA_AVALON_TIMER_SNAPH_REG)
 #define IOWR_ALTERA_AVALON_TIMER_SNAPH(base, data) \
-  IOWR16(base, ALTERA_AVALON_TIMER_SNAPH_REG, data)
+    IOWR16(base, ALTERA_AVALON_TIMER_SNAPH_REG, data)
 #define ALTERA_AVALON_TIMER_SNAPH_MSK               (0xFFFF)
 #define ALTERA_AVALON_TIMER_SNAPH_OFST              (0)
 
+#define IOADDR_ALTERA_AVALON_PIO_DATA(base)                 __IO_CALC_ADDRESS_NATIVE(base, 0)
+#define IORD_ALTERA_AVALON_PIO_DATA(base)                   IORD32(base, 0)
+#define IOWR_ALTERA_AVALON_PIO_DATA(base, data)             IOWR32(base, 0, data)
 
+#define IOADDR_ALTERA_AVALON_PIO_DIRECTION(base)            __IO_CALC_ADDRESS_NATIVE(base, 1)
+#define IORD_ALTERA_AVALON_PIO_DIRECTION(base)              IORD32(base, 1)
+#define IOWR_ALTERA_AVALON_PIO_DIRECTION(base, data)        IOWR32(base, 1, data)
 
-#define IOADDR_ALTERA_AVALON_PIO_DATA(base)           __IO_CALC_ADDRESS_NATIVE(base, 0)
-#define IORD_ALTERA_AVALON_PIO_DATA(base)             IORD32(base, 0)
-#define IOWR_ALTERA_AVALON_PIO_DATA(base, data)       IOWR32(base, 0, data)
+#define IOADDR_ALTERA_AVALON_PIO_IRQ_MASK(base)             __IO_CALC_ADDRESS_NATIVE(base, 2)
+#define IORD_ALTERA_AVALON_PIO_IRQ_MASK(base)               IORD32(base, 2)
+#define IOWR_ALTERA_AVALON_PIO_IRQ_MASK(base, data)         IOWR32(base, 2, data)
 
-#define IOADDR_ALTERA_AVALON_PIO_DIRECTION(base)      __IO_CALC_ADDRESS_NATIVE(base, 1)
-#define IORD_ALTERA_AVALON_PIO_DIRECTION(base)        IORD32(base, 1)
-#define IOWR_ALTERA_AVALON_PIO_DIRECTION(base, data)  IOWR32(base, 1, data)
+#define IOADDR_ALTERA_AVALON_PIO_EDGE_CAP(base)             __IO_CALC_ADDRESS_NATIVE(base, 3)
+#define IORD_ALTERA_AVALON_PIO_EDGE_CAP(base)               IORD32(base, 3)
+#define IOWR_ALTERA_AVALON_PIO_EDGE_CAP(base, data)         IOWR32(base, 3, data)
 
-#define IOADDR_ALTERA_AVALON_PIO_IRQ_MASK(base)       __IO_CALC_ADDRESS_NATIVE(base, 2)
-#define IORD_ALTERA_AVALON_PIO_IRQ_MASK(base)         IORD32(base, 2)
-#define IOWR_ALTERA_AVALON_PIO_IRQ_MASK(base, data)   IOWR32(base, 2, data)
+#define IOADDR_ALTERA_AVALON_PIO_SET_BIT(base)              __IO_CALC_ADDRESS_NATIVE(base, 4)
+#define IORD_ALTERA_AVALON_PIO_SET_BITS(base)               IORD32(base, 4)
+#define IOWR_ALTERA_AVALON_PIO_SET_BITS(base, data)         IOWR32(base, 4, data)
 
-#define IOADDR_ALTERA_AVALON_PIO_EDGE_CAP(base)       __IO_CALC_ADDRESS_NATIVE(base, 3)
-#define IORD_ALTERA_AVALON_PIO_EDGE_CAP(base)         IORD32(base, 3)
-#define IOWR_ALTERA_AVALON_PIO_EDGE_CAP(base, data)   IOWR32(base, 3, data)
-
-
-#define IOADDR_ALTERA_AVALON_PIO_SET_BIT(base)       __IO_CALC_ADDRESS_NATIVE(base, 4)
-#define IORD_ALTERA_AVALON_PIO_SET_BITS(base)         IORD32(base, 4)
-#define IOWR_ALTERA_AVALON_PIO_SET_BITS(base, data)   IOWR32(base, 4, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_CLEAR_BITS(base)       __IO_CALC_ADDRESS_NATIVE(base, 5)
-#define IORD_ALTERA_AVALON_PIO_CLEAR_BITS(base)         IORD32(base, 5)
-#define IOWR_ALTERA_AVALON_PIO_CLEAR_BITS(base, data)   IOWR32(base, 5, data)
-
-
+#define IOADDR_ALTERA_AVALON_PIO_CLEAR_BITS(base)           __IO_CALC_ADDRESS_NATIVE(base, 5)
+#define IORD_ALTERA_AVALON_PIO_CLEAR_BITS(base)             IORD32(base, 5)
+#define IOWR_ALTERA_AVALON_PIO_CLEAR_BITS(base, data)       IOWR32(base, 5, data)
 
 /* Defintions for direction-register operation with bi-directional PIOs */
-#define ALTERA_AVALON_PIO_DIRECTION_INPUT  0
-#define ALTERA_AVALON_PIO_DIRECTION_OUTPUT 1
+#define ALTERA_AVALON_PIO_DIRECTION_INPUT       0
+#define ALTERA_AVALON_PIO_DIRECTION_OUTPUT      1
 
 //------------------------------------------------------------------------------
 // local types
@@ -212,8 +207,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // local vars
 //------------------------------------------------------------------------------
 
-    volatile int a = 0;
-static unsigned char fTargetInitStatus = FALSE;
+volatile int            a = 0;
+static unsigned char    fTargetInitStatus = FALSE;
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
@@ -250,12 +245,12 @@ UINT32 target_getTickCount(void)
     /* Select the lower 32 bit of the timer value */
     //ticks = alt_gpt_counter_get(ALT_GPT_CPU_GLOBAL_TMR);
     //ticks = alt_gpt_time_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR);
-//    if (alt_globaltmr_get(&ticks_h, &ticks_l) != ALT_E_SUCCESS)
-//    {
-//        DEBUG_LVL_ERROR_TRACE("Timer is returning junk!\n");
-//    }
-//
-//    return ticks_l;
+    //    if (alt_globaltmr_get(&ticks_h, &ticks_l) != ALT_E_SUCCESS)
+    //    {
+    //        DEBUG_LVL_ERROR_TRACE("Timer is returning junk!\n");
+    //    }
+    //
+    //    return ticks_l;
     return (uint32_t) getTimerCurrentScaledCount(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS);
 }
 
@@ -279,7 +274,7 @@ void target_enableGlobalInterrupt(UINT8 fEnable_p)
     {
         if (--lockCount == 0)
         {
-           // printf("e");
+            // printf("e");
             enableInterruptMaster();
         }
     }
@@ -287,7 +282,7 @@ void target_enableGlobalInterrupt(UINT8 fEnable_p)
     {                       // disable interrupts
         if (lockCount == 0)
         {
-           //printf("%d\n", a);
+            //printf("%d\n", a);
             disableInterruptMaster();
         }
 
@@ -308,7 +303,6 @@ openPOWERLINK stack.
 */
 //------------------------------------------------------------------------------
 
-
 void cs3_isr_1(uint32_t icciar_p, void* context_p)
 {
     alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ1);
@@ -316,7 +310,7 @@ void cs3_isr_1(uint32_t icciar_p, void* context_p)
     alt_globaltmr_int_clear_pending();
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE, 0x3);
     printf("ISR\n");
-    *(volatile int *)context_p = 1;
+    *(volatile int*)context_p = 1;
 
     a = 2;
     return;
@@ -389,15 +383,15 @@ tOplkError target_init(void)
         printf("H2F initialization Failed!!: 0x%X\n", alt_bridge_init(ALT_BRIDGE_H2F, NULL, NULL));
     }
 
-//    if (alt_addr_space_remap(ALT_ADDR_SPACE_MPU_ZERO_AT_BOOTROM,
-//                             ALT_ADDR_SPACE_NONMPU_ZERO_AT_SDRAM,
-//                             ALT_ADDR_SPACE_H2F_ACCESSIBLE,
-//                             ALT_ADDR_SPACE_LWH2F_ACCESSIBLE)
-//        == ALT_E_SUCCESS)
-//    {
-//        oplkRet = kErrorGeneralError;
-//        printf("Address remapping Failed!!\n");
-//    }
+    //    if (alt_addr_space_remap(ALT_ADDR_SPACE_MPU_ZERO_AT_BOOTROM,
+    //                             ALT_ADDR_SPACE_NONMPU_ZERO_AT_SDRAM,
+    //                             ALT_ADDR_SPACE_H2F_ACCESSIBLE,
+    //                             ALT_ADDR_SPACE_LWH2F_ACCESSIBLE)
+    //        == ALT_E_SUCCESS)
+    //    {
+    //        oplkRet = kErrorGeneralError;
+    //        printf("Address remapping Failed!!\n");
+    //    }
     // test code
 
     //target_enableSyncIrq(FALSE);
@@ -632,7 +626,6 @@ used by the application for PDO and event synchronization.
 */
 //------------------------------------------------------------------------------
 
-
 void target_regSyncIrqHdl(void* callback_p, void* pArg_p)
 {
     ALT_INT_INTERRUPT_t    irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + 1;
@@ -682,7 +675,7 @@ void target_enableSyncIrq(BOOL fEnable_p)
         alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ3);
         for (irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ1; irqId <= ALT_INT_INTERRUPT_F2S_FPGA_IRQ1; irqId++)
         {
-            printf("Enable IRQ: %X(%X)\n", fEnable_p,irqId);
+            printf("Enable IRQ: %X(%X)\n", fEnable_p, irqId);
             if (alt_int_dist_target_set(irqId, cpu_target) != ALT_E_SUCCESS)
             {
                 printf("trigger set failed\n");
@@ -720,7 +713,6 @@ void target_enableSyncIrq(BOOL fEnable_p)
         {
             //printf("distributor set failed\n");
         }
-
     }
     else
     {
@@ -816,19 +808,19 @@ static int initializeFpga(void)
     ALT_STATUS_CODE     halRet = ALT_E_SUCCESS;
 
     /* intialize the FPGA control */
-    if (alt_fpga_init() != ALT_E_SUCCESS) // initialize the FPGA manager
+    if (alt_fpga_init() != ALT_E_SUCCESS)                       // initialize the FPGA manager
     {
         printf("FPGA interface initialization Failed!!\n");
         ret = -1;
         goto Exit;
     }
-    else if (alt_fpga_state_get() == ALT_FPGA_STATE_POWER_OFF) // check the FPGA state
+    else if (alt_fpga_state_get() == ALT_FPGA_STATE_POWER_OFF)  // check the FPGA state
     {
         printf("FPGA is powered Off!!\n");
         ret = -1;
         goto Exit;
     }
-    else if (!alt_fpga_control_is_enabled()) // check if CPU has the control of the FPGA control block
+    else if (!alt_fpga_control_is_enabled())                    // check if CPU has the control of the FPGA control block
     {           // if not acquire control
         halRet = alt_fpga_control_enable();
     }
@@ -1118,7 +1110,6 @@ static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t s
 Exit:
     return maxScaledTime;
 }
-
 
 //------------------------------------------------------------------------------
 /**

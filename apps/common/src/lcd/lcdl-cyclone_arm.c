@@ -82,13 +82,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 
-#define LCD_I2C_ADDRESS      (0x50 >> 1)    // I2C address of LCD module
-#define LCD_I2C_SPEED        40000          // I2C bus speed for accessing LCD module
-#define LCD_ESCAPE_CHAR      0xfe           // Escape character used to prefix commands
-#define LCD_POS_1ST_LINE     0x00           // LCD cursor position for 1st line
-#define LCD_POS_2ND_LINE     0x40           // LCD cursor position for 2nd line
-#define LCD_PRINT_DELAY_US   500            // Delay in us after printing text on LCD
-#define LCDL_COLUMN          16             // Maximum Column length
+#define LCD_I2C_ADDRESS         (0x50 >> 1) // I2C address of LCD module
+#define LCD_I2C_SPEED           40000       // I2C bus speed for accessing LCD module
+#define LCD_ESCAPE_CHAR         0xfe        // Escape character used to prefix commands
+#define LCD_POS_1ST_LINE        0x00        // LCD cursor position for 1st line
+#define LCD_POS_2ND_LINE        0x40        // LCD cursor position for 2nd line
+#define LCD_PRINT_DELAY_US      500         // Delay in us after printing text on LCD
+#define LCDL_COLUMN             16          // Maximum Column length
 
 //------------------------------------------------------------------------------
 // local types
@@ -124,51 +124,50 @@ typedef enum
 // Command description
 typedef struct
 {
-    uint8_t command;
-    uint8_t padding;
-    uint16_t executionDuration;
+    uint8_t     command;
+    uint8_t     padding;
+    uint16_t    executionDuration;
 } LCD_COMMAND_DESC_T;
-
 
 //------------------------------------------------------------------------------
 // local vars
 //------------------------------------------------------------------------------
 
-ALT_I2C_DEV_t * deviceHandle_l;
+ALT_I2C_DEV_t*                  deviceHandle_l;
 
 // Descriptions for all supported commands
-static LCD_COMMAND_DESC_T lcdCommands_l[] =
+static LCD_COMMAND_DESC_T       lcdCommands_l[] =
 {
-    {0x41, 0, 100},  // LCD_COMMAND_DISPLAY_ON,
-    {0x42, 0, 100},  // LCD_COMMAND_DISPLAY_OFF,
-    {0x45, 1, 100},  // LCD_COMMAND_SET_CURSOR,
-    {0x46, 0, 1500}, // LCD_COMMAND_CURSOR_HOME,
-    {0x47, 0, 1500}, // LCD_COMMAND_UNDERLINE_CURSOR_ON,
-    {0x48, 0, 1500}, // LCD_COMMAND_UNDERLINE_CURSOR_OFF,
-    {0x49, 0, 100},  // LCD_COMMAND_MOVE_CURSOR_LEFT_ONE_PLACE,
-    {0x4A, 0, 100},  // LCD_COMMAND_MOVE_CURSOR_RIGHT_ONE_PLACE,
-    {0x4B, 0, 100},  // LCD_COMMAND_BLINKING_CURSOR_ON,
-    {0x4C, 0, 100},  // LCD_COMMAND_BLINKING_CURSOR_OFF,
-    {0x4E, 0, 100},  // LCD_COMMAND_BACKSPACE,
-    {0x51, 0, 1500}, // LCD_COMMAND_CLEAR_SCREEN,
-    {0x52, 1, 500},  // LCD_COMMAND_SET_CONTRAST,
-    {0x53, 1, 100},  // LCD_COMMAND_SET_BACKLIGHT_BRIGHTNESS,
-    {0x54, 9, 200},  // LCD_COMMAND_LOAD_CUSTOM_CHARACTER,
-    {0x55, 0, 100},  // LCD_COMMAND_MOVE_DISPLAY_ONE_PLACE_TO_THE_LEFT,
-    {0x56, 0, 100},  // LCD_COMMAND_MOVE_DISPLAY_ONE_PLACE_TO_THE_RIGHT,
-    {0x61, 1, 3000}, // LCD_COMMAND_CHANGE_RS_232_BAUD_RATE,
-    {0x62, 1, 3000}, // LCD_COMMAND_CHANGE_I2C_ADDRESS,
-    {0x70, 0, 4000}, // LCD_COMMAND_DISPLAY_FIRMWARE_VERSION_NUMBER,
-    {0x71, 0, 10000},// LCD_COMMAND_DISPLAY_RS_232_BAUD_RATE,
-    {0x72, 0, 4000}, // LCD_COMMAND_DISPLAY_I2C_ADDRESS,
+    {0x41, 0, 100},     // LCD_COMMAND_DISPLAY_ON,
+    {0x42, 0, 100},     // LCD_COMMAND_DISPLAY_OFF,
+    {0x45, 1, 100},     // LCD_COMMAND_SET_CURSOR,
+    {0x46, 0, 1500},    // LCD_COMMAND_CURSOR_HOME,
+    {0x47, 0, 1500},    // LCD_COMMAND_UNDERLINE_CURSOR_ON,
+    {0x48, 0, 1500},    // LCD_COMMAND_UNDERLINE_CURSOR_OFF,
+    {0x49, 0, 100},     // LCD_COMMAND_MOVE_CURSOR_LEFT_ONE_PLACE,
+    {0x4A, 0, 100},     // LCD_COMMAND_MOVE_CURSOR_RIGHT_ONE_PLACE,
+    {0x4B, 0, 100},     // LCD_COMMAND_BLINKING_CURSOR_ON,
+    {0x4C, 0, 100},     // LCD_COMMAND_BLINKING_CURSOR_OFF,
+    {0x4E, 0, 100},     // LCD_COMMAND_BACKSPACE,
+    {0x51, 0, 1500},    // LCD_COMMAND_CLEAR_SCREEN,
+    {0x52, 1, 500},     // LCD_COMMAND_SET_CONTRAST,
+    {0x53, 1, 100},     // LCD_COMMAND_SET_BACKLIGHT_BRIGHTNESS,
+    {0x54, 9, 200},     // LCD_COMMAND_LOAD_CUSTOM_CHARACTER,
+    {0x55, 0, 100},     // LCD_COMMAND_MOVE_DISPLAY_ONE_PLACE_TO_THE_LEFT,
+    {0x56, 0, 100},     // LCD_COMMAND_MOVE_DISPLAY_ONE_PLACE_TO_THE_RIGHT,
+    {0x61, 1, 3000},    // LCD_COMMAND_CHANGE_RS_232_BAUD_RATE,
+    {0x62, 1, 3000},    // LCD_COMMAND_CHANGE_I2C_ADDRESS,
+    {0x70, 0, 4000},    // LCD_COMMAND_DISPLAY_FIRMWARE_VERSION_NUMBER,
+    {0x71, 0, 10000}, // LCD_COMMAND_DISPLAY_RS_232_BAUD_RATE,
+    {0x72, 0, 4000},    // LCD_COMMAND_DISPLAY_I2C_ADDRESS,
 };
 
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
 
-static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t * device, LCD_COMMAND_T command, uint8_t * params);
-void delay_us(uint32_t us);
+static ALT_STATUS_CODE  lcd_send_command(ALT_I2C_DEV_t* device, LCD_COMMAND_T command, uint8_t* params);
+void                    delay_us(uint32_t us);
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
 //============================================================================//
@@ -182,22 +181,22 @@ This function writes a sequence of initialization parameters to the LCD.
 //------------------------------------------------------------------------------
 int lcdl_init(void)
 {
-    ALT_STATUS_CODE halRet = ALT_E_SUCCESS;
-    ALT_I2C_MASTER_CONFIG_t cfg;
-    uint32_t speed;
+    ALT_STATUS_CODE             halRet = ALT_E_SUCCESS;
+    ALT_I2C_MASTER_CONFIG_t     cfg;
+    uint32_t                    speed;
 
     // Init I2C module
     if (halRet == ALT_E_SUCCESS)
     {
-      printf("LCD-INFO: Init I2C module.\n");
-      halRet = alt_i2c_init(ALT_I2C_I2C0, deviceHandle_l);
+        printf("LCD-INFO: Init I2C module.\n");
+        halRet = alt_i2c_init(ALT_I2C_I2C0, deviceHandle_l);
     }
 
     // Enable I2C module
     if (halRet == ALT_E_SUCCESS)
     {
-      printf("LCD-INFO: Enable I2C module.\n");
-      halRet = alt_i2c_enable(deviceHandle_l);
+        printf("LCD-INFO: Enable I2C module.\n");
+        halRet = alt_i2c_enable(deviceHandle_l);
     }
 
     // Configure I2C module
@@ -205,53 +204,53 @@ int lcdl_init(void)
 
     if (halRet == ALT_E_SUCCESS)
     {
-      halRet = alt_i2c_master_config_get(deviceHandle_l, &cfg);
+        halRet = alt_i2c_master_config_get(deviceHandle_l, &cfg);
     }
 
     if (halRet == ALT_E_SUCCESS)
     {
-      halRet = alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed);
-      printf("LCD-INFO: Current I2C speed = %d Hz.\n", (int)speed);
+        halRet = alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed);
+        printf("LCD-INFO: Current I2C speed = %d Hz.\n", (int)speed);
     }
 
     if (halRet == ALT_E_SUCCESS)
     {
-      halRet = alt_i2c_master_config_speed_set(deviceHandle_l, &cfg, LCD_I2C_SPEED);
+        halRet = alt_i2c_master_config_speed_set(deviceHandle_l, &cfg, LCD_I2C_SPEED);
     }
 
     if (halRet == ALT_E_SUCCESS)
     {
-      halRet = alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed);
-      printf("LCD-INFO: New I2C speed = %d Hz.\n", (int)speed);
+        halRet = alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed);
+        printf("LCD-INFO: New I2C speed = %d Hz.\n", (int)speed);
     }
 
-    if(halRet == ALT_E_SUCCESS)
+    if (halRet == ALT_E_SUCCESS)
     {
-      cfg.addr_mode = ALT_I2C_ADDR_MODE_7_BIT;
-      cfg.restart_enable = ALT_E_TRUE;
-      halRet = alt_i2c_master_config_set(deviceHandle_l, &cfg);
+        cfg.addr_mode = ALT_I2C_ADDR_MODE_7_BIT;
+        cfg.restart_enable = ALT_E_TRUE;
+        halRet = alt_i2c_master_config_set(deviceHandle_l, &cfg);
     }
 
-    if(halRet == ALT_E_SUCCESS)
+    if (halRet == ALT_E_SUCCESS)
     {
-      alt_i2c_sda_hold_time_set(deviceHandle_l, 8);
+        alt_i2c_sda_hold_time_set(deviceHandle_l, 8);
     }
 
     // Set target display I2C address
-    if(halRet == ALT_E_SUCCESS)
+    if (halRet == ALT_E_SUCCESS)
     {
         halRet = alt_i2c_master_target_set(deviceHandle_l, LCD_I2C_ADDRESS);
     }
 
     // Turn display on
-    if(halRet == ALT_E_SUCCESS)
+    if (halRet == ALT_E_SUCCESS)
     {
         printf("LCD-INFO: Turning display on.\n");
         halRet = lcd_send_command(deviceHandle_l, LCD_COMMAND_DISPLAY_ON, NULL);
     }
 
     // Turn cursor on
-    if(halRet == ALT_E_SUCCESS)
+    if (halRet == ALT_E_SUCCESS)
     {
         printf("LCD-INFO: Turning cursor on.\n");
         halRet = lcd_send_command(deviceHandle_l, LCD_COMMAND_BLINKING_CURSOR_ON, NULL);
@@ -262,8 +261,6 @@ int lcdl_init(void)
         return -1;
     else
         return 0;
-
-
 }
 
 //------------------------------------------------------------------------------
@@ -314,7 +311,7 @@ Changes to specified line of the LCD
 //------------------------------------------------------------------------------
 int lcdl_changeToLine(unsigned int line_p)
 {
-    uint8_t     param;
+    uint8_t    param;
     if (line_p < 2)
         param = LCD_POS_1ST_LINE;
     else
@@ -336,18 +333,18 @@ Writes text to the LCD currently selected.
 //------------------------------------------------------------------------------
 void lcdl_printText(const char* sText_p)
 {
-    ALT_STATUS_CODE halRet = ALT_E_SUCCESS;
-    int             txtLen = strlen(sText_p);
-    const char      padTxt = ' ';
+    ALT_STATUS_CODE     halRet = ALT_E_SUCCESS;
+    int                 txtLen = strlen(sText_p);
+    const char          padTxt = ' ';
 
-    for(int i=0; i< LCDL_COLUMN; i++)
+    for (int i = 0; i < LCDL_COLUMN; i++)
     {
         if (i < txtLen)
             halRet = alt_i2c_master_transmit(deviceHandle_l, &sText_p[i], 1, ALT_E_FALSE, ALT_E_TRUE);
         else
             halRet = alt_i2c_master_transmit(deviceHandle_l, &padTxt, 1, ALT_E_FALSE, ALT_E_TRUE);
 
-        if(halRet != ALT_E_SUCCESS)
+        if (halRet != ALT_E_SUCCESS)
         {
             break;
         }
@@ -371,21 +368,21 @@ void lcdl_printText(const char* sText_p)
  * \param       params command parameters or NULL for no parameters
  * \return      result of the function
  */
-static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t * device, LCD_COMMAND_T command, uint8_t * params)
+static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t* device, LCD_COMMAND_T command, uint8_t* params)
 {
-    ALT_STATUS_CODE halRet = ALT_E_SUCCESS;
-    LCD_COMMAND_DESC_T command_description = lcdCommands_l[(int)command];
-    uint8_t data[10];
-    uint8_t data_size = 0;
+    ALT_STATUS_CODE         halRet = ALT_E_SUCCESS;
+    LCD_COMMAND_DESC_T      command_description = lcdCommands_l[(int)command];
+    uint8_t                 data[10];
+    uint8_t                 data_size = 0;
 
     data[data_size++] = LCD_ESCAPE_CHAR;
     data[data_size++] = command_description.command;
-    for(int i=0; i<command_description.padding; i++)
+    for (int i = 0; i < command_description.padding; i++)
     {
         data[data_size++] = params[i];
     }
 
-    halRet = alt_i2c_master_transmit(device, data, data_size , ALT_E_FALSE, ALT_E_TRUE);
+    halRet = alt_i2c_master_transmit(device, data, data_size, ALT_E_FALSE, ALT_E_TRUE);
     delay_us(command_description.executionDuration);
 
     return halRet;
@@ -399,18 +396,17 @@ static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t * device, LCD_COMMAND_T co
  */
 void delay_us(uint32_t us)
 {
-    uint64_t start_time = alt_globaltmr_get64();
-    uint32_t timer_prescaler = alt_globaltmr_prescaler_get() + 1;
-    uint64_t end_time;
-    alt_freq_t timer_clock;
+    uint64_t        start_time = alt_globaltmr_get64();
+    uint32_t        timer_prescaler = alt_globaltmr_prescaler_get() + 1;
+    uint64_t        end_time;
+    alt_freq_t      timer_clock;
 
     alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timer_clock);
     end_time = start_time + us * ((timer_clock / timer_prescaler) / 1000000);
 
-    while(alt_globaltmr_get64() < end_time)
+    while (alt_globaltmr_get64() < end_time)
     {
     }
 }
 
 ///\}
-
