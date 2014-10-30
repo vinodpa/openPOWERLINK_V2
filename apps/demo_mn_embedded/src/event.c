@@ -43,8 +43,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 #include <stdio.h>
 
-#include <common/oplkinc.h>
-//#include <oplk/oplk.h>
+#include <oplk/oplk.h>
 #include <oplk/debugstr.h>
 
 #include "event.h"

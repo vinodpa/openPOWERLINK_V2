@@ -2407,7 +2407,7 @@ static tOplkError processReceivedAsnd(tFrameInfo* pFrameInfo_p, tEdrvRxBuffer* p
                         OPLK_MEMCPY(pIntNodeInfo->aMacAddr, pFrame->aSrcMac, 6);
                     }
                 }
-                // else here
+                // FIXME else here
                 if (((tDllAsndServiceId)asndServiceId) == kDllAsndStatusResponse)
                 {
                     handleErrorSignaling(pFrame, nodeId);

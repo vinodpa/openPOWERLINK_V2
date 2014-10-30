@@ -140,6 +140,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if (TARGET_SYSTEM == _NO_OS_ && (DEV_SYSTEM == _DEV_MICROBLAZE_LITTLE_ || DEV_SYSTEM == _DEV_MICROBLAZE_BIG_))
 #define O_BINARY    0 // FIXME: If file system is used, you have to fix that!
 #endif
+
 #ifndef FD_TYPE
 #define FD_TYPE     int
 #endif

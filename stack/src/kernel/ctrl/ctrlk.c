@@ -243,8 +243,11 @@ tOplkError ctrlk_executeCmd(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatus_
             *pRet_p = (UINT16)retVal;
 =======
             *pRet_p = initStack();
+<<<<<<< HEAD
             printf("Initialize kernel modules...\n");
 >>>>>>> 765f179... MN and CN Operational
+=======
+>>>>>>> 1d5c51d... Prelimnary Cleanup
             status = kCtrlStatusRunning;
             fExit = FALSE;
             break;
@@ -256,8 +259,11 @@ tOplkError ctrlk_executeCmd(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatus_
             *pRet_p = (UINT16)retVal;
 =======
             *pRet_p = shutdownStack();
+<<<<<<< HEAD
             printf("Shutdown kernel modules...\n");
 >>>>>>> 765f179... MN and CN Operational
+=======
+>>>>>>> 1d5c51d... Prelimnary Cleanup
             status = kCtrlStatusReady;
             fExit = FALSE;
             break;
@@ -370,46 +376,45 @@ static tOplkError initStack(void)
     tOplkError          ret;
     tDllkInitParam      dllkInitParam;
 
-    //printf("1.1\n");
     ctrlkcal_readInitParam(&instance_l.initParam);
-    //printf("1.2\n");
+
     if ((ret = eventk_init()) != kErrorOk)
         return ret;
-    //printf("1.3\n");
+
     if ((ret = nmtk_init()) != kErrorOk)
         return ret;
-    //printf("1.4\n");
+
     OPLK_MEMCPY(dllkInitParam.aLocalMac, instance_l.initParam.aMacAddress, 6);
     dllkInitParam.hwParam.pDevName = instance_l.initParam.szEthDevName;
     dllkInitParam.hwParam.devNum = instance_l.initParam.ethDevNumber;
-    //printf("1.5\n");
+
     ret = dllk_addInstance(&dllkInitParam);
     if (ret != kErrorOk)
         return ret;
-    //printf("1.6\n");
+
     // copy MAC address back to instance structure
     OPLK_MEMCPY(instance_l.initParam.aMacAddress, dllkInitParam.aLocalMac, 6);
     ctrlkcal_storeInitParam(&instance_l.initParam);
-    //printf("1.7\n");
+
     dllk_regSyncHandler(pdok_sendSyncEvent);
-    //printf("1.8\n");
+
     // initialize dllkcal module
     if ((ret = dllkcal_init()) != kErrorOk)
         return ret;
-    //printf("1.9\n");
+
 #if defined(CONFIG_INCLUDE_PDO)
     if ((ret = pdok_init()) != kErrorOk)
         return ret;
 #endif
-    //printf("1.10\n");
+
     // initialize Virtual Ethernet Driver
 #if defined(CONFIG_INCLUDE_VETH)
     if ((ret = veth_addInstance(instance_l.initParam.aMacAddress)) != kErrorOk)
         return ret;
 #endif
-    //printf("1.11\n");
+
     ret = errhndk_init();
-    //printf("1.12 %x\n",ret);
+
     return ret;
 }
 

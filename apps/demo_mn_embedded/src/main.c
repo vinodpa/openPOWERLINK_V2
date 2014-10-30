@@ -42,8 +42,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
-//#include <oplk/oplk.h>
-#include <common/oplkinc.h>
+#include <oplk/oplk.h>
 
 #include <gpio.h>
 #include <lcd.h>
@@ -52,6 +51,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "app.h"
 #include "event.h"
 
+#include <common/target.h>
 #if (CONFIG_CDC_ON_SD != FALSE)
 #include <sdcard.h>
 #endif
@@ -138,9 +138,6 @@ This is the main function of the openPOWERLINK console MN demo application.
 \ingroup module_demo_mn_embedded
 */
 //------------------------------------------------------------------------------
-
-#include <system.h>
-#include <common/target.h>
 int main(void)
 {
 <<<<<<< HEAD
@@ -155,7 +152,7 @@ int main(void)
     const UINT8 aMacAddr[] = {MAC_ADDR};
     UINT8       nodeid;
 
-
+    // initialize the target platform
     target_init();
 >>>>>>> e759b04... Working MN with gpio and LCD integrated
     lcd_init();
@@ -163,13 +160,6 @@ int main(void)
     // get node ID from input
     nodeid = gpio_getNodeid();
 
-//while (1)
-//{
-//    target_msleep(100);
-//    printf("PIO data status: 0x%X\n", alt_read_word(BUTTON_PIO_BASE));
-//    printf("PIO edge capture status: 0x%X\n", alt_read_word(BUTTON_PIO_BASE + 0x0C));
-//    printf("PIO irq status: 0x%X\n", alt_read_word(BUTTON_PIO_BASE + 0x08));
-//}
     // initialize instance
     memset(&instance_l, 0, sizeof(instance_l));
 
@@ -215,7 +205,7 @@ int main(void)
     //    goto Exit;
 
     loopMain(&instance_l);
-printf("control goes out of loopMain");
+
 Exit:
 #if (CONFIG_CDC_ON_SD != FALSE)
     sdcard_freeCdcBuffer(&cdcBuffInfo);
@@ -331,17 +321,6 @@ This function implements the main loop of the demo application.
 \return The function returns a tOplkError error code.
 */
 //------------------------------------------------------------------------------
-#include <alt_timers.h>
-#include <alt_globaltmr.h>
-#include <alt_interrupt.h>
-#include <alt_cache.h>
-#include <alt_fpga_manager.h>
-#include <alt_bridge_manager.h>
-#include <alt_address_space.h>
-#include <alt_mpu_registers.h>
-
-#include <common/target.h>
-#include <alt_clock_manager.h>
 static tOplkError loopMain(tInstance* pInstance_p)
 {
     tOplkError    ret = kErrorOk;
@@ -352,19 +331,16 @@ static tOplkError loopMain(tInstance* pInstance_p)
 
     while (1)
     {
-        alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ0);
         // do background tasks
         if ((ret = oplk_process()) != kErrorOk)
             break;
 
-        //printf("1 \n");
         if (oplk_checkKernelStack() == FALSE)
         {
             PRINTF("Kernel stack has gone! Exiting...\n");
             instance_l.fShutdown = TRUE;
         }
 
-        //printf("2 \n");
         // trigger switch off
         if (pInstance_p->fShutdown != FALSE)
         {
@@ -373,12 +349,11 @@ static tOplkError loopMain(tInstance* pInstance_p)
             // reset shutdown flag to generate only one switch off command
             pInstance_p->fShutdown = FALSE;
         }
-        //printf("3 \n");
+
         // exit loop if NMT is in off state
         if (pInstance_p->fGsOff != FALSE)
             break;
 
-        //printf("4 \n");
         switch (gpio_getAppInput())
         {
             case 0x01:
@@ -398,7 +373,6 @@ static tOplkError loopMain(tInstance* pInstance_p)
         }
 
         while (gpio_getAppInput() != 0);
-        //printf("E \n");
     }
 
     return ret;

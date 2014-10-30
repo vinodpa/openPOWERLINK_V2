@@ -220,6 +220,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #if (DEV_SYSTEM == _DEV_NIOS2_)
 #include <oplk/targetdefs/nios2.h>
+
 #elif (DEV_SYSTEM == _DEV_MICROBLAZE_BIG_ || DEV_SYSTEM == _DEV_MICROBLAZE_LITTLE_)
 #include <oplk/targetdefs/microblaze.h>
 

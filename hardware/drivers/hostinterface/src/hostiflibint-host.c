@@ -161,8 +161,6 @@ tHostifReturn hostif_createInt(tHostif* pHostif_p)
         pHostif_p->aBufMap[i].span = pInitParam->aInitMem[i].span;
     }
 
-
-    hostif_ackIrq(pHostif_p->pBase, 1);
     // register isr in system
     if ((ret = hostif_sysIrqRegHandler(hostifIrqHandler, (void*)pHostif_p)) != kHostifSuccessful)
     {
@@ -171,8 +169,6 @@ tHostifReturn hostif_createInt(tHostif* pHostif_p)
 
     // enable system irq
     ret = hostif_sysIrqEnable(TRUE);
-
-    hostif_ackIrq(pHostif_p->pBase, 1);
 
 Exit:
     return ret;

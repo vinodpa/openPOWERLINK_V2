@@ -153,7 +153,6 @@ tOplkError openmac_isrReg(tOpenmacIrqSource irqSource_p, tOpenmacIrqCb pfnIsrCb_
             goto Exit;
     }
 
-//    if (alt_irq_register(irqId,(void*)irqSource_p,irqHandler)) //TODO: Vinod
     if (alt_ic_isr_register(icId, irqId, irqHandler, (void*)irqSource_p, NULL))
     {
         return kErrorNoResource;
@@ -442,7 +441,7 @@ static void irqHandler(void* pArg_p
         )
 {
     tOpenmacIrqSource   irqSource = (tOpenmacIrqSource)pArg_p;
-//printf("I:%x\n",irqSource);
+
 #ifndef ALT_ENHANCED_INTERRUPT_API_PRESENT
     UNUSED_PARAMETER(int_p);
 #endif

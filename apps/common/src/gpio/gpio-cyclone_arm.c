@@ -371,7 +371,7 @@ int gpio_init(void)
     // will be initialized in target intialization
 
     // clear the Leds
-    IOWR_ALTERA_AVALON_PIO_DATA(DIPSW_PIO_BASE, FPGA_LED_ALL_TURN_OFF);
+    IOWR_ALTERA_AVALON_PIO_DATA(LED_PIO_FLOW_CTRL_BASE, FPGA_LED_ALL_TURN_OFF);
 
     // Clear the dip switch and push button interrupt status registers
 
@@ -409,7 +409,7 @@ void gpio_shutdown(void)
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(DIPSW_PIO_BASE, FPGA_DIPSW_ALL_BIT_MASK);
 
     // clear the Leds
-    IOWR_ALTERA_AVALON_PIO_DATA(DIPSW_PIO_BASE, FPGA_LED_ALL_TURN_OFF);
+    IOWR_ALTERA_AVALON_PIO_DATA(LED_PIO_FLOW_CTRL_BASE, FPGA_LED_ALL_TURN_OFF);
 }
 
 //------------------------------------------------------------------------------
