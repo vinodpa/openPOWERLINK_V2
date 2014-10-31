@@ -50,12 +50,14 @@ modules.
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
+#include <alt_interrupt.h>
+#include <alt_timers.h>
+#include <alt_globaltmr.h>
+#include <alt_clock_manager.h>
+
 #include "hostiflib.h"
 #include "hostiflib_target.h"
 #include "hostiflibint.h"
-
-#include <alt_interrupt.h>
-#include <alt_timers.h>
 
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
@@ -199,30 +201,26 @@ tHostifReturn hostif_sysIrqEnable(BOOL fEnable_p)
     }
 }
 
-//void hostif_msleep(UINT32 milliSeconds_p)
-//{
-//	uint32_t			msStartTime = alt_gpt_time_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR);
-//	uint8_t				fExit = FALSE;
-//
-//	while (!fExit)
-//	{
-//		if ((((alt_gpt_time_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR) > msStartTime) &&
-//			(alt_gpt_time_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR)	- msStartTime) <= milliSeconds_p))
-//			|| ((alt_gpt_time_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR) < msStartTime) &&
-//					(alt_gpt_time_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR) +
-//							alt_gpt_maxtime_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR)
-//							- msStartTime) <= milliSeconds_p))
-//		{
-//			// wait
-//		}
-//		else
-//		{
-//			fExit = TRUE;
-//		}
-//	}
-//}
+//------------------------------------------------------------------------------
+/**
+\brief  Delay execution
 
-void hostif_msleep(UINT32 milliSeconds_p)
+\param usDelay_p        Delay in microseconds
+
+\ingroup module_hostiflib
+*/
+//------------------------------------------------------------------------------
+void hostif_usSleep(UINT32 usDelay_p)
 {
-    target_msleep(milliSeconds_p);
+    uint64_t        start_time = alt_globaltmr_get64();
+    uint32_t        timer_prescaler = alt_globaltmr_prescaler_get() + 1;
+    uint64_t        end_time;
+    alt_freq_t      timer_clock;
+
+    alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timer_clock);
+    end_time = start_time + usDelay_p * ((timer_clock / timer_prescaler) / 1000000);
+
+    while (alt_globaltmr_get64() < end_time)
+    {
+    }
 }

@@ -41,11 +41,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // includes
 //------------------------------------------------------------------------------
 #include <alt_generalpurpose_io.h>
-#include <alt_globaltmr.h>
-#include <alt_clock_manager.h>
 
 #include <oplk/oplk.h>
-
 #include "gpio.h"
 
 #include <system.h>
@@ -73,8 +70,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-#define GPIO_STATUS_LED_BIT                         1
-#define GPIO_ERROR_LED_BIT                          2
 
 #define LED_OUTPUT_DELAY_US                         500000      // 500ms
 
@@ -143,129 +138,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Determine size of an array
 #define ARRAY_COUNT(array)              (sizeof(array) / sizeof(array[0]))
 
-#ifdef XPAR_NODE_SWITCHES_BASEADDR
-#define NODE_SWITCH_BASE                            XPAR_NODE_SWITCHES_BASEADDR
-#endif  // XPAR_NODE_SWITCHES_BASEADDR
-
-#ifdef XPAR_POWERLINK_LED_BASEADDR
-#define STATUS_LEDS_BASE                            XPAR_POWERLINK_LED_BASEADDR
-#endif  // XPAR_POWERLINK_LED_BASEADDR
-
-#ifdef XPAR_GPIO_INPUTS_BASEADDR
-#define GPIO_INPUTS_BASE                            XPAR_GPIO_INPUTS_BASEADDR
-#endif  // XPAR_GPIO_INPUTS_BASEADDR
-
-#ifdef XPAR_GPIO_OUTPUTS_BASEADDR
-#define GPIO_OUTPUTS_BASE                           XPAR_GPIO_OUTPUTS_BASEADDR
-#endif  // XPAR_GPIO_OUTPUTS_BASEADDR
-
-#define FPGA_BUS_WIDTH                              32
-#define __IO_CALC_ADDRESS_NATIVE(base, offset) \
-    (base + offset * (FPGA_BUS_WIDTH / 8))
-#define IORD16(base, offset)            alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
-#define IORD32(base, offset)            alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
-#define IOWR16(base, offset, val)       alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
-#define IOWR32(base, offset, val)       alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
-
-/* STATUS register */
-#define ALTERA_AVALON_TIMER_STATUS_REG              0
-#define IOADDR_ALTERA_AVALON_TIMER_STATUS(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_STATUS_REG)
-#define IORD_ALTERA_AVALON_TIMER_STATUS(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_STATUS_REG)
-#define IOWR_ALTERA_AVALON_TIMER_STATUS(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_STATUS_REG, data)
-#define ALTERA_AVALON_TIMER_STATUS_TO_MSK           (0x1)
-#define ALTERA_AVALON_TIMER_STATUS_TO_OFST          (0)
-#define ALTERA_AVALON_TIMER_STATUS_RUN_MSK          (0x2)
-#define ALTERA_AVALON_TIMER_STATUS_RUN_OFST         (1)
-
-/* CONTROL register */
-#define ALTERA_AVALON_TIMER_CONTROL_REG             1
-#define IOADDR_ALTERA_AVALON_TIMER_CONTROL(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_CONTROL_REG)
-#define IORD_ALTERA_AVALON_TIMER_CONTROL(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_CONTROL_REG)
-#define IOWR_ALTERA_AVALON_TIMER_CONTROL(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_CONTROL_REG, data)
-#define ALTERA_AVALON_TIMER_CONTROL_ITO_MSK         (0x1)
-#define ALTERA_AVALON_TIMER_CONTROL_ITO_OFST        (0)
-#define ALTERA_AVALON_TIMER_CONTROL_CONT_MSK        (0x2)
-#define ALTERA_AVALON_TIMER_CONTROL_CONT_OFST       (1)
-#define ALTERA_AVALON_TIMER_CONTROL_START_MSK       (0x4)
-#define ALTERA_AVALON_TIMER_CONTROL_START_OFST      (2)
-#define ALTERA_AVALON_TIMER_CONTROL_STOP_MSK        (0x8)
-#define ALTERA_AVALON_TIMER_CONTROL_STOP_OFST       (3)
-
-/* Period and SnapShot Register for COUNTER_SIZE = 32 */
-/*----------------------------------------------------*/
-/* PERIODL register */
-#define ALTERA_AVALON_TIMER_PERIODL_REG             2
-#define IOADDR_ALTERA_AVALON_TIMER_PERIODL(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODL_REG)
-#define IORD_ALTERA_AVALON_TIMER_PERIODL(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_PERIODL_REG)
-#define IOWR_ALTERA_AVALON_TIMER_PERIODL(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_PERIODL_REG, data)
-#define ALTERA_AVALON_TIMER_PERIODL_MSK             (0xFFFF)
-#define ALTERA_AVALON_TIMER_PERIODL_OFST            (0)
-
-/* PERIODH register */
-#define ALTERA_AVALON_TIMER_PERIODH_REG             3
-#define IOADDR_ALTERA_AVALON_TIMER_PERIODH(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODH_REG)
-#define IORD_ALTERA_AVALON_TIMER_PERIODH(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_PERIODH_REG)
-#define IOWR_ALTERA_AVALON_TIMER_PERIODH(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_PERIODH_REG, data)
-#define ALTERA_AVALON_TIMER_PERIODH_MSK             (0xFFFF)
-#define ALTERA_AVALON_TIMER_PERIODH_OFST            (0)
-
-/* SNAPL register */
-#define ALTERA_AVALON_TIMER_SNAPL_REG               4
-#define IOADDR_ALTERA_AVALON_TIMER_SNAPL(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPL_REG)
-#define IORD_ALTERA_AVALON_TIMER_SNAPL(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_SNAPL_REG)
-#define IOWR_ALTERA_AVALON_TIMER_SNAPL(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_SNAPL_REG, data)
-#define ALTERA_AVALON_TIMER_SNAPL_MSK               (0xFFFF)
-#define ALTERA_AVALON_TIMER_SNAPL_OFST              (0)
-
-/* SNAPH register */
-#define ALTERA_AVALON_TIMER_SNAPH_REG               5
-#define IOADDR_ALTERA_AVALON_TIMER_SNAPH(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPH_REG)
-#define IORD_ALTERA_AVALON_TIMER_SNAPH(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_SNAPH_REG)
-#define IOWR_ALTERA_AVALON_TIMER_SNAPH(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_SNAPH_REG, data)
-#define ALTERA_AVALON_TIMER_SNAPH_MSK               (0xFFFF)
-#define ALTERA_AVALON_TIMER_SNAPH_OFST              (0)
-
-#define IOADDR_ALTERA_AVALON_PIO_DATA(base)                 __IO_CALC_ADDRESS_NATIVE(base, 0)
-#define IORD_ALTERA_AVALON_PIO_DATA(base)                   IORD32(base, 0)
-#define IOWR_ALTERA_AVALON_PIO_DATA(base, data)             IOWR32(base, 0, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_DIRECTION(base)            __IO_CALC_ADDRESS_NATIVE(base, 1)
-#define IORD_ALTERA_AVALON_PIO_DIRECTION(base)              IORD32(base, 1)
-#define IOWR_ALTERA_AVALON_PIO_DIRECTION(base, data)        IOWR32(base, 1, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_IRQ_MASK(base)             __IO_CALC_ADDRESS_NATIVE(base, 2)
-#define IORD_ALTERA_AVALON_PIO_IRQ_MASK(base)               IORD32(base, 2)
-#define IOWR_ALTERA_AVALON_PIO_IRQ_MASK(base, data)         IOWR32(base, 2, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_EDGE_CAP(base)             __IO_CALC_ADDRESS_NATIVE(base, 3)
-#define IORD_ALTERA_AVALON_PIO_EDGE_CAP(base)               IORD32(base, 3)
-#define IOWR_ALTERA_AVALON_PIO_EDGE_CAP(base, data)         IOWR32(base, 3, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_SET_BIT(base)              __IO_CALC_ADDRESS_NATIVE(base, 4)
-#define IORD_ALTERA_AVALON_PIO_SET_BITS(base)               IORD32(base, 4)
-#define IOWR_ALTERA_AVALON_PIO_SET_BITS(base, data)         IOWR32(base, 4, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_CLEAR_BITS(base)           __IO_CALC_ADDRESS_NATIVE(base, 5)
-#define IORD_ALTERA_AVALON_PIO_CLEAR_BITS(base)             IORD32(base, 5)
-#define IOWR_ALTERA_AVALON_PIO_CLEAR_BITS(base, data)       IOWR32(base, 5, data)
 
 //------------------------------------------------------------------------------
 // local types
@@ -274,8 +146,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // local vars
 //------------------------------------------------------------------------------
-
-static UINT32               plkStatusLeds_l = 0;                                ///< Local copy of the state of the POWERLINK status LEDs
 
 ALT_GPIO_CONFIG_RECORD_t    pb_gpio_init[] =
 {
@@ -330,8 +200,6 @@ int gpio_init(void)
         halRet = alt_gpio_init();
     }
 
-    printf("GPIO-INFO: Set up GPIO for LEDs.\n");
-
     // Setup GPIO LED
     if (halRet == ALT_E_SUCCESS)
     {
@@ -343,8 +211,6 @@ int gpio_init(void)
     {
         halRet = alt_gpio_port_data_write(ALT_GPIO_PORTB, HPS_LED_ALL_BIT_MASK, HPS_LED_ALL_TURN_OFF);
     }
-
-    printf("GPIO-INFO: Set up GPIO for Dip Switches.\n");
 
     // Setup GPIO PUSHBUTTON
     if (halRet == ALT_E_SUCCESS)

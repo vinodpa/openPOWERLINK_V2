@@ -42,10 +42,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // includes
 //------------------------------------------------------------------------------
 #include <stdint.h>
-//#include <sys/alt_cache.h>
-#include <oplk/targetdefs/arm_altera.h>
 #include <unistd.h>
+
 #include <system.h>
+
+#include <socal/socal.h>
 
 //------------------------------------------------------------------------------
 // const defines
@@ -61,31 +62,33 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HOSTIF_IRQ          0           ///< Irq Id
 
 /// cache
+#warning "Cache bypassing not available"
 #define HOSTIF_MAKE_NONCACHEABLE(ptr)       (void*)(((unsigned long)ptr))
 
 #define HOSTIF_UNCACHED_MALLOC(size)        malloc(size)
 #define HOSTIF_UNCACHED_FREE(ptr)           free(ptr)
 
 /// sleep
-#define HOSTIF_USLEEP(x)                    usleep((useconds_t)x)
+#define HOSTIF_USLEEP(x)                    hostif_usSleep(x)
+#define HOSTIF_BRIDGE_INIT_TIMEOUT_MS       10
 
 /// hw access
-#define HOSTIF_RD32(base, offset)           IORD_32DIRECT(base, offset)
-#define HOSTIF_RD16(base, offset)           IORD_16DIRECT(base, offset)
-#define HOSTIF_RD8(base, offset)            IORD_8DIRECT(base, offset)
+#define HOSTIF_RD32(base, offset)           alt_read_word((unsigned int)base + (unsigned int)offset)
+#define HOSTIF_RD16(base, offset)           alt_read_hword((unsigned int)base + (unsigned int)offset)
+#define HOSTIF_RD8(base, offset)            alt_read_byte((unsigned int)base + (unsigned int)offset)
 
-#define HOSTIF_WR32(base, offset, dword)    IOWR_32DIRECT(base, offset, dword)
-#define HOSTIF_WR16(base, offset, word)     IOWR_16DIRECT(base, offset, word)
-#define HOSTIF_WR8(base, offset, byte)      IOWR_8DIRECT(base, offset, byte)
+#define HOSTIF_WR32(base, offset, dword)    alt_write_word((unsigned int)base + (unsigned int)offset, dword)
+#define HOSTIF_WR16(base, offset, word)     alt_write_hword((unsigned int)base + (unsigned int)offset, word)
+#define HOSTIF_WR8(base, offset, byte)      alt_write_byte((unsigned int)base + (unsigned int)offset, byte)
 
 #define HOSTIF_INLINE    inline
 //------------------------------------------------------------------------------
 // typedef
 //------------------------------------------------------------------------------
-void hostif_msleep(UINT32 milliSeconds_p);
 
 //------------------------------------------------------------------------------
 // function prototypes
 //------------------------------------------------------------------------------
+void hostif_usSleep(uint32_t usDelay_p);
 
 #endif /* _INC_hostiflib_arm_H_ */

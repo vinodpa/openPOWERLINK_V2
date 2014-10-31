@@ -81,7 +81,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PRINTF(...)
 #endif
 
-// FIXME
+//TODO Is the following ideal
+
+#define FPGA_BUS_WIDTH                              32
+#define __IO_CALC_ADDRESS_NATIVE(base, offset) \
+    (base + offset * (FPGA_BUS_WIDTH / 8))
+#define IORD16(base, offset)            alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
+#define IORD32(base, offset)            alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
+#define IOWR16(base, offset, val)       alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
+#define IOWR32(base, offset, val)       alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
+
 #define IORD_32DIRECT(base, offset)             alt_read_word((unsigned int)base + (unsigned int)offset)
 #define IORD_16DIRECT(base, offset)             alt_read_hword((unsigned int)base + (unsigned int)offset)
 #define IORD_8DIRECT(base, offset)              alt_read_byte((unsigned int)base + (unsigned int)offset)
@@ -89,6 +98,106 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define IOWR_32DIRECT(base, offset, dword)      alt_write_word((unsigned int)base + (unsigned int)offset, dword)
 #define IOWR_16DIRECT(base, offset, word)       alt_write_hword((unsigned int)base + (unsigned int)offset, word)
 #define IOWR_8DIRECT(base, offset, byte)        alt_write_byte((unsigned int)base + (unsigned int)offset, byte)
+
+/* STATUS register */
+#define ALTERA_AVALON_TIMER_STATUS_REG              0
+#define IOADDR_ALTERA_AVALON_TIMER_STATUS(base) \
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_STATUS_REG)
+#define IORD_ALTERA_AVALON_TIMER_STATUS(base) \
+    IORD16(base, ALTERA_AVALON_TIMER_STATUS_REG)
+#define IOWR_ALTERA_AVALON_TIMER_STATUS(base, data) \
+    IOWR16(base, ALTERA_AVALON_TIMER_STATUS_REG, data)
+#define ALTERA_AVALON_TIMER_STATUS_TO_MSK           (0x1)
+#define ALTERA_AVALON_TIMER_STATUS_TO_OFST          (0)
+#define ALTERA_AVALON_TIMER_STATUS_RUN_MSK          (0x2)
+#define ALTERA_AVALON_TIMER_STATUS_RUN_OFST         (1)
+
+/* CONTROL register */
+#define ALTERA_AVALON_TIMER_CONTROL_REG             1
+#define IOADDR_ALTERA_AVALON_TIMER_CONTROL(base) \
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_CONTROL_REG)
+#define IORD_ALTERA_AVALON_TIMER_CONTROL(base) \
+    IORD16(base, ALTERA_AVALON_TIMER_CONTROL_REG)
+#define IOWR_ALTERA_AVALON_TIMER_CONTROL(base, data) \
+    IOWR16(base, ALTERA_AVALON_TIMER_CONTROL_REG, data)
+#define ALTERA_AVALON_TIMER_CONTROL_ITO_MSK         (0x1)
+#define ALTERA_AVALON_TIMER_CONTROL_ITO_OFST        (0)
+#define ALTERA_AVALON_TIMER_CONTROL_CONT_MSK        (0x2)
+#define ALTERA_AVALON_TIMER_CONTROL_CONT_OFST       (1)
+#define ALTERA_AVALON_TIMER_CONTROL_START_MSK       (0x4)
+#define ALTERA_AVALON_TIMER_CONTROL_START_OFST      (2)
+#define ALTERA_AVALON_TIMER_CONTROL_STOP_MSK        (0x8)
+#define ALTERA_AVALON_TIMER_CONTROL_STOP_OFST       (3)
+
+/* Period and SnapShot Register for COUNTER_SIZE = 32 */
+/*----------------------------------------------------*/
+/* PERIODL register */
+#define ALTERA_AVALON_TIMER_PERIODL_REG             2
+#define IOADDR_ALTERA_AVALON_TIMER_PERIODL(base) \
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODL_REG)
+#define IORD_ALTERA_AVALON_TIMER_PERIODL(base) \
+    IORD16(base, ALTERA_AVALON_TIMER_PERIODL_REG)
+#define IOWR_ALTERA_AVALON_TIMER_PERIODL(base, data) \
+    IOWR16(base, ALTERA_AVALON_TIMER_PERIODL_REG, data)
+#define ALTERA_AVALON_TIMER_PERIODL_MSK             (0xFFFF)
+#define ALTERA_AVALON_TIMER_PERIODL_OFST            (0)
+
+/* PERIODH register */
+#define ALTERA_AVALON_TIMER_PERIODH_REG             3
+#define IOADDR_ALTERA_AVALON_TIMER_PERIODH(base) \
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODH_REG)
+#define IORD_ALTERA_AVALON_TIMER_PERIODH(base) \
+    IORD16(base, ALTERA_AVALON_TIMER_PERIODH_REG)
+#define IOWR_ALTERA_AVALON_TIMER_PERIODH(base, data) \
+    IOWR16(base, ALTERA_AVALON_TIMER_PERIODH_REG, data)
+#define ALTERA_AVALON_TIMER_PERIODH_MSK             (0xFFFF)
+#define ALTERA_AVALON_TIMER_PERIODH_OFST            (0)
+
+/* SNAPL register */
+#define ALTERA_AVALON_TIMER_SNAPL_REG               4
+#define IOADDR_ALTERA_AVALON_TIMER_SNAPL(base) \
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPL_REG)
+#define IORD_ALTERA_AVALON_TIMER_SNAPL(base) \
+    IORD16(base, ALTERA_AVALON_TIMER_SNAPL_REG)
+#define IOWR_ALTERA_AVALON_TIMER_SNAPL(base, data) \
+    IOWR16(base, ALTERA_AVALON_TIMER_SNAPL_REG, data)
+#define ALTERA_AVALON_TIMER_SNAPL_MSK               (0xFFFF)
+#define ALTERA_AVALON_TIMER_SNAPL_OFST              (0)
+
+/* SNAPH register */
+#define ALTERA_AVALON_TIMER_SNAPH_REG               5
+#define IOADDR_ALTERA_AVALON_TIMER_SNAPH(base) \
+    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPH_REG)
+#define IORD_ALTERA_AVALON_TIMER_SNAPH(base) \
+    IORD16(base, ALTERA_AVALON_TIMER_SNAPH_REG)
+#define IOWR_ALTERA_AVALON_TIMER_SNAPH(base, data) \
+    IOWR16(base, ALTERA_AVALON_TIMER_SNAPH_REG, data)
+#define ALTERA_AVALON_TIMER_SNAPH_MSK               (0xFFFF)
+#define ALTERA_AVALON_TIMER_SNAPH_OFST              (0)
+
+#define IOADDR_ALTERA_AVALON_PIO_DATA(base)                 __IO_CALC_ADDRESS_NATIVE(base, 0)
+#define IORD_ALTERA_AVALON_PIO_DATA(base)                   IORD32(base, 0)
+#define IOWR_ALTERA_AVALON_PIO_DATA(base, data)             IOWR32(base, 0, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_DIRECTION(base)            __IO_CALC_ADDRESS_NATIVE(base, 1)
+#define IORD_ALTERA_AVALON_PIO_DIRECTION(base)              IORD32(base, 1)
+#define IOWR_ALTERA_AVALON_PIO_DIRECTION(base, data)        IOWR32(base, 1, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_IRQ_MASK(base)             __IO_CALC_ADDRESS_NATIVE(base, 2)
+#define IORD_ALTERA_AVALON_PIO_IRQ_MASK(base)               IORD32(base, 2)
+#define IOWR_ALTERA_AVALON_PIO_IRQ_MASK(base, data)         IOWR32(base, 2, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_EDGE_CAP(base)             __IO_CALC_ADDRESS_NATIVE(base, 3)
+#define IORD_ALTERA_AVALON_PIO_EDGE_CAP(base)               IORD32(base, 3)
+#define IOWR_ALTERA_AVALON_PIO_EDGE_CAP(base, data)         IOWR32(base, 3, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_SET_BIT(base)              __IO_CALC_ADDRESS_NATIVE(base, 4)
+#define IORD_ALTERA_AVALON_PIO_SET_BITS(base)               IORD32(base, 4)
+#define IOWR_ALTERA_AVALON_PIO_SET_BITS(base, data)         IOWR32(base, 4, data)
+
+#define IOADDR_ALTERA_AVALON_PIO_CLEAR_BITS(base)           __IO_CALC_ADDRESS_NATIVE(base, 5)
+#define IORD_ALTERA_AVALON_PIO_CLEAR_BITS(base)             IORD32(base, 5)
+#define IOWR_ALTERA_AVALON_PIO_CLEAR_BITS(base, data)       IOWR32(base, 5, data)
 
 /* NOTE:
  * ARM does not support atomic instructions, hence, pseudo atomic
@@ -102,8 +211,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         return kErrorNoResource
 #define OPLK_ATOMIC_EXCHANGE(address, newval, oldval) \
     target_lock();                                    \
-    oldval = IORD_8DIRECT(address, 0);                \
-    IOWR_8DIRECT(address, 0, newval);                 \
+    oldval = alt_read_byte(address);                  \
+    alt_write_byte(address, newval);                  \
     target_unlock()
 
 #define CACHE_ALIGNED_BYTE_CHECK    (ALT_CACHE_LINE_SIZE - 1)

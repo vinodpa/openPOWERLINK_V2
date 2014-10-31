@@ -55,6 +55,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <socal/hps.h>
 #include <socal/socal.h>
 
+#include <oplk/debug.h>
 #include <system.h>
 #include "lcdl.h"
 
@@ -398,15 +399,15 @@ static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t* deviceHdl_p, LCD_COMMAND_
 //------------------------------------------------------------------------------
 void delay_us(uint32_t usDelay_p)
 {
-    uint64_t        start_time = alt_globaltmr_get64();
-    uint32_t        timer_prescaler = alt_globaltmr_prescaler_get() + 1;
-    uint64_t        end_time;
-    alt_freq_t      timer_clock;
+    uint64_t        startTime = alt_globaltmr_get64();
+    uint32_t        timerPrescaler = alt_globaltmr_prescaler_get() + 1;
+    uint64_t        endTime;
+    alt_freq_t      timerClkSrc;
 
-    alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timer_clock);
-    end_time = start_time + usDelay_p * ((timer_clock / timer_prescaler) / 1000000);
+    alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timerClkSrc);
+    endTime = startTime + usDelay_p * ((timerClkSrc / timerPrescaler) / 1000000);
 
-    while (alt_globaltmr_get64() < end_time)
+    while (alt_globaltmr_get64() < endTime)
     {
     }
 }
