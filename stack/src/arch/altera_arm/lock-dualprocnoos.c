@@ -72,8 +72,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 
 //FIXME
-#define XPAR_CPU_ID         0
-#define LOCK_LOCAL_ID       (XPAR_CPU_ID + 1)
+#define LOCK_LOCAL_ID       1
 
 #if (LOCK_LOCAL_ID == LOCK_UNLOCKED_C)
 #error "Change the to LOCK_LOCAL_ID to some unique BYTE value unequal 0x0!"
@@ -138,7 +137,6 @@ int target_lock(void)
     if (pLock_l == NULL)
         return -1;
 
-    //printf("Locking..\n");
     // spin if id is not written to shared memory
     do
     {

@@ -36,11 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifndef _INC_lock_H_
 #define _INC_lock_H_
-#include <stdint.h>
+
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
-//#include <xil_types.h>
+#include <stdint.h>
 
 //------------------------------------------------------------------------------
 // const defines
@@ -53,6 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // typedef
 //------------------------------------------------------------------------------
 #ifndef LOCK_T
+//FIXME
 //#define LOCK_T              uint8_t
 typedef uint8_t LOCK_T;
 #endif

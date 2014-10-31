@@ -2,16 +2,17 @@
 ********************************************************************************
 \file   hostiflibint_arm.c
 
-\brief  Host Interface Library - Driver Implementation for ARM
+\brief  Host Interface Library - Driver Implementation for Altera Cyclone-V ARM
 
 The file contains the high level driver for the host interface library for
-ARM targets.
+Altera Cyclone-V ARM targets.
 
 \ingroup module_hostiflib
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
 Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+Copyright (c) 2014, Kalycito Infotech Private Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -94,6 +95,7 @@ static tHostifIrqCb    pfnIrqCb_l = NULL;
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
+static void cs3ISR(uint32_t icciar_p, void* pArg_p);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -116,28 +118,17 @@ interrupt services.
 \ingroup module_hostiflib
 */
 //------------------------------------------------------------------------------
-
-void __cs3_isr(uint32_t icciar_p, void* context_p)
-{
-    alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + HOSTIF_IRQ);
-    if (pfnIrqCb_l != NULL)
-        pfnIrqCb_l(context_p);
-    return;
-}
-
 tHostifReturn hostif_sysIrqRegHandler(tHostifIrqCb pfnIrqCb_p, void* pArg_p)
 {
     ALT_INT_INTERRUPT_t    irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + HOSTIF_IRQ;
 
     if (pfnIrqCb_p == NULL)
     {
-        printf("UnReg Hostif ISR\n");
         alt_int_isr_unregister(irqId);
     }
     else
     {
-        printf("Reg Hostif ISR\n");
-        if ( alt_int_isr_register(irqId, __cs3_isr, pArg_p) != ALT_E_SUCCESS)
+        if ( alt_int_isr_register(irqId, cs3ISR, pArg_p) != ALT_E_SUCCESS)
         {
             return kHostifUnspecError;
         }
@@ -166,27 +157,21 @@ This function enables the interrupt for the host interface driver instance.
 //------------------------------------------------------------------------------
 tHostifReturn hostif_sysIrqEnable(BOOL fEnable_p)
 {
-    ALT_STATUS_CODE         ret;
     ALT_INT_INTERRUPT_t     irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + HOSTIF_IRQ;
-    int                     cpu_target = 0x1;                                             // cortexA9_0
 
-    printf("Enable Hostif IRQ: %X(%X)\n", fEnable_p, irqId);
     if (fEnable_p)
     {
         if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_LEVEL) != ALT_E_SUCCESS)
         {
-            printf("trigger set failed\n");
             return kHostifNoResource;
         }
-        else if (alt_int_dist_target_set(irqId, cpu_target) != ALT_E_SUCCESS)
+        else if (alt_int_dist_target_set(irqId, HOSTIF_SYNC_IRQ_TARGET_CPU) != ALT_E_SUCCESS)
         {
-            printf("trigger set failed\n");
             return kHostifNoResource;
         }
         else if (alt_int_dist_enable(irqId) != ALT_E_SUCCESS)
         {
             // Set interrupt distributor target
-            printf("distributor set failed\n");
             return kHostifNoResource;
         }
         else
@@ -212,15 +197,47 @@ tHostifReturn hostif_sysIrqEnable(BOOL fEnable_p)
 //------------------------------------------------------------------------------
 void hostif_usSleep(UINT32 usDelay_p)
 {
-    uint64_t        start_time = alt_globaltmr_get64();
-    uint32_t        timer_prescaler = alt_globaltmr_prescaler_get() + 1;
-    uint64_t        end_time;
-    alt_freq_t      timer_clock;
+    uint64_t        startTime = alt_globaltmr_get64();
+    uint32_t        timerPrescaler = alt_globaltmr_prescaler_get() + 1;
+    uint64_t        endTime;
+    alt_freq_t      timerClkSrc;
 
-    alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timer_clock);
-    end_time = start_time + usDelay_p * ((timer_clock / timer_prescaler) / 1000000);
+    alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timerClkSrc);
+    endTime = startTime + usDelay_p * ((timerClkSrc / timerPrescaler) / 1000000);
 
-    while (alt_globaltmr_get64() < end_time)
+    while (alt_globaltmr_get64() < endTime)
     {
     }
 }
+
+//============================================================================//
+//            P R I V A T E   F U N C T I O N S                               //
+//============================================================================//
+/// \name Private Functions
+/// \{
+
+//------------------------------------------------------------------------------
+/**
+\brief  Primary ISR for hostinterface sync interrupt
+
+The function receives the sync IRQ from HPS distributor and forwards to the
+hostinterface module callback function
+
+ \param icciar_p     The Interrupt Controller CPU Interrupt
+                     Acknowledgement Register value (ICCIAR) value
+                     corresponding to the current interrupt.
+
+ \param pArg_p       argument to the function
+
+*/
+//------------------------------------------------------------------------------
+static void cs3ISR(uint32_t icciar_p, void* pArg_p)
+{
+    // clear the interrupt in the distributor
+    alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + HOSTIF_IRQ);
+    if (pfnIrqCb_l != NULL)
+        pfnIrqCb_l(pArg_p);
+    return;
+}
+
+///\}

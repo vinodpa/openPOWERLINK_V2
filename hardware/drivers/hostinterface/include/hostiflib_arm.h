@@ -2,14 +2,15 @@
 ********************************************************************************
 \file   hostiflib_arm.h
 
-\brief  Host Interface Library - For ARM target
+\brief  Host Interface Library - For Altera Cyclone-V ARM target
 
-This header file provides specific macros for Altera ARM CPU.
+This header file provides specific macros for Altera Cyclone-V ARM CPU.
 
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
 Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+Copyright (c) 2014, Kalycito Infotech Private Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -53,13 +54,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // Get hostinterface base address from system.h
 #if defined(__HOSTINTERFACE)
-#define HOSTIF_BASE         HOSTINTERFACE_0_BASE
+#define HOSTIF_BASE                         HOSTINTERFACE_0_BASE
 #else
-#define HOSTIF_BASE         0x10000000  //FIXME: Use multiplex ipcore base here
+#define HOSTIF_BASE                         0x10000000  //FIXME: Use multiplex ipcore base here
 #endif
 
-#define HOSTIF_IRQ_IC_ID    0           ///< Irq Controller Id
-#define HOSTIF_IRQ          0           ///< Irq Id
+#define HOSTIF_IRQ_IC_ID                    0           ///< Irq Controller Id
+#define HOSTIF_IRQ                          0           ///< Irq Id
+
+#define HOSTIF_SYNC_IRQ_TARGET_CPU          0x1 // dual Core
 
 /// cache
 #warning "Cache bypassing not available"
@@ -81,7 +84,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HOSTIF_WR16(base, offset, word)     alt_write_hword((unsigned int)base + (unsigned int)offset, word)
 #define HOSTIF_WR8(base, offset, byte)      alt_write_byte((unsigned int)base + (unsigned int)offset, byte)
 
-#define HOSTIF_INLINE    inline
+#define HOSTIF_INLINE                       inline
 //------------------------------------------------------------------------------
 // typedef
 //------------------------------------------------------------------------------

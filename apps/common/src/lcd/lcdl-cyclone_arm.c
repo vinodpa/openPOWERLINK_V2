@@ -1,17 +1,17 @@
 /**
 ********************************************************************************
-\file       lcd-16207.c
+\file       lcd-cyclone_arm.c
 
-\brief      LCD functions for Altera Avalon LCD IP-Core with HD44780
+\brief      LCD functions for Altera Cyclone-V HPS LCD
 
-This implementation uses the Altera Avalon LCD 16207 IP-Core to handle the
-display controller HD44780 - available e.g. on the Terasic DE2-115 board.
+This implementation uses the Altera Cyclone-V HPS LCD available on
+Altera Cyclone-V development board(D) for handling LCD module
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
 Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
 Copyright (c) 2013, SYSTEC electronic GmbH
-Copyright (c) 2013, Kalycito Infotech Private Ltd.
+Copyright (c) 2014, Kalycito Infotech Private Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -83,6 +83,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 
+//TODO Replace the I2C address from system.h
 #define LCD_I2C_ADDRESS         (0x50 >> 1) // I2C address of LCD module
 #define LCD_I2C_SPEED           40000       // I2C bus speed for accessing LCD module
 #define LCD_ESCAPE_CHAR         0xfe        // Escape character used to prefix commands
@@ -98,29 +99,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Commands supported by the LCD display
 typedef enum
 {
-    LCD_COMMAND_DISPLAY_ON = 0,
-    LCD_COMMAND_DISPLAY_OFF,
-    LCD_COMMAND_SET_CURSOR,
-    LCD_COMMAND_CURSOR_HOME,
-    LCD_COMMAND_UNDERLINE_CURSOR_ON,
-    LCD_COMMAND_UNDERLINE_CURSOR_OFF,
-    LCD_COMMAND_MOVE_CURSOR_LEFT_ONE_PLACE,
-    LCD_COMMAND_MOVE_CURSOR_RIGHT_ONE_PLACE,
-    LCD_COMMAND_BLINKING_CURSOR_ON,
-    LCD_COMMAND_BLINKING_CURSOR_OFF,
-    LCD_COMMAND_BACKSPACE,
-    LCD_COMMAND_CLEAR_SCREEN,
-    LCD_COMMAND_SET_CONTRAST,
-    LCD_COMMAND_SET_BACKLIGHT_BRIGHTNESS,
-    LCD_COMMAND_LOAD_CUSTOM_CHARACTER,
-    LCD_COMMAND_MOVE_DISPLAY_ONE_PLACE_TO_THE_LEFT,
-    LCD_COMMAND_MOVE_DISPLAY_ONE_PLACE_TO_THE_RIGHT,
-    LCD_COMMAND_CHANGE_RS_232_BAUD_RATE,
-    LCD_COMMAND_CHANGE_I2C_ADDRESS,
-    LCD_COMMAND_DISPLAY_FIRMWARE_VERSION_NUMBER,
-    LCD_COMMAND_DISPLAY_RS_232_BAUD_RATE,
-    LCD_COMMAND_DISPLAY_I2C_ADDRESS,
-} LCD_COMMAND_T;
+    kLcdCmdDisplayOn = 0,
+    kLcdCmdDisplayOff,
+    kLcdCmdSetCursor,
+    kLcdCmdCursorHome,
+    kLcdCmdUnderlineCursorOn,
+    kLcdCmdUnderlineCursorOff,
+    kLcdCmdMoveCursorLeftOnePlace,
+    kLcdCmdMoveCursorRightOnePlace,
+    kLcdCmdBlinkingCursorOn,
+    kLcdCmdBlinkingCursorOff,
+    kLcdCmdBackspace,
+    kLcdCmdClearScreen,
+    kLcdCmdSetContrast,
+    kLcdCmdSetBacklightBrightness,
+    kLcdCmdLoadCustomCharacter,
+    kLcdCmdMoveDisplayOnePlaceToTheLeft,
+    kLcdCmdMoveDisplayOnePlaceToTheRight,
+    kLcdCmdChangeRS232BaudRate,
+    kLcdCmdChangeI2CAddress,
+    kLcdCmdDisplayFirmwareVersionNumber,
+    kLcdCmdDisplayRS232BaudRate,
+    kLcdCmdDisplayI2CAddress,
+} tLcdCmd;
 
 // Command description
 typedef struct
@@ -128,7 +129,7 @@ typedef struct
     uint8_t     command;
     uint8_t     padding;
     uint16_t    executionDuration;
-} LCD_COMMAND_DESC_T;
+} tLcdCmdDesc;
 
 //------------------------------------------------------------------------------
 // local vars
@@ -137,7 +138,7 @@ typedef struct
 ALT_I2C_DEV_t*                  deviceHandle_l;
 
 // Descriptions for all supported commands
-static LCD_COMMAND_DESC_T       lcdCommands_l[] =
+static tLcdCmdDesc       lcdCommands_l[] =
 {
     {0x41, 0, 100},     // LCD_COMMAND_DISPLAY_ON,
     {0x42, 0, 100},     // LCD_COMMAND_DISPLAY_OFF,
@@ -167,8 +168,10 @@ static LCD_COMMAND_DESC_T       lcdCommands_l[] =
 // local function prototypes
 //------------------------------------------------------------------------------
 
-static ALT_STATUS_CODE  lcd_send_command(ALT_I2C_DEV_t* deviceHdl_p, LCD_COMMAND_T command_p, uint8_t* pArg_p);
-void                    delay_us(uint32_t usDelay_p);
+static inline ALT_STATUS_CODE   sendLcdCommand(ALT_I2C_DEV_t* deviceHdl_p,
+                                              tLcdCmd command_p,
+                                              uint8_t* pArg_p);
+static inline void              usDelay(uint32_t usDelay_p);
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
 //============================================================================//
@@ -182,86 +185,83 @@ This function writes a sequence of initialization parameters to the LCD.
 //------------------------------------------------------------------------------
 int lcdl_init(void)
 {
-    ALT_STATUS_CODE             halRet = ALT_E_SUCCESS;
+    int                         ret = 0;
     ALT_I2C_MASTER_CONFIG_t     cfg;
     uint32_t                    speed;
 
     // Init I2C module
-    if (halRet == ALT_E_SUCCESS)
+    if (alt_i2c_init(ALT_I2C_I2C0, deviceHandle_l) != ALT_E_SUCCESS)
     {
-        halRet = alt_i2c_init(ALT_I2C_I2C0, deviceHandle_l);
+        ret = -1;
+        goto Exit;
     }
 
-    // Enable I2C module
-    if (halRet == ALT_E_SUCCESS)
+    if (alt_i2c_enable(deviceHandle_l) != ALT_E_SUCCESS)       // Enable I2C module
     {
-        halRet = alt_i2c_enable(deviceHandle_l);
+        ret = -1 ;
+        goto Exit;
     }
 
-    // Configure I2C module
-    PRINTF("LCD INFO: Configuring I2C parameters.\n");
-
-    if (halRet == ALT_E_SUCCESS)
+    if (alt_i2c_master_config_get(deviceHandle_l, &cfg) != ALT_E_SUCCESS) // Configure I2C module
     {
-        halRet = alt_i2c_master_config_get(deviceHandle_l, &cfg);
+        ret = -1;
+        goto Exit;
     }
 
-    if (halRet == ALT_E_SUCCESS)
+    if (alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed) != ALT_E_SUCCESS)
     {
-        halRet = alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed);
-        PRINTF("LCD INFO: Current I2C speed = %d Hz.\n", (int)speed);
+        ret = -1;
+        goto Exit;
     }
 
-    if (halRet == ALT_E_SUCCESS)
+    PRINTF("LCD INFO: Current I2C speed = %d Hz.\n", (int)speed);
+
+    if (alt_i2c_master_config_speed_set(deviceHandle_l, &cfg, LCD_I2C_SPEED) != ALT_E_SUCCESS)
     {
-        halRet = alt_i2c_master_config_speed_set(deviceHandle_l, &cfg, LCD_I2C_SPEED);
+        ret = -1;
+        goto Exit;
     }
 
-    if (halRet == ALT_E_SUCCESS)
+    if (alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed) != ALT_E_SUCCESS)
     {
-        halRet = alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed);
-        PRINTF("LCD INFO: New I2C speed = %d Hz.\n", (int)speed);
-    }
-
-    if (halRet == ALT_E_SUCCESS)
-    {
-        cfg.addr_mode = ALT_I2C_ADDR_MODE_7_BIT;
-        cfg.restart_enable = ALT_E_TRUE;
-        halRet = alt_i2c_master_config_set(deviceHandle_l, &cfg);
-    }
-
-    if (halRet == ALT_E_SUCCESS)
-    {
-        alt_i2c_sda_hold_time_set(deviceHandle_l, 8);
-    }
-
-    // Set target display I2C address
-    if (halRet == ALT_E_SUCCESS)
-    {
-        halRet = alt_i2c_master_target_set(deviceHandle_l, LCD_I2C_ADDRESS);
-    }
-
-    // Turn display on
-    if (halRet == ALT_E_SUCCESS)
-    {
-        halRet = lcd_send_command(deviceHandle_l, LCD_COMMAND_DISPLAY_ON, NULL);
-    }
-
-    // Turn cursor on
-    if (halRet == ALT_E_SUCCESS)
-    {
-        halRet = lcd_send_command(deviceHandle_l, LCD_COMMAND_BLINKING_CURSOR_ON, NULL);
-    }
-
-    delay_us(500);
-
-    if (halRet != ALT_E_SUCCESS)
-    {
-        DEBUG_LVL_ERROR_TRACE("LCD ERR: Initialization failed!!\n");
-        return -1;
+        ret = -1;
+        goto Exit;
     }
     else
-        return 0;
+    {
+        PRINTF("LCD INFO: New I2C speed = %d Hz.\n", (int)speed);
+        cfg.addr_mode = ALT_I2C_ADDR_MODE_7_BIT;
+        cfg.restart_enable = ALT_E_TRUE;
+
+        if (alt_i2c_master_config_set(deviceHandle_l, &cfg) != ALT_E_SUCCESS)
+        {
+            ret = -1;
+        }
+        else if (alt_i2c_sda_hold_time_set(deviceHandle_l, 8) != ALT_E_SUCCESS)
+        {
+            ret = -1;
+        }
+        else if (alt_i2c_master_target_set(deviceHandle_l, LCD_I2C_ADDRESS) != ALT_E_SUCCESS)    // Set target display I2C address
+        {
+            ret = -1;
+        }
+        else if (sendLcdCommand(deviceHandle_l, kLcdCmdDisplayOn, NULL) != ALT_E_SUCCESS)   // Turn display on
+        {
+            ret = -1;
+        }
+        else if (sendLcdCommand(deviceHandle_l, kLcdCmdBlinkingCursorOn, NULL) != ALT_E_SUCCESS)    // Turn cursor on
+        {
+            ret = -1;
+        }
+        else
+            ret = 0;
+    }
+
+ Exit:
+     if (ret != 0)
+         DEBUG_LVL_ERROR_TRACE("LCD ERR: Initialization Failed!!\n");
+
+     return ret;
 }
 
 //------------------------------------------------------------------------------
@@ -274,8 +274,8 @@ This function exits the LCD instance.
 void lcdl_exit(void)
 {
     lcdl_clear();
-    lcd_send_command(deviceHandle_l, LCD_COMMAND_DISPLAY_OFF, NULL);
-    lcd_send_command(deviceHandle_l, LCD_COMMAND_BLINKING_CURSOR_OFF, NULL);
+    sendLcdCommand(deviceHandle_l, kLcdCmdDisplayOff, NULL);
+    sendLcdCommand(deviceHandle_l, kLcdCmdBlinkingCursorOff, NULL);
     alt_i2c_disable(deviceHandle_l);
     alt_i2c_uninit(deviceHandle_l);
 }
@@ -290,7 +290,7 @@ This function clears all lines of the display.
 void lcdl_clear(void)
 {
     // Clear screen
-    if (lcd_send_command(deviceHandle_l, LCD_COMMAND_CLEAR_SCREEN, NULL) != ALT_E_SUCCESS)
+    if (sendLcdCommand(deviceHandle_l, kLcdCmdClearScreen, NULL) != ALT_E_SUCCESS)
     {
         DEBUG_LVL_ERROR_TRACE("LCD ERR: Failed to clear screen\n");
     }
@@ -314,7 +314,7 @@ int lcdl_changeToLine(unsigned int line_p)
         param = LCD_POS_1ST_LINE;
     else
         param = LCD_POS_2ND_LINE;
-    if (lcd_send_command(deviceHandle_l, LCD_COMMAND_SET_CURSOR, &param) != ALT_E_SUCCESS)
+    if (sendLcdCommand(deviceHandle_l, kLcdCmdSetCursor, &param) != ALT_E_SUCCESS)
         return -1;
     else
         return 0;
@@ -338,16 +338,18 @@ void lcdl_printText(const char* sText_p)
     for (int i = 0; i < LCDL_COLUMN; i++)
     {
         if (i < txtLen)
-            halRet = alt_i2c_master_transmit(deviceHandle_l, &sText_p[i], 1, ALT_E_FALSE, ALT_E_TRUE);
+            halRet = alt_i2c_master_transmit(deviceHandle_l, &sText_p[i],
+                                             1, ALT_E_FALSE, ALT_E_TRUE);
         else
-            halRet = alt_i2c_master_transmit(deviceHandle_l, &padTxt, 1, ALT_E_FALSE, ALT_E_TRUE);
+            halRet = alt_i2c_master_transmit(deviceHandle_l, &padTxt,
+                                             1, ALT_E_FALSE, ALT_E_TRUE);
 
         if (halRet != ALT_E_SUCCESS)
         {
             break;
         }
 
-        delay_us(LCD_PRINT_DELAY_US);
+        usDelay(LCD_PRINT_DELAY_US);
     }
 }
 
@@ -370,22 +372,25 @@ The function sends a I2C command to the LCD module
  \return    returns a ALT_STATUS_CODE error code
 */
 //------------------------------------------------------------------------------
-static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t* deviceHdl_p, LCD_COMMAND_T command_p, uint8_t* pArg_p)
+static inline ALT_STATUS_CODE sendLcdCommand(ALT_I2C_DEV_t* deviceHdl_p,
+                                      tLcdCmd command_p,
+                                      uint8_t* pArg_p)
 {
     ALT_STATUS_CODE         halRet = ALT_E_SUCCESS;
-    LCD_COMMAND_DESC_T      command_description = lcdCommands_l[(int)command_p];
+    tLcdCmdDesc             lcdCommandDesc = lcdCommands_l[(int)command_p];
     uint8_t                 data[10];
-    uint8_t                 data_size = 0;
+    uint8_t                 dataLen = 0;
 
-    data[data_size++] = LCD_ESCAPE_CHAR;
-    data[data_size++] = command_description.command;
-    for (int i = 0; i < command_description.padding; i++)
+    data[dataLen++] = LCD_ESCAPE_CHAR;
+    data[dataLen++] = lcdCommandDesc.command;
+    for (int i = 0; i < lcdCommandDesc.padding; i++)
     {
-        data[data_size++] = pArg_p[i];
+        data[dataLen++] = pArg_p[i];
     }
 
-    halRet = alt_i2c_master_transmit(deviceHdl_p, data, data_size, ALT_E_FALSE, ALT_E_TRUE);
-    delay_us(command_description.executionDuration);
+    halRet = alt_i2c_master_transmit(deviceHdl_p, data, dataLen,
+                                     ALT_E_FALSE, ALT_E_TRUE);
+    usDelay(lcdCommandDesc.executionDuration);
 
     return halRet;
 }
@@ -397,7 +402,7 @@ static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t* deviceHdl_p, LCD_COMMAND_
 \param usDelay_p        Delay in microseconds
 */
 //------------------------------------------------------------------------------
-void delay_us(uint32_t usDelay_p)
+static inline void usDelay(uint32_t usDelay_p)
 {
     uint64_t        startTime = alt_globaltmr_get64();
     uint32_t        timerPrescaler = alt_globaltmr_prescaler_get() + 1;

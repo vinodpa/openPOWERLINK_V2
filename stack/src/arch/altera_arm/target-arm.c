@@ -110,9 +110,9 @@ static int              initializeFpga(void);
 static int              initializeTimer(void);
 static int              cleanupTimer(void);
 
-static inline uint64_t  getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor);
-static inline uint64_t  getTimerCurrentScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor);
-static inline uint64_t  getTimerTicksFromScaled(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor, uint32_t scaledTimeDuration_p);
+static inline uint64_t  getTimerMaxScaledCount(ALT_GPT_TIMER_t timerId_p, uint32_t scalingFactor_p);
+static inline uint64_t  getTimerCurrentScaledCount(ALT_GPT_TIMER_t timerId_p, uint32_t scalingFactor_p);
+static inline uint64_t  getTimerTicksFromScaled(ALT_GPT_TIMER_t timerId_p, uint32_t scalingFactor_p, uint32_t scaledTimeDuration_p);
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
 //============================================================================//
@@ -725,16 +725,16 @@ static int cleanupTimer(void)
 The function converts the time in standard unit into ticks for the
 given timer.
 
-\param  tmr_id                  The ALT_GPT_TIMER_t enum Id of the timer used
-\param  scalingFactor           Ratio of provided time duration scale to seconds
+\param  timerId_p               The ALT_GPT_TIMER_t enum Id of the timer used
+\param  scalingFactor_p         Ratio of provided time duration scale to seconds
 \param  scaledTimeDuration_p    Time duration in standard unit to be converted
 
 \return The function returns a unsigned 64 bit value.
 \retval The converted tick count for the given timer.
 */
 //------------------------------------------------------------------------------
-static inline uint64_t getTimerTicksFromScaled(ALT_GPT_TIMER_t tmr_id,
-                                               uint32_t scalingFactor,
+static inline uint64_t getTimerTicksFromScaled(ALT_GPT_TIMER_t timerId_p,
+                                               uint32_t scalingFactor_p,
                                                uint32_t scaledTimeDuration_p)
 {
     uint64_t        ticks = 0;                      // value to return
@@ -742,10 +742,10 @@ static inline uint64_t getTimerTicksFromScaled(ALT_GPT_TIMER_t tmr_id,
     uint32_t        preScaler = 0;
     uint32_t        freq = 1;
 
-    preScaler = alt_gpt_prescaler_get(tmr_id);
+    preScaler = alt_gpt_prescaler_get(timerId_p);
     if (preScaler <= UINT8_MAX)
     {
-        if (tmr_id == ALT_GPT_CPU_GLOBAL_TMR)       // Global Timer
+        if (timerId_p == ALT_GPT_CPU_GLOBAL_TMR)       // Global Timer
         {
             ticks = 1;
             clkSrc = ALT_CLK_MPU_PERIPH;
@@ -762,7 +762,7 @@ static inline uint64_t getTimerTicksFromScaled(ALT_GPT_TIMER_t tmr_id,
             ticks *= freq;
 
             // total clock ticks
-            ticks *= (uint64_t) (scaledTimeDuration_p / scalingFactor);
+            ticks *= (uint64_t) (scaledTimeDuration_p / scalingFactor_p);
 
             // convert into timer ticks
             ticks /= (preScaler + 1);
@@ -779,14 +779,15 @@ Exit:
 
 The function returns the timestamp of the provided timer in standard time units
 
-\param  tmr_id                  The ALT_GPT_TIMER_t enum Id of the timer used
-\param  scalingFactor           Ratio of provided time duration scale to seconds
+\param  timerId_p               The ALT_GPT_TIMER_t enum Id of the timer used
+\param  scalingFactor_p         Ratio of provided time duration scale to seconds
 
 \return The function returns a unsigned 64 bit value.
 \retval Timestamp from the given timer in standard time unit provided
 */
 //------------------------------------------------------------------------------
-static inline uint64_t getTimerCurrentScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor)
+static inline uint64_t getTimerCurrentScaledCount(ALT_GPT_TIMER_t timerId_p,
+                                                  uint32_t scalingFactor_p)
 {
     uint64_t        timeStamp_l = 0;                // r2 & r3
     uint64_t        timeStamp_h = 0;
@@ -796,10 +797,10 @@ static inline uint64_t getTimerCurrentScaledCount(ALT_GPT_TIMER_t tmr_id, uint32
     uint32_t        preScaler = 0;
     uint32_t        freq = 1;
 
-    preScaler = alt_gpt_prescaler_get(tmr_id);
+    preScaler = alt_gpt_prescaler_get(timerId_p);
     if (preScaler <= UINT8_MAX)
     {
-        if (tmr_id == ALT_GPT_CPU_GLOBAL_TMR)       // Global Timer
+        if (timerId_p == ALT_GPT_CPU_GLOBAL_TMR)       // Global Timer
         {
             alt_globaltmr_get((uint32_t*)&timeStamp_h, (uint32_t*)&timeStamp_l);
             clkSrc = ALT_CLK_MPU_PERIPH;
@@ -814,9 +815,10 @@ static inline uint64_t getTimerCurrentScaledCount(ALT_GPT_TIMER_t tmr_id, uint32
         {
             timeStamp_l *= (preScaler + 1);
             timeStamp_h *= (preScaler + 1);
-            timeStamp_l *= scalingFactor;
-            timeStamp_h *= scalingFactor;
-            timeStamp = (uint64_t) ((((timeStamp_h << 32) & ~UINT32_MAX) | timeStamp_l) / freq);
+            timeStamp_l *= scalingFactor_p;
+            timeStamp_h *= scalingFactor_p;
+            timeStamp = (uint64_t) ((((timeStamp_h << 32) & ~UINT32_MAX)
+                                     | timeStamp_l) / freq);
             scaledTime = (timeStamp > UINT64_MAX) ? UINT64_MAX : (uint64_t) timeStamp;
         }
     }
@@ -832,14 +834,15 @@ Exit:
 The function returns the maximum timestamp of the provided timer
 in standard time units
 
-\param  tmr_id                  The ALT_GPT_TIMER_t enum Id of the timer used
-\param  scalingFactor           Ratio of provided time duration scale to seconds
+\param  timerId_p                The ALT_GPT_TIMER_t enum Id of the timer used
+\param  scalingFactor_p          Ratio of provided time duration scale to seconds
 
 \return The function returns a unsigned 64 bit value.
 \retval Maximum timestamp from the given timer in standard time unit provided
 */
 //------------------------------------------------------------------------------
-static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor)
+static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t timerId_p,
+                                              uint32_t scalingFactor_p)
 {
     uint64_t        maxScaledTime = 0;
     uint32_t        freq = 1;
@@ -849,9 +852,9 @@ static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t s
     uint32_t        preScaler = 0;
     ALT_CLK_t       clkSrc;
 
-    preScaler = alt_gpt_prescaler_get(tmr_id);
+    preScaler = alt_gpt_prescaler_get(timerId_p);
 
-    if (tmr_id == ALT_GPT_CPU_GLOBAL_TMR)
+    if (timerId_p == ALT_GPT_CPU_GLOBAL_TMR)
     {
         clkSrc = ALT_CLK_MPU_PERIPH;
         maxTimeStamp_l = (uint64_t) UINT32_MAX;
@@ -866,9 +869,10 @@ static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t s
     {
         maxTimeStamp_l *= (preScaler + 1);
         maxTimeStamp_h *= (preScaler + 1);
-        maxTimeStamp_l *= scalingFactor;                    //scale the output
-        maxTimeStamp_h *= scalingFactor;                    //scale the output
-        maxTimeStamp = (uint64_t) ((((maxTimeStamp_h << 32) & ~UINT32_MAX) | maxTimeStamp_l) / freq);
+        maxTimeStamp_l *= scalingFactor_p;                    //scale the output
+        maxTimeStamp_h *= scalingFactor_p;                    //scale the output
+        maxTimeStamp = (uint64_t) ((((maxTimeStamp_h << 32) & ~UINT32_MAX)
+                                   | maxTimeStamp_l) / freq);
 
         maxScaledTime = (maxTimeStamp > UINT64_MAX) ? UINT64_MAX : (uint64_t) maxTimeStamp;
     }

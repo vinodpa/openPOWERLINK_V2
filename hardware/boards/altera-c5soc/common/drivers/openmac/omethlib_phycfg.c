@@ -2,10 +2,10 @@
 ********************************************************************************
 \file   omethlib_phycfg_ink.c
 
-\brief  openMAC phy configuration for INK DE2-115 evaluation board
+\brief  openMAC phy configuration for Altera Cyclone-V development board(D)
 
-This file contains phy configuration callback for the TERASIC INK DE2-115
-evaluation board.
+This file contains phy configuration callback for the
+Altera Cyclone-V development board(D)
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------

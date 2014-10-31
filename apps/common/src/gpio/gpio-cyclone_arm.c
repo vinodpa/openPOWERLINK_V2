@@ -1,11 +1,11 @@
 /**
 ********************************************************************************
-\file   gpio-arm.c
+\file   gpio-cyclone_arm.c
 
-\brief  GPIOs for Xilinx Zynq ARM
+\brief  GPIOs for Altera Cyclone-V ARM
 
-The file implements the GPIOs on Xilinx Zynq ARM core used by openPOWERLINK demo
-applications.
+The file implements the GPIOs on Altera Cyclone-V ARM core used by
+openPOWERLINK demo applications.
 
 \ingroup module_app_common
 *******************************************************************************/
@@ -147,7 +147,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // local vars
 //------------------------------------------------------------------------------
 
-ALT_GPIO_CONFIG_RECORD_t    pb_gpio_init[] =
+ALT_GPIO_CONFIG_RECORD_t    cfgHpsGPI[] =
 {
     { ALT_HLGPI_4, ALT_GPIO_PIN_INPUT, 0, 0, 0, 0 },                            // HPS_DIPSW_0
     { ALT_HLGPI_5, ALT_GPIO_PIN_INPUT, 0, 0, 0, 0 },                            // HPS_DIPSW_1
@@ -159,15 +159,13 @@ ALT_GPIO_CONFIG_RECORD_t    pb_gpio_init[] =
     { ALT_HLGPI_11, ALT_GPIO_PIN_INPUT, 0, 0, 0, 0 } // HPS_PB_3
 };
 
-ALT_GPIO_CONFIG_RECORD_t    led_gpio_init[] =
+ALT_GPIO_CONFIG_RECORD_t    cfgHpsGPO[] =
 {
     { ALT_GPIO_1BIT_44, ALT_GPIO_PIN_OUTPUT, 0, 0, 0, ALT_GPIO_PIN_DATAZERO },  // HPS_LED_0
     { ALT_GPIO_1BIT_43, ALT_GPIO_PIN_OUTPUT, 0, 0, 0, ALT_GPIO_PIN_DATAZERO },  // HPS_LED_1
     { ALT_GPIO_1BIT_42, ALT_GPIO_PIN_OUTPUT, 0, 0, 0, ALT_GPIO_PIN_DATAZERO },  // HPS_LED_2
-    { ALT_GPIO_1BIT_41, ALT_GPIO_PIN_OUTPUT, 0, 0, 0, ALT_GPIO_PIN_DATAZERO }  // HPS_LED_3
+    { ALT_GPIO_1BIT_41, ALT_GPIO_PIN_OUTPUT, 0, 0, 0, ALT_GPIO_PIN_DATAZERO }   // HPS_LED_3
 };
-
-uint32_t                    push_button_stat = 0;
 
 //------------------------------------------------------------------------------
 // local function prototypes
@@ -191,37 +189,38 @@ The function initializes the GPIO module before being used.
 int gpio_init(void)
 {
     ALT_STATUS_CODE    halRet = ALT_E_SUCCESS;
+    int                 ret = 0;
 
     /* Initialize HPS GPIO */
 
     // Initialize GPIO module
-    if (halRet == ALT_E_SUCCESS)
+    if (alt_gpio_init() != ALT_E_SUCCESS)
     {
-        halRet = alt_gpio_init();
+        ret = -1;
+    }
+    else if (alt_gpio_group_config(cfgHpsGPO, ARRAY_COUNT(cfgHpsGPO)) != ALT_E_SUCCESS) // Setup GPIO LED
+    {
+        ret = -1;
+    }
+    else if (alt_gpio_port_data_write(ALT_GPIO_PORTB, HPS_LED_ALL_BIT_MASK,
+                                      HPS_LED_ALL_TURN_OFF) != ALT_E_SUCCESS) // clear the Leds
+    {
+        ret = -1;
+    }
+    else if (alt_gpio_group_config(cfgHpsGPI, ARRAY_COUNT(cfgHpsGPI)) != ALT_E_SUCCESS) // Setup GPIO PUSHBUTTON
+    {
+        ret = -1;
+    }
+    else if (alt_gpio_port_int_disable(ALT_GPIO_PORTC, HPS_PB_INT_ALL_BIT_MASK)
+             != ALT_E_SUCCESS)   // Enable GPIO interrupts
+    {
+        ret = -1;
     }
 
-    // Setup GPIO LED
-    if (halRet == ALT_E_SUCCESS)
+    if (ret != 0)
     {
-        halRet = alt_gpio_group_config(led_gpio_init, ARRAY_COUNT(led_gpio_init));
-    }
-
-    // clear the Leds
-    if (halRet == ALT_E_SUCCESS)
-    {
-        halRet = alt_gpio_port_data_write(ALT_GPIO_PORTB, HPS_LED_ALL_BIT_MASK, HPS_LED_ALL_TURN_OFF);
-    }
-
-    // Setup GPIO PUSHBUTTON
-    if (halRet == ALT_E_SUCCESS)
-    {
-        halRet = alt_gpio_group_config(pb_gpio_init, ARRAY_COUNT(pb_gpio_init));
-    }
-
-    // Enable GPIO interrupts
-    if (halRet == ALT_E_SUCCESS)
-    {
-        halRet = alt_gpio_port_int_disable(ALT_GPIO_PORTC, HPS_PB_INT_ALL_BIT_MASK);
+        DEBUG_LVL_ERROR_TRACE("GPIO ERR: Initialization Failed!!\n");
+        goto Exit;
     }
 
     /* Initialize FPGA GPIO */
@@ -239,7 +238,8 @@ int gpio_init(void)
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(DIPSW_PIO_BASE, 0x0);
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(DIPSW_PIO_BASE, FPGA_DIPSW_ALL_BIT_MASK);
 
-    return 0;
+ Exit:
+    return ret;
 }
 
 //------------------------------------------------------------------------------
