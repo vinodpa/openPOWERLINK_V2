@@ -40,8 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
-#include <oplk/oplk.h>
-#include <oplk/debug.h>
+
 #include <sys/unistd.h>
 #include <alt_timers.h>
 #include <alt_globaltmr.h>
@@ -51,13 +50,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <alt_bridge_manager.h>
 #include <alt_address_space.h>
 #include <alt_mpu_registers.h>
-
-#include <common/target.h>
 #include <alt_clock_manager.h>
-#include <gpio.h>
 
 #include <system.h>
-//#include <xparameters.h>
+
+#include <oplk/oplk.h>
+#include <oplk/debug.h>
+#include <common/target.h>
+#include <gpio.h>
+#include <lcd.h>
 
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
@@ -67,6 +68,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 
+#ifndef SYNC_IRQ
+#define SYNC_IRQ    1
+#endif
 //------------------------------------------------------------------------------
 // module global vars
 //------------------------------------------------------------------------------
@@ -84,118 +88,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 #define SECS_TO_MILLISECS                           1000
 
-#define FPGA_BUS_WIDTH                              32
-#define __IO_CALC_ADDRESS_NATIVE(base, offset) \
-    (base + offset * (FPGA_BUS_WIDTH / 8))
-#define IORD16(base, offset)            alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
-#define IORD32(base, offset)            alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
-#define IOWR16(base, offset, val)       alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
-#define IOWR32(base, offset, val)       alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
-
-/* STATUS register */
-#define ALTERA_AVALON_TIMER_STATUS_REG              0
-#define IOADDR_ALTERA_AVALON_TIMER_STATUS(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_STATUS_REG)
-#define IORD_ALTERA_AVALON_TIMER_STATUS(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_STATUS_REG)
-#define IOWR_ALTERA_AVALON_TIMER_STATUS(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_STATUS_REG, data)
-#define ALTERA_AVALON_TIMER_STATUS_TO_MSK           (0x1)
-#define ALTERA_AVALON_TIMER_STATUS_TO_OFST          (0)
-#define ALTERA_AVALON_TIMER_STATUS_RUN_MSK          (0x2)
-#define ALTERA_AVALON_TIMER_STATUS_RUN_OFST         (1)
-
-/* CONTROL register */
-#define ALTERA_AVALON_TIMER_CONTROL_REG             1
-#define IOADDR_ALTERA_AVALON_TIMER_CONTROL(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_CONTROL_REG)
-#define IORD_ALTERA_AVALON_TIMER_CONTROL(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_CONTROL_REG)
-#define IOWR_ALTERA_AVALON_TIMER_CONTROL(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_CONTROL_REG, data)
-#define ALTERA_AVALON_TIMER_CONTROL_ITO_MSK         (0x1)
-#define ALTERA_AVALON_TIMER_CONTROL_ITO_OFST        (0)
-#define ALTERA_AVALON_TIMER_CONTROL_CONT_MSK        (0x2)
-#define ALTERA_AVALON_TIMER_CONTROL_CONT_OFST       (1)
-#define ALTERA_AVALON_TIMER_CONTROL_START_MSK       (0x4)
-#define ALTERA_AVALON_TIMER_CONTROL_START_OFST      (2)
-#define ALTERA_AVALON_TIMER_CONTROL_STOP_MSK        (0x8)
-#define ALTERA_AVALON_TIMER_CONTROL_STOP_OFST       (3)
-
-/* Period and SnapShot Register for COUNTER_SIZE = 32 */
-/*----------------------------------------------------*/
-/* PERIODL register */
-#define ALTERA_AVALON_TIMER_PERIODL_REG             2
-#define IOADDR_ALTERA_AVALON_TIMER_PERIODL(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODL_REG)
-#define IORD_ALTERA_AVALON_TIMER_PERIODL(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_PERIODL_REG)
-#define IOWR_ALTERA_AVALON_TIMER_PERIODL(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_PERIODL_REG, data)
-#define ALTERA_AVALON_TIMER_PERIODL_MSK             (0xFFFF)
-#define ALTERA_AVALON_TIMER_PERIODL_OFST            (0)
-
-/* PERIODH register */
-#define ALTERA_AVALON_TIMER_PERIODH_REG             3
-#define IOADDR_ALTERA_AVALON_TIMER_PERIODH(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_PERIODH_REG)
-#define IORD_ALTERA_AVALON_TIMER_PERIODH(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_PERIODH_REG)
-#define IOWR_ALTERA_AVALON_TIMER_PERIODH(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_PERIODH_REG, data)
-#define ALTERA_AVALON_TIMER_PERIODH_MSK             (0xFFFF)
-#define ALTERA_AVALON_TIMER_PERIODH_OFST            (0)
-
-/* SNAPL register */
-#define ALTERA_AVALON_TIMER_SNAPL_REG               4
-#define IOADDR_ALTERA_AVALON_TIMER_SNAPL(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPL_REG)
-#define IORD_ALTERA_AVALON_TIMER_SNAPL(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_SNAPL_REG)
-#define IOWR_ALTERA_AVALON_TIMER_SNAPL(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_SNAPL_REG, data)
-#define ALTERA_AVALON_TIMER_SNAPL_MSK               (0xFFFF)
-#define ALTERA_AVALON_TIMER_SNAPL_OFST              (0)
-
-/* SNAPH register */
-#define ALTERA_AVALON_TIMER_SNAPH_REG               5
-#define IOADDR_ALTERA_AVALON_TIMER_SNAPH(base) \
-    __IO_CALC_ADDRESS_NATIVE(base, ALTERA_AVALON_TIMER_SNAPH_REG)
-#define IORD_ALTERA_AVALON_TIMER_SNAPH(base) \
-    IORD16(base, ALTERA_AVALON_TIMER_SNAPH_REG)
-#define IOWR_ALTERA_AVALON_TIMER_SNAPH(base, data) \
-    IOWR16(base, ALTERA_AVALON_TIMER_SNAPH_REG, data)
-#define ALTERA_AVALON_TIMER_SNAPH_MSK               (0xFFFF)
-#define ALTERA_AVALON_TIMER_SNAPH_OFST              (0)
-
-#define IOADDR_ALTERA_AVALON_PIO_DATA(base)                 __IO_CALC_ADDRESS_NATIVE(base, 0)
-#define IORD_ALTERA_AVALON_PIO_DATA(base)                   IORD32(base, 0)
-#define IOWR_ALTERA_AVALON_PIO_DATA(base, data)             IOWR32(base, 0, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_DIRECTION(base)            __IO_CALC_ADDRESS_NATIVE(base, 1)
-#define IORD_ALTERA_AVALON_PIO_DIRECTION(base)              IORD32(base, 1)
-#define IOWR_ALTERA_AVALON_PIO_DIRECTION(base, data)        IOWR32(base, 1, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_IRQ_MASK(base)             __IO_CALC_ADDRESS_NATIVE(base, 2)
-#define IORD_ALTERA_AVALON_PIO_IRQ_MASK(base)               IORD32(base, 2)
-#define IOWR_ALTERA_AVALON_PIO_IRQ_MASK(base, data)         IOWR32(base, 2, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_EDGE_CAP(base)             __IO_CALC_ADDRESS_NATIVE(base, 3)
-#define IORD_ALTERA_AVALON_PIO_EDGE_CAP(base)               IORD32(base, 3)
-#define IOWR_ALTERA_AVALON_PIO_EDGE_CAP(base, data)         IOWR32(base, 3, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_SET_BIT(base)              __IO_CALC_ADDRESS_NATIVE(base, 4)
-#define IORD_ALTERA_AVALON_PIO_SET_BITS(base)               IORD32(base, 4)
-#define IOWR_ALTERA_AVALON_PIO_SET_BITS(base, data)         IOWR32(base, 4, data)
-
-#define IOADDR_ALTERA_AVALON_PIO_CLEAR_BITS(base)           __IO_CALC_ADDRESS_NATIVE(base, 5)
-#define IORD_ALTERA_AVALON_PIO_CLEAR_BITS(base)             IORD32(base, 5)
-#define IOWR_ALTERA_AVALON_PIO_CLEAR_BITS(base, data)       IOWR32(base, 5, data)
-
-/* Defintions for direction-register operation with bi-directional PIOs */
-#define ALTERA_AVALON_PIO_DIRECTION_INPUT       0
-#define ALTERA_AVALON_PIO_DIRECTION_OUTPUT      1
-
 //------------------------------------------------------------------------------
 // local types
 //------------------------------------------------------------------------------
@@ -207,16 +99,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // local vars
 //------------------------------------------------------------------------------
 
-volatile int            a = 0;
 static unsigned char    fTargetInitStatus = FALSE;
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
 
-static int              enableInterruptMaster(void);
-static int              disableInterruptMaster(void);
+static inline int       enableInterruptMaster(void);
+static inline int       disableInterruptMaster(void);
 static int              initializeFpga(void);
 static int              initializeTimer(void);
+static int              cleanupTimer(void);
 
 static inline uint64_t  getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor);
 static inline uint64_t  getTimerCurrentScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor);
@@ -238,19 +130,6 @@ This function returns the current system tick determined by the system timer.
 //------------------------------------------------------------------------------
 UINT32 target_getTickCount(void)
 {
-    UINT32      ticks_l = 0;
-    UINT32      ticks_h = 0;
-
-    /* Uses global timer functions */
-    /* Select the lower 32 bit of the timer value */
-    //ticks = alt_gpt_counter_get(ALT_GPT_CPU_GLOBAL_TMR);
-    //ticks = alt_gpt_time_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR);
-    //    if (alt_globaltmr_get(&ticks_h, &ticks_l) != ALT_E_SUCCESS)
-    //    {
-    //        DEBUG_LVL_ERROR_TRACE("Timer is returning junk!\n");
-    //    }
-    //
-    //    return ticks_l;
     return (uint32_t) getTimerCurrentScaledCount(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS);
 }
 
@@ -274,7 +153,6 @@ void target_enableGlobalInterrupt(UINT8 fEnable_p)
     {
         if (--lockCount == 0)
         {
-            // printf("e");
             enableInterruptMaster();
         }
     }
@@ -282,7 +160,6 @@ void target_enableGlobalInterrupt(UINT8 fEnable_p)
     {                       // disable interrupts
         if (lockCount == 0)
         {
-            //printf("%d\n", a);
             disableInterruptMaster();
         }
 
@@ -302,20 +179,6 @@ openPOWERLINK stack.
 \ingroup module_target
 */
 //------------------------------------------------------------------------------
-
-void cs3_isr_1(uint32_t icciar_p, void* context_p)
-{
-    alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ1);
-    alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ3);
-    alt_globaltmr_int_clear_pending();
-    IOWR_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE, 0x3);
-    printf("ISR\n");
-    *(volatile int*)context_p = 1;
-
-    a = 2;
-    return;
-}
-
 tOplkError target_init(void)
 {
     tOplkError          oplkRet = kErrorOk;
@@ -342,62 +205,42 @@ tOplkError target_init(void)
     halRet = alt_int_global_init();
     if (halRet != ALT_E_SUCCESS)
     {
-        printf("global IRQ controller initialization Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("global IRQ controller initialization Failed!!\n");
         oplkRet = kErrorGeneralError;
         goto Exit;
     }
 
-    // initialize the cpu interrupt interface
+    // Initialize the cpu interrupt interface
     halRet = alt_int_cpu_init();
     if (halRet != ALT_E_SUCCESS)
     {
-        printf("CPU IRQ interface initialization Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("CPU IRQ interface initialization Failed!!\n");
         oplkRet = kErrorGeneralError;
         goto Exit;
     }
 
     if (initializeTimer() != 0)
     {
-        printf("general purpose time module intialization Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("general purpose timer module initialization Failed!!\n");
         oplkRet = kErrorGeneralError;
         goto Exit;
     }
 
-    target_msleep(5000);
-
-    if (0) //(initializeFpga() != 0)
-    {
-        oplkRet = kErrorGeneralError;
-        printf("FPGA initialization Failed!!\n");
-    }
-
+    // Initialize the HPS to FPGA bridges alone and not initializeFpga()
     if (alt_bridge_init(ALT_BRIDGE_LWH2F, NULL, NULL) != ALT_E_SUCCESS)
     {
         oplkRet = kErrorGeneralError;
-        printf("LWH2F initialization Failed!!: 0x%X\n", alt_bridge_init(ALT_BRIDGE_LWH2F, NULL, NULL));
+        DEBUG_LVL_ERROR_TRACE("LWH2F initialization Failed!!\n");
     }
 
     if (alt_bridge_init(ALT_BRIDGE_H2F, NULL, NULL) != ALT_E_SUCCESS)
     {
         oplkRet = kErrorGeneralError;
-        printf("H2F initialization Failed!!: 0x%X\n", alt_bridge_init(ALT_BRIDGE_H2F, NULL, NULL));
+        DEBUG_LVL_ERROR_TRACE("H2F initialization Failed!!\n");
     }
 
-    //    if (alt_addr_space_remap(ALT_ADDR_SPACE_MPU_ZERO_AT_BOOTROM,
-    //                             ALT_ADDR_SPACE_NONMPU_ZERO_AT_SDRAM,
-    //                             ALT_ADDR_SPACE_H2F_ACCESSIBLE,
-    //                             ALT_ADDR_SPACE_LWH2F_ACCESSIBLE)
-    //        == ALT_E_SUCCESS)
-    //    {
-    //        oplkRet = kErrorGeneralError;
-    //        printf("Address remapping Failed!!\n");
-    //    }
-    // test code
 
-    //target_enableSyncIrq(FALSE);
-    //target_regSyncIrqHdl(cs3_isr_1, &a);
-    //target_enableSyncIrq(TRUE);
-    //enableInterruptMaster();
+    lcd_init();
     gpio_init();
 
     fTargetInitStatus = TRUE;
@@ -419,7 +262,20 @@ The function cleans-up target specific stuff.
 //------------------------------------------------------------------------------
 tOplkError target_cleanup(void)
 {
-    //FIXME
+    if (!fTargetInitStatus)
+    {
+        return kErrorIllegalInstance;
+    }
+
+    lcd_exit();
+    gpio_shutdown();
+    alt_bridge_uninit(ALT_BRIDGE_H2F, NULL, NULL);
+    alt_bridge_uninit(ALT_BRIDGE_LWH2F, NULL, NULL);
+    cleanupTimer();
+    disableInterruptMaster();
+    alt_int_cpu_uninit();
+    alt_int_global_uninit();
+
     fTargetInitStatus = FALSE;
     return kErrorOk;
 }
@@ -442,42 +298,34 @@ void target_msleep(UINT32 milliSeconds_p)
     uint64_t                waitTickCount = getTimerTicksFromScaled(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS, milliSeconds_p);
     volatile uint32_t*      glbTimerRegCntBase_l = (volatile uint32_t*) (GLOBALTMR_BASE + GLOBALTMR_CNTR_LO_REG_OFFSET);
     volatile uint32_t*      glbTimerRegCntBase_h = (volatile uint32_t*) (GLOBALTMR_BASE + GLOBALTMR_CNTR_HI_REG_OFFSET);
-    uint64_t                curTickStamp = 0;             //((((*glbTimerRegCntBase_h) << 32) & ~UINT32_MAX) | (*glbTimerRegCntBase_l));
+    uint64_t                curTickStamp = 0;
     uint32_t                temp = 0;
     uint32_t                hi = 0;
     uint32_t                lo = 0;
     volatile uint32_t       waitCount = 0;
     uint32_t                waitCountLimit = (uint32_t) (5 + (waitTickCount >> 12));
-    uint32_t                entryCount = 0;
     uint8_t                 fExit = FALSE;
     uint8_t                 readCntLimit = 3;
 
-    //printf("CurTime: %llu, startTime: %llu, waitCountLimit: %lu\n", curTickStamp, startTickStamp, waitCountLimit);
     curTickStamp = alt_globaltmr_get64();
-    //printf("CurTime: %llu, startTime: %llu, waitTickCount: %llu\n", curTickStamp, startTickStamp, waitTickCount);
-    //printf("s");
+
     while (fExit != TRUE)
     {
         fExit = FALSE;
-        //if ((waitCount % waitCountLimit) == 0)
+
         if (waitCount == waitCountLimit)
         {
-            //printf("2\n");
             readCntLimit = 3;
+
             do
             {
-                //printf("3\n");
                 temp = (*glbTimerRegCntBase_h);
                 lo =  (*glbTimerRegCntBase_l);
                 hi = (*glbTimerRegCntBase_h);
-                //printf("3.5\n");
             } while ((temp != hi) && (--readCntLimit));
-
-            entryCount++;
 
             if (readCntLimit != 0)
             {
-                //printf("4\n");
                 curTickStamp =  (uint64_t) hi;
                 curTickStamp =  (((curTickStamp << 32) & ~((uint64_t) UINT32_MAX)) | lo);
                 if ((((curTickStamp >= startTickStamp) && ((curTickStamp - startTickStamp) < waitTickCount)) ||
@@ -488,8 +336,6 @@ void target_msleep(UINT32 milliSeconds_p)
                 }
                 else
                 {
-                    //printf("\n");
-                    //printf("5:: hi: %lu, lo: %lu\n", hi, lo);
                     fExit = TRUE;
                 }
 
@@ -497,116 +343,13 @@ void target_msleep(UINT32 milliSeconds_p)
             }
             else
             {
-                //printf("6\n");
                 waitCount--;
             }
         }
 
-        if (waitCount % 50000 == 0)
-        {
-            //if (waitCount == 100000)
-            //printf(".......................................");
-            //printf("waitCount: %lu\n", waitCount);
-            //printf(".");
-        }
-
         waitCount++;
     }
-
-    //printf("\n");
-    //printf("CurTime: %llu, startTime: %llu, entryCount: %lu\n", curTickStamp, startTickStamp, entryCount);
 }
-
-//void target_msleep(UINT32 milliSeconds_p)
-//{
-//	uint64_t			msStartTime = getTimerCurrentScaledCount(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS); //alt_gpt_curtime_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR);
-//	//uint8_t				fExit = FALSE;
-//	volatile uint64_t			msCurTime = (volatile uint64_t) msStartTime;
-//	uint64_t		    msMaxTime = getTimerMaxScaledCount(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS);
-//	uint32_t			waitCount = 0;
-//	uint32_t			waitCount1 = 0;
-//
-//	printf("CurTime: %llu, startTime: %llu, maxTime: %llu\n", msCurTime, msStartTime, msMaxTime);
-//
-//	while ((((msCurTime >= msStartTime) && ((msCurTime - msStartTime) <= milliSeconds_p))
-//			|| ((msCurTime < msStartTime) && ((msMaxTime - msStartTime)
-//				+ msCurTime) <= milliSeconds_p)))
-//	{
-//		//FILE* fp = tmpfile();
-///*
-//		if (waitCount1++ > 500)
-//		{
-//			waitCount1 = 0;
-//			msCurTime = (volatile uint64_t) getTimerCurrentScaledCount(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS);
-//		}
-//
-//		if (waitCount++ > 500000)
-//		{
-//			waitCount = 0;
-//			printf("50000\n");
-//		}
-///*/
-//		waitCount++;
-//		msCurTime = (volatile uint64_t) getTimerCurrentScaledCount(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS);
-//		//*/
-//
-//		//fclose(fp);
-//	}
-//
-//	printf("waitCount: %lu\n", waitCount);
-//	printf("CurTime: %llu, startTime: %llu, maxTime: %llu\n", msCurTime, msStartTime, msMaxTime);
-//
-////	while (!fExit)
-////	{
-//////		if ((((alt_gpt_curtime_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR) > msStartTime) &&
-//////			 (alt_gpt_curtime_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR)	- msStartTime) <= milliSeconds_p))
-//////			|| ((alt_gpt_curtime_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR) < msStartTime) &&
-//////					(alt_gpt_curtime_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR) +
-//////							alt_gpt_maxtime_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR)
-//////							- msStartTime) <= milliSeconds_p))
-//////		msCurTime = alt_gpt_curtime_millisecs_get(ALT_GPT_CPU_GLOBAL_TMR);
-//////
-//////		if (((msCurTime <= msStartTime) && ((msStartTime - msCurTime) <= milliSeconds_p))
-//////			|| ((msCurTime > msStartTime) && ((msMaxTime - msCurTime)
-//////				+ msStartTime) <= milliSeconds_p))
-//////		{
-//////			printf("CurTime: %u, startTime: %u, maxTime: %u\n", msCurTime, msStartTime, msMaxTime);
-//////			//printf(".\n");
-////////			for (unsigned long i = 0; i < 50000000; i++)
-////////				__asm("NOP");
-//////			// wait
-//////			waitCount++;
-//////		}
-//////		else
-//////		{
-//////			printf("%u\n", waitCount);
-//////			while (waitCount--)
-//////			fExit = TRUE;
-//////		}
-////
-////
-////		msCurTime = getTimerCurrentScaledCount(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS);
-////
-////		//printf("CurTime: %llu, startTime: %llu, maxTime: %llu\n", msCurTime, msStartTime, msMaxTime);
-////		if (((msCurTime >= msStartTime) && ((msCurTime - msStartTime) <= milliSeconds_p))
-////			|| ((msCurTime < msStartTime) && ((msMaxTime - msStartTime)
-////				+ msCurTime) <= milliSeconds_p))
-////		{
-////			//for (uint64_t i =0; i < 0xFFFFFFFF; i++);
-////			fExit = FALSE;
-////			waitCount++;
-////		}
-////		else
-////		{
-////			//printf("CurTime: %llu, startTime: %llu, maxTime: %llu\n", msCurTime, msStartTime, msMaxTime);
-////			//printf("waitCount: %u\n", waitCount);
-////			//while (waitCount--);
-////			waitCount = 0;
-////			fExit = TRUE;
-////		}
-////
-////	}
-//}
 
 //------------------------------------------------------------------------------
 /**
@@ -628,27 +371,19 @@ used by the application for PDO and event synchronization.
 
 void target_regSyncIrqHdl(void* callback_p, void* pArg_p)
 {
-    ALT_INT_INTERRUPT_t    irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + 1;
+    ALT_INT_INTERRUPT_t    irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + SYNC_IRQ;
 
     if (callback_p == NULL)
     {
-        printf("UnReg Hostif ISR\n");
         alt_int_isr_unregister(irqId);
     }
     else
     {
-        printf("Reg Hostif ISR\n");
         if ( alt_int_isr_register(irqId, callback_p, pArg_p) != ALT_E_SUCCESS)
         {
-            printf("isr registration failed\n");
-        }
-        else
-        {
-            printf("isr registration successful\n");
+            DEBUG_LVL_ERROR_TRACE("Sync ISR registration failed\n");
         }
     }
-
-    alt_int_isr_register(ALT_INT_INTERRUPT_PPI_TIMER_GLOBAL, callback_p, NULL);
 }
 
 //------------------------------------------------------------------------------
@@ -664,70 +399,39 @@ The function is used to enable or disable the sync interrupt
 //------------------------------------------------------------------------------
 void target_enableSyncIrq(BOOL fEnable_p)
 {
-    ALT_STATUS_CODE         ret;
-    ALT_INT_INTERRUPT_t     irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + 1;
+    ALT_INT_INTERRUPT_t     irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + SYNC_IRQ;
     int                     cpu_target = 0x1;                                             // cortexA9_0
 
     if (fEnable_p)
     {
-        alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ0);
-        alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ1);
-        alt_int_dist_pending_clear(ALT_INT_INTERRUPT_F2S_FPGA_IRQ3);
-        for (irqId = ALT_INT_INTERRUPT_F2S_FPGA_IRQ1; irqId <= ALT_INT_INTERRUPT_F2S_FPGA_IRQ1; irqId++)
+        alt_int_dist_pending_clear(irqId);
+
+        if (alt_int_dist_target_set(irqId, cpu_target) != ALT_E_SUCCESS)
         {
-            printf("Enable IRQ: %X(%X)\n", fEnable_p, irqId);
-            if (alt_int_dist_target_set(irqId, cpu_target) != ALT_E_SUCCESS)
-            {
-                printf("trigger set failed\n");
-            }
-            //else if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_EDGE) != ALT_E_SUCCESS)
-            else if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_EDGE) != ALT_E_SUCCESS)
-            {
-                printf("trigger set failed\n");
-            }
-            else if (alt_int_dist_enable(irqId) != ALT_E_SUCCESS)
-            {
-                // Set interrupt distributor target
-                printf("distributor set failed\n");
-            }
-            else
-                printf("Irq enabled\n");
+            DEBUG_LVL_ERROR_TRACE("Sync IRQ target cpu set failed\n");
         }
-
-        printf("PIO data status: 0x%X\n", IORD_ALTERA_AVALON_PIO_DATA(BUTTON_PIO_BASE));
-        printf("PIO edge capture status: 0x%X\n", IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE));
-        printf("PIO irq status: 0x%X\n", IORD_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE));
-        IOWR_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE, 0x3);
-        IOWR_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE, 0x3);
-        printf("PIO edge capture status: 0x%X\n", IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE));
-        printf("PIO irq status: 0x%X\n", IORD_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE));
-
-        // Set interrupt trigger type
-        if (alt_int_dist_trigger_set(ALT_INT_INTERRUPT_PPI_TIMER_GLOBAL, ALT_INT_TRIGGER_AUTODETECT) != ALT_E_SUCCESS)
+        //else if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_EDGE) != ALT_E_SUCCESS)
+        else if (alt_int_dist_trigger_set(irqId, ALT_INT_TRIGGER_EDGE) != ALT_E_SUCCESS)
         {
-            printf("trigger set failed\n");
+            DEBUG_LVL_ERROR_TRACE("Sync IRQ trigger set failed\n");
         }
-
-        // Enable interrupt at the distributor level
-        //if (alt_int_dist_enable(ALT_INT_INTERRUPT_PPI_TIMER_GLOBAL) != ALT_E_SUCCESS)
+        else if (alt_int_dist_enable(irqId) != ALT_E_SUCCESS)
         {
-            //printf("distributor set failed\n");
+            // Set interrupt distributor target
+            DEBUG_LVL_ERROR_TRACE("Sync IRQ could not be enabled in the distributor\n");
         }
     }
     else
     {
         if (alt_int_dist_disable(irqId) == ALT_E_SUCCESS)
-            printf("disable irq\n");
+        {
+            // access to any FPGA registers if required
+            return;
+        }
         else
-            printf("nothing to disable irq\n");
-
-        printf("PIO data status: 0x%X\n", IORD_ALTERA_AVALON_PIO_DATA(BUTTON_PIO_BASE));
-        printf("PIO edge capture status: 0x%X\n", IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE));
-        printf("PIO irq status: 0x%X\n", IORD_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE));
-        IOWR_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE, 0x0);
-        IOWR_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE, 0x3);
-        printf("PIO edge capture status: 0x%X\n", IORD_ALTERA_AVALON_PIO_EDGE_CAP(BUTTON_PIO_BASE));
-        printf("PIO irq status: 0x%X\n", IORD_ALTERA_AVALON_PIO_IRQ_MASK(BUTTON_PIO_BASE));
+        {
+            DEBUG_LVL_ERROR_TRACE("Sync IRQ could not be disabled in the distributor\n");
+        }
     }
 }
 
@@ -741,9 +445,15 @@ void target_enableSyncIrq(BOOL fEnable_p)
 /**
 \brief Enable the global interrupt master
 
+The function enables interrupt reception in the global and target processor
+interrupt interfaces
+
+\return The function returns an integer
+\retval 0                   Success
+\retval -1                  Failure
 */
 //------------------------------------------------------------------------------
-static int enableInterruptMaster(void)
+static inline int enableInterruptMaster(void)
 {
     ALT_STATUS_CODE     retStatus = ALT_E_SUCCESS;
     int                 ret = 0;
@@ -753,7 +463,7 @@ static int enableInterruptMaster(void)
     retStatus = alt_int_global_enable();
     if (retStatus != ALT_E_SUCCESS)
     {
-        printf("enabling interrupts failed\n");
+        DEBUG_LVL_ERROR_TRACE("enabling global interrupt receiver failed\n");
         ret = -1;
         goto Exit;
     }
@@ -762,7 +472,7 @@ static int enableInterruptMaster(void)
     retStatus = alt_int_cpu_enable();
     if (retStatus != ALT_E_SUCCESS)
     {
-        printf("enabling interrupts failed\n");
+        DEBUG_LVL_ERROR_TRACE("enabling cpu interrupt receiver failed\n");
         ret = -1;
         goto Exit;
     }
@@ -775,9 +485,15 @@ Exit:
 /**
 \brief Disable the global interrupt master
 
+The function disables interrupt reception in the global and target processor
+interrupt interfaces
+
+\return The function returns an integer
+\retval 0                   Success
+\retval -1                  Failure
 */
 //------------------------------------------------------------------------------
-static int disableInterruptMaster(void)
+static inline int disableInterruptMaster(void)
 {
     ALT_STATUS_CODE     retStatus = ALT_E_SUCCESS;
     int                 ret = 0;
@@ -802,21 +518,33 @@ Exit:
     return ret;
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief Initialize the FPGA from the hard processor system
+
+The function initializes the FPGA, manager interface, data bridges and
+configures the FPGA for operation
+
+\return The function returns an integer
+\retval 0                   Success
+\retval -1                  Failure
+*/
+//------------------------------------------------------------------------------
 static int initializeFpga(void)
 {
     int                 ret = 0;
     ALT_STATUS_CODE     halRet = ALT_E_SUCCESS;
 
-    /* intialize the FPGA control */
+    /* initialize the FPGA control */
     if (alt_fpga_init() != ALT_E_SUCCESS)                       // initialize the FPGA manager
     {
-        printf("FPGA interface initialization Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("FPGA interface initialization Failed!!\n");
         ret = -1;
         goto Exit;
     }
     else if (alt_fpga_state_get() == ALT_FPGA_STATE_POWER_OFF)  // check the FPGA state
     {
-        printf("FPGA is powered Off!!\n");
+        DEBUG_LVL_ERROR_TRACE("FPGA is powered Off!!\n");
         ret = -1;
         goto Exit;
     }
@@ -827,7 +555,7 @@ static int initializeFpga(void)
 
     if (halRet != ALT_E_SUCCESS)
     {
-        printf("FPGA interface control could not be acquired\n");
+        DEBUG_LVL_ERROR_TRACE("FPGA interface control could not be acquired\n");
         ret = -1;
         goto Exit;
     }
@@ -837,19 +565,19 @@ static int initializeFpga(void)
     /* Enable the HPS-FPGA bridge */
     if (alt_bridge_init(ALT_BRIDGE_F2H, NULL, NULL) != ALT_E_SUCCESS)
     {
-        printf("F2H initialization Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("F2H initialization Failed!!\n");
         ret = -1;
         goto Exit;
     }
     else if (alt_bridge_init(ALT_BRIDGE_H2F, NULL, NULL) != ALT_E_SUCCESS)
     {
-        printf("H2F initialization Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("H2F initialization Failed!!\n");
         ret = -1;
         goto Exit;
     }
     else if (alt_bridge_init(ALT_BRIDGE_LWH2F, NULL, NULL) != ALT_E_SUCCESS)
     {
-        printf("LWH2F initialization Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("LWH2F initialization Failed!!\n");
         ret = -1;
         goto Exit;
     }
@@ -860,7 +588,7 @@ static int initializeFpga(void)
                              ALT_ADDR_SPACE_LWH2F_ACCESSIBLE) !=
         ALT_E_SUCCESS)
     {
-        printf("FPGA address space remapping Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("FPGA address space remapping Failed!!\n");
         ret = -1;
         goto Exit;
     }
@@ -869,6 +597,18 @@ Exit:
     return ret;
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief Initialize the timer module
+
+The function initializes the global timer and configures it to be used as
+the user stack generic timer
+
+\return The function returns an integer
+\retval 0                   Success
+\retval -1                  Failure
+*/
+//------------------------------------------------------------------------------
 static int initializeTimer(void)
 {
     int                 ret = 0;
@@ -878,7 +618,7 @@ static int initializeTimer(void)
     halRet =  alt_globaltmr_init();
     if (halRet != ALT_E_SUCCESS)
     {
-        DEBUG_LVL_ERROR_TRACE("general purpose time module intialization Failed!!\n");
+        DEBUG_LVL_ERROR_TRACE("general purpose timer module intialization Failed!!\n");
         ret = -1;
         goto Exit;
     }
@@ -955,7 +695,47 @@ Exit:
     return ret;
 }
 
-static inline uint64_t getTimerTicksFromScaled(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor, uint32_t scaledTimeDuration_p)
+//------------------------------------------------------------------------------
+/**
+\brief Uninitialize the timer module
+
+The function uninitializes the global timer and configures it to be used as
+the user stack generic timer.
+
+\return The function returns an integer
+\retval 0                   Success
+\retval -1                  Failure
+*/
+//------------------------------------------------------------------------------
+static int cleanupTimer(void)
+{
+    int                 ret = 0;
+    ALT_STATUS_CODE     halRet = ALT_E_SUCCESS;
+
+    halRet = alt_globaltmr_stop();
+    halRet = alt_globaltmr_uninit();
+
+    return ret;
+}
+
+//------------------------------------------------------------------------------
+/**
+\brief Convert time units into timer ticks
+
+The function converts the time in standard unit into ticks for the
+given timer.
+
+\param  tmr_id                  The ALT_GPT_TIMER_t enum Id of the timer used
+\param  scalingFactor           Ratio of provided time duration scale to seconds
+\param  scaledTimeDuration_p    Time duration in standard unit to be converted
+
+\return The function returns a unsigned 64 bit value.
+\retval The converted tick count for the given timer.
+*/
+//------------------------------------------------------------------------------
+static inline uint64_t getTimerTicksFromScaled(ALT_GPT_TIMER_t tmr_id,
+                                               uint32_t scalingFactor,
+                                               uint32_t scaledTimeDuration_p)
 {
     uint64_t        ticks = 0;                      // value to return
     ALT_CLK_t       clkSrc = ALT_CLK_UNKNOWN;
@@ -978,14 +758,13 @@ static inline uint64_t getTimerTicksFromScaled(ALT_GPT_TIMER_t tmr_id, uint32_t 
 
         if (alt_clk_freq_get(clkSrc, &freq) == ALT_E_SUCCESS)
         {
-            // convert into clock ticks
+            // clock ticks per second
             ticks *= freq;
 
-            // convert into seconds
+            // total clock ticks
             ticks *= (uint64_t) (scaledTimeDuration_p / scalingFactor);
 
             // convert into timer ticks
-
             ticks /= (preScaler + 1);
         }
     }
@@ -994,6 +773,19 @@ Exit:
     return ticks;
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief Convert timer ticks into time units
+
+The function returns the timestamp of the provided timer in standard time units
+
+\param  tmr_id                  The ALT_GPT_TIMER_t enum Id of the timer used
+\param  scalingFactor           Ratio of provided time duration scale to seconds
+
+\return The function returns a unsigned 64 bit value.
+\retval Timestamp from the given timer in standard time unit provided
+*/
+//------------------------------------------------------------------------------
 static inline uint64_t getTimerCurrentScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor)
 {
     uint64_t        timeStamp_l = 0;                // r2 & r3
@@ -1009,7 +801,6 @@ static inline uint64_t getTimerCurrentScaledCount(ALT_GPT_TIMER_t tmr_id, uint32
     {
         if (tmr_id == ALT_GPT_CPU_GLOBAL_TMR)       // Global Timer
         {
-            //timeStamp = alt_globaltmr_get64();
             alt_globaltmr_get((uint32_t*)&timeStamp_h, (uint32_t*)&timeStamp_l);
             clkSrc = ALT_CLK_MPU_PERIPH;
         }
@@ -1021,33 +812,12 @@ static inline uint64_t getTimerCurrentScaledCount(ALT_GPT_TIMER_t tmr_id, uint32
 
         if (alt_clk_freq_get(clkSrc, &freq) == ALT_E_SUCCESS)
         {
-            //             // remaining count divided by cycles-per-second becomes seconds,
-            //             // milliseconds, microseconds, or nanoseconds remaining
-            //           timeStamp /= freq;
-            //             timeStamp *= (preScaler + 1);
-            //                 // ARM can usually do a 32x64 bit multiply faster than a 64x64 bit multiply
-            //             timeStamp *= scalingFactor;
-            //             scaledTime = (timeStamp > UINT64_MAX) ? UINT64_MAX : (uint64_t) timeStamp;
-
-            // printf("timeStamp_l: %llu, timeStamp_h: %llu\n", timeStamp_l, timeStamp_h);
             timeStamp_l *= (preScaler + 1);
             timeStamp_h *= (preScaler + 1);
-
-            //printf("timeStamp_l: %llu, timeStamp_h: %llu\n", timeStamp_l, timeStamp_h);
             timeStamp_l *= scalingFactor;
             timeStamp_h *= scalingFactor;
-
-            //printf("timeStamp_l: %llu, timeStamp_h: %llu\n", timeStamp_l, timeStamp_h);
-            //timeStamp_l /= freq;
-            //timeStamp_h /= freq;
-
-            //printf("timeStamp_l: %llu, timeStamp_h: %llu\n", timeStamp_l, timeStamp_h);
             timeStamp = (uint64_t) ((((timeStamp_h << 32) & ~UINT32_MAX) | timeStamp_l) / freq);
-            //timeStamp /= freq;
-
-            //printf("timeStamp: %llu\n", timeStamp);
             scaledTime = (timeStamp > UINT64_MAX) ? UINT64_MAX : (uint64_t) timeStamp;
-            //printf("scaledTime: %llu\n", scaledTime);
         }
     }
 
@@ -1055,6 +825,20 @@ Exit:
     return scaledTime;
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief Get maximum timestamp of the timer
+
+The function returns the maximum timestamp of the provided timer
+in standard time units
+
+\param  tmr_id                  The ALT_GPT_TIMER_t enum Id of the timer used
+\param  scalingFactor           Ratio of provided time duration scale to seconds
+
+\return The function returns a unsigned 64 bit value.
+\retval Maximum timestamp from the given timer in standard time unit provided
+*/
+//------------------------------------------------------------------------------
 static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t scalingFactor)
 {
     uint64_t        maxScaledTime = 0;
@@ -1070,7 +854,6 @@ static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t s
     if (tmr_id == ALT_GPT_CPU_GLOBAL_TMR)
     {
         clkSrc = ALT_CLK_MPU_PERIPH;
-        //maxTimeStamp = UINT64_MAX;
         maxTimeStamp_l = (uint64_t) UINT32_MAX;
         maxTimeStamp_h = (uint64_t) UINT32_MAX;
     }
@@ -1081,30 +864,13 @@ static inline uint64_t getTimerMaxScaledCount(ALT_GPT_TIMER_t tmr_id, uint32_t s
 
     if (alt_clk_freq_get(clkSrc, &freq) == ALT_E_SUCCESS)
     {
-        //        maxTimeStamp /= (uint64_t) freq;
-        //        maxTimeStamp *= ((uint64_t) (alt_gpt_prescaler_get(tmr_id) + 1));
-        //        maxTimeStamp *= (uint64_t) scalingFactor;                 //scale the output
-        //        maxScaledTime = (maxTimeStamp > UINT64_MAX) ? UINT64_MAX : (uint64_t) maxTimeStamp;
-
-        //printf("maxTimeStamp_l: %llu, maxTimeStamp_h: %llu\n", maxTimeStamp_l, maxTimeStamp_h);
         maxTimeStamp_l *= (preScaler + 1);
         maxTimeStamp_h *= (preScaler + 1);
-
-        //printf("maxTimeStamp_l: %llu, maxTimeStamp_h: %llu\n", maxTimeStamp_l, maxTimeStamp_h);
         maxTimeStamp_l *= scalingFactor;                    //scale the output
         maxTimeStamp_h *= scalingFactor;                    //scale the output
-
-        //printf("maxTimeStamp_l: %llu, maxTimeStamp_h: %llu\n", maxTimeStamp_l, maxTimeStamp_h);
-        //maxTimeStamp_l /= freq;
-        //maxTimeStamp_h /= freq;
-
-        //printf("maxTimeStamp_l: %llu, maxTimeStamp_h: %llu\n", maxTimeStamp_l, maxTimeStamp_h);
         maxTimeStamp = (uint64_t) ((((maxTimeStamp_h << 32) & ~UINT32_MAX) | maxTimeStamp_l) / freq);
-        //maxTimeStamp_h /= freq;
 
-        //printf("maxTimeStamp: %llu\n", maxTimeStamp);
         maxScaledTime = (maxTimeStamp > UINT64_MAX) ? UINT64_MAX : (uint64_t) maxTimeStamp;
-        //printf("maxScaledTime: %llu\n", maxScaledTime);
     }
 
 Exit:

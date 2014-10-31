@@ -66,8 +66,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // global function prototypes
 //------------------------------------------------------------------------------
 
-static ALT_STATUS_CODE delay_us(uint32_t us);
-
 //============================================================================//
 //            P R I V A T E   D E F I N I T I O N S                           //
 //============================================================================//
@@ -428,7 +426,6 @@ UINT8 gpio_getNodeid(void)
 
     nodeId = (UINT8) ((FPGA_DIPSW_NET_VAL(fpgaSwStatus) << DIPSW_PIO_DATA_WIDTH) | HPS_DIPSW_NET_VAL(hpsSwStatus));
 
-    printf("nodeId: 0x%X, fpga: 0x%X, HPS: 0x%X\n", nodeId, fpgaSwStatus, hpsSwStatus);
     return nodeId;
 }
 
@@ -540,29 +537,5 @@ void gpio_setAppOutputs(UINT32 val_p)
 //============================================================================//
 /// \name Private Functions
 /// \{
-
-/*!
- * Delay function
- *
- * \param      us delay interval
- */
-static ALT_STATUS_CODE delay_us(uint32_t us)
-{
-    ALT_STATUS_CODE     status = ALT_E_SUCCESS;
-
-    uint64_t            start_time = alt_globaltmr_get64();
-    uint32_t            timer_prescaler = alt_globaltmr_prescaler_get() + 1;
-    uint64_t            end_time;
-    alt_freq_t          timer_clock;
-
-    status = alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timer_clock);
-    end_time = start_time + us * ((timer_clock / timer_prescaler) / 1000000);
-
-    while (alt_globaltmr_get64() < end_time)
-    {
-    }
-
-    return status;
-}
 
 ///\}

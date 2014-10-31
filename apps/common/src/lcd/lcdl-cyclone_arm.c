@@ -166,8 +166,8 @@ static LCD_COMMAND_DESC_T       lcdCommands_l[] =
 // local function prototypes
 //------------------------------------------------------------------------------
 
-static ALT_STATUS_CODE  lcd_send_command(ALT_I2C_DEV_t* device, LCD_COMMAND_T command, uint8_t* params);
-void                    delay_us(uint32_t us);
+static ALT_STATUS_CODE  lcd_send_command(ALT_I2C_DEV_t* deviceHdl_p, LCD_COMMAND_T command_p, uint8_t* pArg_p);
+void                    delay_us(uint32_t usDelay_p);
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
 //============================================================================//
@@ -188,19 +188,17 @@ int lcdl_init(void)
     // Init I2C module
     if (halRet == ALT_E_SUCCESS)
     {
-        printf("LCD-INFO: Init I2C module.\n");
         halRet = alt_i2c_init(ALT_I2C_I2C0, deviceHandle_l);
     }
 
     // Enable I2C module
     if (halRet == ALT_E_SUCCESS)
     {
-        printf("LCD-INFO: Enable I2C module.\n");
         halRet = alt_i2c_enable(deviceHandle_l);
     }
 
     // Configure I2C module
-    printf("LCD-INFO: Configuring I2C parameters.\n");
+    PRINTF("LCD INFO: Configuring I2C parameters.\n");
 
     if (halRet == ALT_E_SUCCESS)
     {
@@ -210,7 +208,7 @@ int lcdl_init(void)
     if (halRet == ALT_E_SUCCESS)
     {
         halRet = alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed);
-        printf("LCD-INFO: Current I2C speed = %d Hz.\n", (int)speed);
+        PRINTF("LCD INFO: Current I2C speed = %d Hz.\n", (int)speed);
     }
 
     if (halRet == ALT_E_SUCCESS)
@@ -221,7 +219,7 @@ int lcdl_init(void)
     if (halRet == ALT_E_SUCCESS)
     {
         halRet = alt_i2c_master_config_speed_get(deviceHandle_l, &cfg, &speed);
-        printf("LCD-INFO: New I2C speed = %d Hz.\n", (int)speed);
+        PRINTF("LCD INFO: New I2C speed = %d Hz.\n", (int)speed);
     }
 
     if (halRet == ALT_E_SUCCESS)
@@ -245,20 +243,22 @@ int lcdl_init(void)
     // Turn display on
     if (halRet == ALT_E_SUCCESS)
     {
-        printf("LCD-INFO: Turning display on.\n");
         halRet = lcd_send_command(deviceHandle_l, LCD_COMMAND_DISPLAY_ON, NULL);
     }
 
     // Turn cursor on
     if (halRet == ALT_E_SUCCESS)
     {
-        printf("LCD-INFO: Turning cursor on.\n");
         halRet = lcd_send_command(deviceHandle_l, LCD_COMMAND_BLINKING_CURSOR_ON, NULL);
     }
 
     delay_us(500);
+
     if (halRet != ALT_E_SUCCESS)
+    {
+        DEBUG_LVL_ERROR_TRACE("LCD ERR: Initialization failed!!\n");
         return -1;
+    }
     else
         return 0;
 }
@@ -273,6 +273,8 @@ This function exits the LCD instance.
 void lcdl_exit(void)
 {
     lcdl_clear();
+    lcd_send_command(deviceHandle_l, LCD_COMMAND_DISPLAY_OFF, NULL);
+    lcd_send_command(deviceHandle_l, LCD_COMMAND_BLINKING_CURSOR_OFF, NULL);
     alt_i2c_disable(deviceHandle_l);
     alt_i2c_uninit(deviceHandle_l);
 }
@@ -287,14 +289,9 @@ This function clears all lines of the display.
 void lcdl_clear(void)
 {
     // Clear screen
-    printf("LCD-INFO: Clearing screen.\n");
     if (lcd_send_command(deviceHandle_l, LCD_COMMAND_CLEAR_SCREEN, NULL) != ALT_E_SUCCESS)
     {
-        printf("Failed\n");
-    }
-    else
-    {
-        printf("Done\n");
+        DEBUG_LVL_ERROR_TRACE("LCD ERR: Failed to clear screen\n");
     }
 }
 
@@ -359,19 +356,23 @@ void lcdl_printText(const char* sText_p)
 /// \name Private Functions
 /// \{
 
-/******************************************************************************/
-/*!
- * Send command to LCD display
- *
- * \param       device  I2C device.
- * \param       command opcode of command to be sent
- * \param       params command parameters or NULL for no parameters
- * \return      result of the function
- */
-static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t* device, LCD_COMMAND_T command, uint8_t* params)
+//------------------------------------------------------------------------------
+/**
+\brief  Send command to LCD display
+
+The function sends a I2C command to the LCD module
+
+ \param deviceHdl_p     I2C device
+ \param command_p       Opcode of command to be sent
+ \param pArg_p          Command parameters or NULL for no parameters
+
+ \return    returns a ALT_STATUS_CODE error code
+*/
+//------------------------------------------------------------------------------
+static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t* deviceHdl_p, LCD_COMMAND_T command_p, uint8_t* pArg_p)
 {
     ALT_STATUS_CODE         halRet = ALT_E_SUCCESS;
-    LCD_COMMAND_DESC_T      command_description = lcdCommands_l[(int)command];
+    LCD_COMMAND_DESC_T      command_description = lcdCommands_l[(int)command_p];
     uint8_t                 data[10];
     uint8_t                 data_size = 0;
 
@@ -379,22 +380,23 @@ static ALT_STATUS_CODE lcd_send_command(ALT_I2C_DEV_t* device, LCD_COMMAND_T com
     data[data_size++] = command_description.command;
     for (int i = 0; i < command_description.padding; i++)
     {
-        data[data_size++] = params[i];
+        data[data_size++] = pArg_p[i];
     }
 
-    halRet = alt_i2c_master_transmit(device, data, data_size, ALT_E_FALSE, ALT_E_TRUE);
+    halRet = alt_i2c_master_transmit(deviceHdl_p, data, data_size, ALT_E_FALSE, ALT_E_TRUE);
     delay_us(command_description.executionDuration);
 
     return halRet;
 }
 
-/******************************************************************************/
-/*!
- * Delay function
- *
- * \param      us delay interval
- */
-void delay_us(uint32_t us)
+//------------------------------------------------------------------------------
+/**
+\brief  Delay execution
+
+\param usDelay_p        Delay in microseconds
+*/
+//------------------------------------------------------------------------------
+void delay_us(uint32_t usDelay_p)
 {
     uint64_t        start_time = alt_globaltmr_get64();
     uint32_t        timer_prescaler = alt_globaltmr_prescaler_get() + 1;
@@ -402,7 +404,7 @@ void delay_us(uint32_t us)
     alt_freq_t      timer_clock;
 
     alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timer_clock);
-    end_time = start_time + us * ((timer_clock / timer_prescaler) / 1000000);
+    end_time = start_time + usDelay_p * ((timer_clock / timer_prescaler) / 1000000);
 
     while (alt_globaltmr_get64() < end_time)
     {
