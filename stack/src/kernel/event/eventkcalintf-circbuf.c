@@ -312,14 +312,14 @@ tOplkError eventkcal_processEventCircbuf(tEventQueue eventQueue_p)
     pEvent->eventArgSize = (readSize - sizeof(tEvent));
 
     if (pEvent->eventArgSize > 0)
-        pEvent->pEventArg = &aRxBuffer_l[eventQueue_p][sizeof(tEvent)];
+        pEvent->pEventArg = (ULONGLONG)&aRxBuffer_l[eventQueue_p][sizeof(tEvent)];
     else
-        pEvent->pEventArg = NULL;
+        pEvent->pEventArg = (ULONGLONG)NULL;
 
     /*TRACE("Process Kernel  type:%s(%d) sink:%s(%d) size:%d!\n",
            debugstr_getEventTypeStr(pEvent->eventType), pEvent->eventType,
            debugstr_getEventSinkStr(pEvent->eventSink), pEvent->eventSink,
-           pEplEvent->eventArgSize);*/
+           pEvent->eventArgSize);*/
 
     ret = eventk_process(pEvent);
     return ret;

@@ -84,7 +84,9 @@ typedef struct
     TPDO: 0x00=PRes, MN: CnNodeId=PReq
     */
     UINT                nodeId;
-    void*               pVar;                   ///< Pointer to frame data
+    // TODO@gks: Modify Pointer to ULONGLONG
+    //void*               pVar;                   ///< Pointer to frame data
+    ULONGLONG           pVar;                   ///< Pointer to frame data
     WORD                pdoSize;                ///< Size of this PDO
     BYTE                mappingVersion;         ///< The mapping version of this PDO
     unsigned int        mappObjectCount;        ///< The actual number of used mapped objects

@@ -60,6 +60,12 @@ SET(LIB_ARCH_SOURCES
                      ${TARGET_MICROBLAZE_OPENMAC_SOURCES}
    )
 
+IF(${CFG_PCIE_DESIGN} STREQUAL "TRUE")
+SET(LIB_ARCH_SOURCES
+                     ${LIB_ARCH_SOURCES}
+                     ${TARGET_MICROBLAZE_PCIEDRV_SOURCES}
+   )
+ENDIF()
 ################################################################################
 # Set architecture specific includes
 
@@ -82,6 +88,13 @@ ADD_DEFINITIONS("${XIL_PCP_CFLAGS} -fmessage-length=0 -mcpu=${CFG_PCP_CPU_VERSIO
 IF(${CFG_DEMO_BOARD_NAME} STREQUAL "xilinx-z702")
 ADD_DEFINITIONS("-D__ZYNQ__")
 ENDIF()
+IF(${CFG_DEMO_BOARD_NAME} STREQUAL "xilinx-sp605eb")
+ADD_DEFINITIONS("-D__SP605EB__")
+ENDIF()
+
+IF(${CFG_PCIE_DESIGN} STREQUAL "TRUE")
+ADD_DEFINITIONS("-DCONFIG_PCIE")
+ENDIF
 ################################################################################
 # Deactivate optimization for usleep
 SET_SOURCE_FILES_PROPERTIES(${ARCH_SOURCE_DIR}/xilinx_microblaze/usleep.c

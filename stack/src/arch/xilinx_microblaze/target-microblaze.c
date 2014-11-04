@@ -46,6 +46,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "usleep.h"
 #include "systemtimer.h"
 
+#ifdef CONFIG_PCIE
+#include "pcie_drv.h"
+#endif
 #include <xparameters.h>
 #include <xintc.h>         // interrupt controller
 
@@ -99,7 +102,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // local vars
 //------------------------------------------------------------------------------
-
+#ifdef CONFIG_PCIE
+/* Allocate AXI PCIe End Point IP Instance */
+static XAxiPcie endPoint;
+#endif
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
@@ -176,6 +182,8 @@ openPOWERLINK stack.
 //------------------------------------------------------------------------------
 tOplkError target_init(void)
 {
+#ifdef CONFIG_PCIE
+    int    status;
     // initialize microblaze caches
 #if XPAR_MICROBLAZE_USE_ICACHE
     microblaze_invalidate_icache();
@@ -195,6 +203,16 @@ tOplkError target_init(void)
 
 #ifdef __ZYNQ__
     uart_init();
+#endif
+
+#ifdef CONFIG_PCIE
+    status = PCIeEndPointInitialize(&endPoint, XPAR_AXIPCIE_0_DEVICE_ID);
+
+    if (status != XST_SUCCESS)
+    {
+        printf("PCIe Initialization Failed\n");
+        return XST_FAILURE;
+    }
 #endif
 
     // enable the interrupt master
