@@ -61,7 +61,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DPSHM_WRITE8(base, val)     Xil_Out8((UINT32)base, val);
 #define DPSHM_READ16(base)          Xil_In16((UINT32)base);
 #define DPSHM_WRITE16(base, val)    Xil_Out16((UINT32)base, val);
-
+#define DPSHM_READ32(base)          Xil_In32((UINT32)base);
+#define DPSHM_WRITE32(base, val)    Xil_Out32((UINT32)base, val);
 // Memory barrier
 // FIXME: Find other suitable way to handle memory barrier for Microblaze
 #define DPSHM_DMB()                 usleep(2)

@@ -90,6 +90,12 @@ IF(CFG_DEMO_BOARD_NAME STREQUAL "xilinx-z702")
        )
 ENDIF()
 
+IF(${CFG_DEMO_BOARD_NAME} STREQUAL "xilinx-sp605eb")
+    SET(DUALPROCSHM_LIB_SRCS
+        ${DUALPROCSHM_LIB_SRCS}
+        ${PROJECT_SOURCE_DIR}/src/dualprocshm-pcp.c
+       )
+ENDIF()
 ########################################################################
 # Set include paths
 ########################################################################

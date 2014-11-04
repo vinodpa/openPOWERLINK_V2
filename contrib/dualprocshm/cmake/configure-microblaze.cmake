@@ -45,6 +45,11 @@ ADD_DEFINITIONS(${XIL_${PROC_INST_NAME}_CFLAGS} "-fmessage-length=0 -mcpu=${CFG_
 IF(${CFG_DEMO_BOARD_NAME} STREQUAL "xilinx-z702")
     ADD_DEFINITIONS("-D__ZYNQ__ ")
 ENDIF()
+
+IF(${CFG_DEMO_BOARD_NAME} STREQUAL "xilinx-sp605eb")
+    ADD_DEFINITIONS("-D__SP605EB__")
+ENDIF()
+
 ################################################################################
 # Set architecture specific installation files
 

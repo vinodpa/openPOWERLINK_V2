@@ -114,8 +114,6 @@ static tDualProcDrv*            paDualProcDrvInstance[DUALPROC_INSTANCE_COUNT] =
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
-static void     setDynBuffAddr(tDualprocDrvInstance pDrvInst_p, UINT16 index_p, UINT32 addr_p);
-static UINT32   getDynBuffAddr(tDualprocDrvInstance pDrvInst_p, UINT16 index_p);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -155,7 +153,7 @@ tDualprocReturn dualprocshm_create(tDualprocConfig* pConfig_p, tDualprocDrvInsta
     }
 
     //create driver instance
-    pDrvInst = (tDualProcDrv*)malloc(sizeof(tDualProcDrv));
+    pDrvInst = (tDualProcDrv*) DUALPROCSHM_MALLOC(sizeof(tDualProcDrv));
 
     if (pDrvInst == NULL)
     {
@@ -186,8 +184,8 @@ tDualprocReturn dualprocshm_create(tDualprocConfig* pConfig_p, tDualprocDrvInsta
 
     for (iIndex = 0; iIndex < pDrvInst->iMaxDynBuffEntries; iIndex++)
     {
-        pDrvInst->pDynResTbl[iIndex].pfnSetDynAddr = setDynBuffAddr;
-        pDrvInst->pDynResTbl[iIndex].pfnGetDynAddr = getDynBuffAddr;
+        pDrvInst->pDynResTbl[iIndex].pfnSetDynAddr = dualprocshm_targetSetDynBuffAddr;
+        pDrvInst->pDynResTbl[iIndex].pfnGetDynAddr = dualprocshm_targetGetDynBuffAddr;
     }
 
     // store driver instance in array
@@ -259,7 +257,7 @@ tDualprocReturn dualprocshm_delete(tDualprocDrvInstance pInstance_p)
         }
     }
 
-    free(pDrvInst);
+    DUALPROCSHM_FREE(pDrvInst);
 
     return kDualprocSuccessful;
 }
@@ -348,11 +346,11 @@ tDualprocReturn dualprocshm_getMemory(tDualprocDrvInstance pInstance_p, UINT8 id
         pDrvInst->pDynResTbl[id_p].memInst->span = (UINT16)*pSize_p;
 
         // write the address in mapping table
-        pDrvInst->pDynResTbl[id_p].pfnSetDynAddr(pDrvInst, id_p, (UINT32)pMemBase);
+        pDrvInst->pDynResTbl[id_p].pfnSetDynAddr(pDrvInst->pAddrTableBase, id_p, (UINT32)pMemBase);
     }
     else
     {
-        pMemBase = (UINT8*)pDrvInst->pDynResTbl[id_p].pfnGetDynAddr(pDrvInst, id_p);
+        pMemBase = (UINT8*)pDrvInst->pDynResTbl[id_p].pfnGetDynAddr(pDrvInst->pAddrTableBase, id_p);
 
         if (pMemBase == NULL)
             return kDualprocNoResource;
@@ -401,10 +399,10 @@ tDualprocReturn dualprocshm_freeMemory(tDualprocDrvInstance pInstance_p, UINT8 i
 
     if (fFree_p)
     {
-        pDrvInst->pDynResTbl[id_p].pfnSetDynAddr(pDrvInst, id_p, 0);
+        pDrvInst->pDynResTbl[id_p].pfnSetDynAddr(pDrvInst->pAddrTableBase, id_p, 0);
         pMemBase = (UINT8*)pDrvInst->pDynResTbl[id_p].memInst;
         pDrvInst->pDynResTbl[id_p].pBase = NULL;
-        free(pMemBase);
+        DUALPROCSHM_FREE(pMemBase);
     }
     else
     {
@@ -663,48 +661,5 @@ tDualprocReturn dualprocshm_releaseBuffLock(tDualprocDrvInstance pInstance_p, UI
 //============================================================================//
 /// \name Private Functions
 /// \{
-
-//------------------------------------------------------------------------------
-/**
-\brief  Write the buffer address in dynamic memory mapping table
-
-\param  pInstance_p  Driver instance.
-\param  index_p      Buffer index.
-\param  addr_p       Address of the buffer.
-
-*/
-//------------------------------------------------------------------------------
-static void setDynBuffAddr(tDualprocDrvInstance pInstance_p, UINT16 index_p, UINT32 addr_p)
-{
-    tDualProcDrv*   pDrvInst = (tDualProcDrv*) pInstance_p;
-    UINT8*          tableBase = pDrvInst->pAddrTableBase;
-    UINT32          tableEntryOffs = index_p * DYN_MEM_TABLE_ENTRY_SIZE;
-
-    dualprocshm_targetWriteData(tableBase + tableEntryOffs,
-                                DYN_MEM_TABLE_ENTRY_SIZE, (UINT8*)&addr_p);
-}
-
-//------------------------------------------------------------------------------
-/**
-\brief  Read the buffer address from dynamic memory mapping table
-
-\param  pInstance_p  Driver instance.
-\param  index_p      Buffer index.
-
-\return Address of the buffer requested.
-
-*/
-//------------------------------------------------------------------------------
-static UINT32 getDynBuffAddr(tDualprocDrvInstance pInstance_p, UINT16 index_p)
-{
-    tDualProcDrv*   pDrvInst = (tDualProcDrv*) pInstance_p;
-    UINT8*          tableBase = pDrvInst->pAddrTableBase;
-    UINT32          tableEntryOffs = index_p * DYN_MEM_TABLE_ENTRY_SIZE;
-    UINT32          buffAddr;
-
-    dualprocshm_targetReadData(tableBase + tableEntryOffs,
-                               DYN_MEM_TABLE_ENTRY_SIZE, (UINT8*)&buffAddr);
-    return buffAddr;
-}
 
 /// \}
