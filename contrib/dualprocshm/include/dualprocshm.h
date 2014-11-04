@@ -171,7 +171,7 @@ address register.
 \return The function returns the address to the memory space referenced by the
         dynamic buffer.
 */
-typedef UINT32 (*tGetDynRes)(tDualprocDrvInstance pDrvInst_p, UINT16 index_p);
+typedef ULONG_PTR (*tGetDynRes) (tDualprocDrvInstance pDrvInst_p, UINT16 index_p);
 
 /**
 \brief Structure for dual processor dynamic resources (buffers)

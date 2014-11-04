@@ -33,9 +33,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------*/
-
-#ifndef _INC_dualprocshm_SP605EB_H_
-#define _INC_dualprocshm_SP605EB_H_
+// TODO@gks: Clean this file to include only supported targets
+#ifndef _INC_dualprocshm_pcp_H_
+#define _INC_dualprocshm_pcp_H_
 
 /* SIZE */
 #define MAX_COMMON_MEM_SIZE         2048                       ///< Max common memory size
@@ -72,10 +72,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <dualprocshm-winkernel.h>
 
-#define DDR_BASE                      0xC0000000
-#define COMMON_MEM_BASE               0xC4000000
-#define MEM_ADDR_TABLE_OFFSET         MAX_COMMON_MEM_SIZE
-#define MEM_INTR_OFFSET               MAX_COMMON_MEM_SIZE + MAX_DYNAMIC_BUFF_SIZE
+#define DDR_BASE                    0xC0000000
+#define COMMON_MEM_BASE             0xC4000000
+#define MEM_ADDR_TABLE_OFFSET       MAX_COMMON_MEM_SIZE
+#define MEM_INTR_OFFSET             MAX_COMMON_MEM_SIZE + MAX_DYNAMIC_BUFF_SIZE
 #else
 
 #error "unknown target for Zynq"

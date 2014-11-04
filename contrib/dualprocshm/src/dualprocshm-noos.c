@@ -68,7 +68,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 #define DUALPROC_INSTANCE_COUNT     2   ///< Number of supported instances
 #define MEM_LOCK_SIZE               1   ///< Memory lock size
-#define DYN_MEM_TABLE_ENTRY_SIZE    4   ///< Size of Dynamic table entry
 
 //------------------------------------------------------------------------------
 // module global vars
