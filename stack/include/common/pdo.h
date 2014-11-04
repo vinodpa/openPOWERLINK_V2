@@ -58,7 +58,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // typedef
 //------------------------------------------------------------------------------
-
+#ifdef _MSC_VER
+#pragma pack(push, packing)
+#pragma pack(4)
+#endif
 /**
 \brief PDO allocation parameter structure
 
@@ -143,7 +146,7 @@ of receive and transmit PDO buffers.
 typedef struct
 {
     UINT16              valid;                                      ///< Defines whether the memory region is valid
-    size_t              pdoMemSize;                                 ///< Size of the overall PDO memory
+    ULONG               pdoMemSize;                                 ///< Size of the overall PDO memory
     tPdoBufferInfo      rxChannelInfo[D_PDO_RPDOChannels_U16];      ///< Array of RPDO channels
     tPdoBufferInfo      txChannelInfo[D_PDO_TPDOChannels_U16];      ///< Array of TPDO channels
 #ifdef OPLK_LOCK_T
@@ -158,8 +161,10 @@ This structure specifies the sizes of the RPDO and TPDO memory.
 */
 typedef struct
 {
-    size_t      rxPdoMemSize;                   ///< Size of the RPDO memory
-    size_t      txPdoMemSize;                   ///< Size of the TPDO memory
+    ULONG      rxPdoMemSize;                   ///< Size of the RPDO memory
+    ULONG      txPdoMemSize;                   ///< Size of the TPDO memory
 } tPdoMemSize;
-
+#ifdef _MSC_VER
+#pragma pack(pop,packing)
+#endif
 #endif /* _INC_common_pdo_H_ */
