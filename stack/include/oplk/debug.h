@@ -386,7 +386,9 @@ void trace(const char* fmt, ...);
     }
 #else
 
+#ifndef _KERNEL_MODE
 #define ASSERTMSG(expr, string)
+#endif
 
 #endif
 

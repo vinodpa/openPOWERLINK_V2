@@ -112,7 +112,6 @@ NDIS_STATUS ndis_initDriver(PDRIVER_OBJECT pDriverObject_p, PUNICODE_STRING pReg
     NDIS_STATUS                            ndisStatus = NDIS_STATUS_SUCCESS;
     NDIS_MINIPORT_DRIVER_CHARACTERISTICS   miniportChars;
     NDIS_HANDLE                            miniportDriverContext = NULL;
-    NDIS_STRING                            ndisDriverName;
 
     NdisZeroMemory(&driverInstance_l, sizeof(tNdisDriverInstance));
 

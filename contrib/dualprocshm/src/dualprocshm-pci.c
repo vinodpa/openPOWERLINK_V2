@@ -411,7 +411,7 @@ UINT8* dualprocshm_targetGetDynBuffAddr(UINT8* pMemTableBase, UINT16 index_p)
             DbgPrint("Unable to Get Address\n");
             return NULL;
         }
-        target_msleep(1000);
+        target_msleep(10);
         buffoffset = DPSHM_READ32(memAddr);
         count++;
     }

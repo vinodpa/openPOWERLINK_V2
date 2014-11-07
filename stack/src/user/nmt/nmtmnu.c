@@ -181,7 +181,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // local types
 //------------------------------------------------------------------------------
-
+#ifdef _MSC_VER
+#pragma pack(push, packing)
+#pragma pack(4)
+#endif
 typedef struct
 {
     UINT8               cmdData;
@@ -280,7 +283,9 @@ typedef struct
     UINT32              prcPResTimeFirstCorrectionNs;   ///< to be commented!
     UINT32              prcPResTimeFirstNegOffsetNs;    ///< to be commented!
 } tNmtMnuInstance;
-
+#ifdef _MSC_VER
+#pragma pack(pop, packing)
+#endif
 //------------------------------------------------------------------------------
 // local vars
 //------------------------------------------------------------------------------
@@ -1310,6 +1315,7 @@ tOplkError nmtmnu_processEvent(tEvent* pEvent_p)
             {
                 UINT        nodeId;
                 nodeId = *((UINT*)pEvent_p->pEventArg);
+                //printf("Node Added %d\n", nodeId);
                 ret = cbNodeAdded(nodeId);
             }
             break;
@@ -1484,6 +1490,7 @@ static tOplkError cbStatusResponse(UINT nodeId_p, tStatusResponse* pStatusRespon
 
     if (pStatusResponse_p == NULL)
     {   // node did not answer
+       // printf("No Answer\n");
         ret = processInternalEvent(nodeId_p, kNmtCsNotActive, E_NMT_NO_STATUS_RES, // was E_NO_ERROR
                                    kNmtMnuIntNodeEventNoStatusResponse);
     }
@@ -1513,7 +1520,7 @@ static tOplkError cbNodeAdded(UINT nodeId_p)
     tOplkError          ret = kErrorOk;
     tNmtMnuNodeInfo*    pNodeInfo;
     tNmtState           nmtState;
-
+    //printf("%s\n", __func__);
     pNodeInfo = NMTMNU_GET_NODEINFO(nodeId_p);
     pNodeInfo->flags |= NMTMNU_NODE_FLAG_ISOCHRON;
 
@@ -1564,7 +1571,7 @@ static tOplkError addNodeIsochronous(UINT nodeId_p)
 
         {   // node is added as PReq/PRes node
             tDllNodeOpParam     NodeOpParam;
-
+            //printf("PReq/Pres Node\n");
             NodeOpParam.opNodeType = kDllNodeOpTypeIsochronous;
             NodeOpParam.nodeId = nodeId_p;
             ret = dllucal_addNode(&NodeOpParam);
@@ -1934,7 +1941,7 @@ static tOplkError nodeBootStep2(UINT nodeId_p, tNmtMnuNodeInfo* pNodeInfo_p)
     UINT8               bNmtState;
     tNmtState           nmtState;
     tObdSize            obdSize;
-
+    //printf("******************** %s %d\n", __func__, nodeId_p);
     if (pNodeInfo_p->nodeCfg & NMT_NODEASSIGN_ASYNCONLY_NODE)
     {   // node is async-only
         // read object 0x1F8E NMT_MNNodeCurrState_AU8
@@ -1953,12 +1960,13 @@ static tOplkError nodeBootStep2(UINT nodeId_p, tNmtMnuNodeInfo* pNodeInfo_p)
 
         // The check whether the node has been added to the isochronous phase
         // implicates the check for NMT state PreOp2
+        //printf("Now THis shall be a problem\n");
         if ((pNodeInfo_p->flags & NMTMNU_NODE_FLAG_ISOCHRON) == 0)
             goto Exit;
     }
 
     NMTMNU_DBG_POST_TRACE_VALUE(0, nodeId_p, kNmtCmdEnableReadyToOperate);
-
+    //printf("Send Command kNmtCmdEnableReadyToOperate\n");
     ret = nmtmnu_sendNmtCommand(nodeId_p, kNmtCmdEnableReadyToOperate);
     if (ret != kErrorOk)
         goto Exit;
@@ -2393,6 +2401,7 @@ static INT processNodeEventConfigured(UINT nodeId_p, tNmtState nodeNmtState_p, t
     else
     {
         // put optional node to next step (BootStep2)
+        //printf("Node boot\n");
         *pRet_p = nodeBootStep2(nodeId_p, pNodeInfo);
     }
     return 0;
@@ -2500,7 +2509,7 @@ static INT processNodeEventStatusResponse(UINT nodeId_p, tNmtState nodeNmtState_
         nmtMnuInstance_g.signalSlaveCount--;
         pNodeInfo->flags &= ~NMTMNU_NODE_FLAG_NOT_SCANNED;
     }
-
+    //printf(" Status Response\n");
     // check NMT state of CN
     *pRet_p = checkNmtState(nodeId_p, pNodeInfo, nodeNmtState_p, errorCode_p, nmtState_p);
     if (*pRet_p != kErrorOk)
@@ -3021,6 +3030,7 @@ static tOplkError processInternalEvent(UINT nodeId_p, tNmtState nodeNmtState_p,
     if (apfnNodeEventFuncs_l[nodeEvent_p](nodeId_p, nodeNmtState_p, nmtState, errorCode_p, &ret) < 0)
         goto Exit;
 
+     //printf("Node %d old %x New %x\n", nodeId_p, nmtState, nodeNmtState_p);
     // check if network is ready to change local NMT state and this was not done before
     if ((nmtMnuInstance_g.flags & (NMTMNU_FLAG_HALTED | NMTMNU_FLAG_APP_INFORMED)) == 0)
     {   // boot process is not halted
@@ -3161,6 +3171,7 @@ static tOplkError checkNmtState(UINT nodeId_p, tNmtMnuNodeInfo* pNodeInfo_p,
     // compute expected NMT state
     expNmtState = (tNmtState)(bExpNmtState | NMT_TYPE_CS);
 
+    //printf("Exp %x Act %x\n", expNmtState, nodeNmtState_p);
     if (expNmtState == kNmtCsNotActive)
     {   // ignore the current state, because the CN shall be not active
         ret = kErrorReject;
@@ -3174,20 +3185,24 @@ static tOplkError checkNmtState(UINT nodeId_p, tNmtMnuNodeInfo* pNodeInfo_p,
     }
     else if ((expNmtState == kNmtCsPreOperational2) && (nodeNmtState_p == kNmtCsPreOperational2))
     {   // CN is PreOp2
+       // printf("1\n");
         if ((pNodeInfo_p->flags & NMTMNU_NODE_FLAG_PREOP2_REACHED) == 0)
         {   // CN switched to PreOp2
             pNodeInfo_p->flags |= NMTMNU_NODE_FLAG_PREOP2_REACHED;
-
+            //printf("2\n");
             if (pNodeInfo_p->nodeCfg & NMT_NODEASSIGN_ASYNCONLY_NODE)
             {
+                //printf("3\n");
                 if ((pNodeInfo_p->nodeState == kNmtMnuNodeStateConfigured) &&
                     (localNmtState_p >= kNmtMsPreOperational2))
                 {
+                   // printf("4\n");
                     ret = nodeBootStep2(nodeId_p, pNodeInfo_p);
                 }
             }
             else
             {   // add node to isochronous phase
+               // printf("5\n");
                 ret = addNodeIsochronous(nodeId_p);
                 if (ret != kErrorOk)
                     goto Exit;

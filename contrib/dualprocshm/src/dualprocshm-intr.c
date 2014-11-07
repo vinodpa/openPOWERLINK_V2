@@ -134,7 +134,6 @@ tDualprocReturn dualprocshm_initInterrupts(tDualprocDrvInstance pInstance_p)
 
     if (intrInst_l.intrReg == NULL)
     {
-        printf("Error Initializing interrupt routine\n");
         return kDualprocNoResource;
     }
 

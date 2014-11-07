@@ -230,7 +230,7 @@ static tOplkError initPowerlink(UINT32 cycleLen_p, char* pszCdcFileName_p,
     initParam.subnetMask              = SUBNET_MASK;
     initParam.defaultGateway          = DEFAULT_GATEWAY;
     sprintf((char*)initParam.sHostname, "%02x-%08x", initParam.nodeId, initParam.vendorId);
-    initParam.syncNodeId              = C_ADR_SYNC_ON_SOA;
+    initParam.syncNodeId              = C_ADR_SYNC_ON_SOC;
     initParam.fSyncOnPrcNode          = FALSE;
 
     // set callback functions

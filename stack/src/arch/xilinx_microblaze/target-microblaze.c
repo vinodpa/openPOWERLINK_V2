@@ -184,6 +184,7 @@ tOplkError target_init(void)
 {
 #ifdef CONFIG_PCIE
     int    status;
+#endif
     // initialize microblaze caches
 #if XPAR_MICROBLAZE_USE_ICACHE
     microblaze_invalidate_icache();

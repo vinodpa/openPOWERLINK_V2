@@ -475,7 +475,7 @@ tOplkError dllknode_addNodeIsochronous(tDllkNodeInfo* pIntNodeInfo_p)
             OPLK_MEMCPY(pTxFrame->aDstMac, pIntNodeInfo_p->aMacAddr, 6);
             // set destination node-ID in PReq
             ami_setUint8Le(&pTxFrame->dstNodeId, (UINT8) pIntNodeInfo_p->nodeId);
-
+            //printf("Send kEventTypeNmtMnuNodeAdded\n");
             event.eventSink = kEventSinkNmtMnu;
             event.eventType = kEventTypeNmtMnuNodeAdded;
             event.eventArgSize = sizeof(pIntNodeInfo_p->nodeId);

@@ -375,7 +375,9 @@ tOplkError dllkcal_process(tEvent* pEvent_p)
             break;
 
         case kEventTypeDllkAddNode:
+        	//printf("Add Node %d\n",sizeof(tDllNodeOpParam));
             pNodeOpParam = (tDllNodeOpParam*)pEvent_p->pEventArg;
+
             ret = dllk_addNode(pNodeOpParam);
             break;
 

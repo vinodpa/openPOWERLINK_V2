@@ -58,7 +58,7 @@ The generic defines are valid for the whole openPOWERLINK stack.
 #define CONFIG_INCLUDE_SDOS
 #define CONFIG_INCLUDE_SDOC
 #define CONFIG_INCLUDE_SDO_ASND
-#define CONFIG_INCLUDE_VETH
+//#define CONFIG_INCLUDE_VETH
 
 #ifndef BENCHMARK_MODULES
 #define BENCHMARK_MODULES                   (0 \
@@ -89,7 +89,7 @@ Note: The settings are specific for MN with openMAC!
     ///< support auto-response (e.g. openMAC)
 #define CONFIG_EDRV_TIME_TRIG_TX            TRUE
     ///< support time triggered transmission (e.g. openMAC)
-#define CONFIG_EDRVCYC_NEG_SHIFT_US         100U
+#define CONFIG_EDRVCYC_NEG_SHIFT_US         80U
     ///< us (timer irq before next cycle)
 /**@}*/
 

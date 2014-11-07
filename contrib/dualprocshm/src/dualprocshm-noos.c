@@ -59,6 +59,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
+
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -450,7 +451,7 @@ tDualprocReturn dualprocshm_readData(tDualprocDrvInstance pInstance_p, UINT8 id_
         return kDualprocNoResource;
     }
 
-    dualprocshm_targetReadData(base + offset_p, size_p, pData_p);
+    dualprocshm_targetReadData(base + offset_p, (UINT16)size_p, pData_p);
 
     return kDualprocSuccessful;
 }
@@ -491,7 +492,7 @@ tDualprocReturn dualprocshm_writeData(tDualprocDrvInstance pInstance_p, UINT8 id
     if ((offset_p + size_p) > highAddr)
         return kDualprocNoResource;
 
-    dualprocshm_targetWriteData(base + offset_p, size_p, pData_p);
+    dualprocshm_targetWriteData(base + offset_p, (UINT16)size_p, pData_p);
 
     return kDualprocSuccessful;
 }
@@ -523,7 +524,7 @@ tDualprocReturn dualprocshm_readDataCommon(tDualprocDrvInstance pInstance_p,
     if (pInstance_p == NULL || pData_p == NULL)
         return kDualprocInvalidParameter;
 
-    dualprocshm_targetReadData(base + offset_p, size_p, pData_p);
+    dualprocshm_targetReadData(base + offset_p, (UINT16)size_p, pData_p);
 
     return kDualprocSuccessful;
 }
@@ -555,7 +556,7 @@ tDualprocReturn dualprocshm_writeDataCommon(tDualprocDrvInstance pInstance_p,
     if (pInstance_p == NULL || pData_p == NULL)
         return kDualprocInvalidParameter;
 
-    dualprocshm_targetWriteData(base + offset_p, size_p, pData_p);
+    dualprocshm_targetWriteData(base + offset_p, (UINT16) size_p, pData_p);
 
     return kDualprocSuccessful;
 }
@@ -583,7 +584,7 @@ tDualprocReturn dualprocshm_acquireBuffLock(tDualprocDrvInstance pInstance_p, UI
     if (pInstance_p == NULL)
         return kDualprocInvalidParameter;
     // Enter critical region
-    target_enableGlobalInterrupt(FALSE);
+    DPSHM_ENABLE_INTR(FALSE);
 
 #if (OPLK_OPTIMIZE != FALSE)
     // Acquire lock only for shared queues
@@ -651,7 +652,7 @@ tDualprocReturn dualprocshm_releaseBuffLock(tDualprocDrvInstance pInstance_p, UI
     dualprocshm_targetReleaseLock(&pDrvInst->pDynResTbl[id_p].memInst->lock);
 #endif
     // Exit critical region
-    target_enableGlobalInterrupt(TRUE);
+    DPSHM_ENABLE_INTR(TRUE);
     return kDualprocSuccessful;
 }
 

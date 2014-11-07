@@ -55,7 +55,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 #define PLK_MEM_TAG                      'klpO'
-#define DRIVER_VERSION                   "1.0.20"
+#define DRIVER_VERSION                   "1.0.25"
 //------------------------------------------------------------------------------
 // module global vars
 //------------------------------------------------------------------------------

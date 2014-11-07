@@ -166,7 +166,7 @@ The function executes a control command in the kernel stack.
 \ingroup module_ctrlucal
 */
 //------------------------------------------------------------------------------
-tOplkError ctrlucal_executeCmd(tCtrlCmdType cmd_p)
+tOplkError ctrlucal_executeCmd(tCtrlCmdType cmd_p, UINT16* pRetVal_p)
 {
     tCtrlCmd    ctrlCmd;
     tCtrlCmd    ctrlCmdRes;
@@ -174,7 +174,7 @@ tOplkError ctrlucal_executeCmd(tCtrlCmdType cmd_p)
 
     ctrlCmd.cmd = cmd_p;
     ctrlCmd.retVal = 0;
-
+    //printf(" Execute command %x\n", cmd_p);
     if (!DeviceIoControl(fileHandle_l, PLK_CMD_CTRL_EXECUTE_CMD,
                          &ctrlCmd, sizeof(tCtrlCmd),
                          &ctrlCmdRes, sizeof(tCtrlCmd),
@@ -183,8 +183,8 @@ tOplkError ctrlucal_executeCmd(tCtrlCmdType cmd_p)
         DEBUG_LVL_ERROR_TRACE("%s() Error in DeviceIoControl : %d\n", __func__, GetLastError());
         return kErrorGeneralError;
     }
-
-    return ctrlCmdRes.retVal;
+    *pRetVal_p = ctrlCmdRes.retVal;
+    return kErrorOk;
 }
 
 //------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ tOplkError ctrlucal_checkKernelStack(void)
 {
     UINT16        kernelStatus;
     tOplkError    ret;
-
+    UINT16        retVal;
     TRACE("Checking for kernel stack...\n");
     kernelStatus = ctrlucal_getStatus();
 
@@ -217,8 +217,8 @@ tOplkError ctrlucal_checkKernelStack(void)
 
         case kCtrlStatusRunning:
             /* try to shutdown kernel stack */
-            ret = ctrlucal_executeCmd(kCtrlCleanupStack);
-            if (ret != kErrorOk)
+            ret = ctrlucal_executeCmd(kCtrlCleanupStack, &retVal);
+            if ((ret != kErrorOk) || ((tOplkError) retVal != kErrorOk))
             {
                 ret = kErrorNoResource;
                 break;
@@ -228,9 +228,9 @@ tOplkError ctrlucal_checkKernelStack(void)
 
             kernelStatus = ctrlucal_getStatus();
             if (kernelStatus != kCtrlStatusReady)
-            {
                 ret = kErrorNoResource;
-            }
+            else
+                ret = kErrorOk;
             break;
 
         default:

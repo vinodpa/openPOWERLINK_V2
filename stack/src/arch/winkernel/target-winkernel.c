@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
-#include <common/oplkinc.h>
+#include <common/target.h>
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -108,4 +108,9 @@ UINT32 target_getTickCount(void)
     KeQueryTickCount(&tickCount);
 
     return (UINT32)tickCount.QuadPart;
+}
+
+void target_enableGlobalInterrupt(BYTE fEnable_p)
+{
+    // Nothing to do here
 }

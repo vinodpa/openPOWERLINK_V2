@@ -463,7 +463,7 @@ static UINT32 kernelEventThread(void* arg_p)
 
     while (!instance_l.fStopThread)
     {
-        //target_msleep(500);
+        target_msleep(10);
         ret = DeviceIoControl(instance_l.rcvfileHandle, PLK_CMD_GET_EVENT,
                               NULL, 0, instance_l.eventBuf, eventBufSize,
                               &bytesReturned, NULL);

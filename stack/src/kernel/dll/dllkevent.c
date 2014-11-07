@@ -587,6 +587,7 @@ static tOplkError processFillTx(tDllAsyncReqPriority asyncReqPriority_p, tNmtSta
             frameSize = pTxBuffer->maxBufferSize;            // set max buffer size as input parameter
 
             // copy frame from shared loop buffer to Tx buffer
+            //printf("Get Async\n");
             ret = dllkcal_getAsyncTxFrame(pTxBuffer->pBuffer, &frameSize, asyncReqPriority_p);
             if (ret == kErrorOk)
             {

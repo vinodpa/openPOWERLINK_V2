@@ -69,7 +69,8 @@ ENDIF()
 ################################################################################
 # Set architecture specific includes
 
-IF(${CFG_MB_UART} STREQUAL "TRUE")
+IF(${CFG_MB_UART} AND ${CFG_MB_UART} STREQUAL "TRUE")
+MESSAGE(STATUS " YEAH now I got this")
     INCLUDE_DIRECTORIES(${OPLK_BASE_DIR}/hardware/boards/xilinx-z702/common/drivers/mb_uart/include)
 ENDIF()
 
@@ -94,7 +95,7 @@ ENDIF()
 
 IF(${CFG_PCIE_DESIGN} STREQUAL "TRUE")
 ADD_DEFINITIONS("-DCONFIG_PCIE")
-ENDIF
+ENDIF()
 ################################################################################
 # Deactivate optimization for usleep
 SET_SOURCE_FILES_PROPERTIES(${ARCH_SOURCE_DIR}/xilinx_microblaze/usleep.c

@@ -60,8 +60,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // module global vars
 //------------------------------------------------------------------------------
-#define DUALPROCSHM_BUFF_ID_ERRHDLR     11
-#define DUALPROCSHM_BUFF_ID_PDO         12
+#define DUALPROCSHM_BUFF_ID_ERRHDLR     12
+#define DUALPROCSHM_BUFF_ID_PDO         13
 
 //------------------------------------------------------------------------------
 // global function prototypes
@@ -157,29 +157,35 @@ void drv_executeCmd(tCtrlCmd* pCtrlCmd_p)
         if (dualprocshm_readDataCommon(drvInstance_l.dualProcDrvInst, FIELD_OFFSET(tCtrlBuf, ctrlCmd),
             sizeof(tCtrlCmd), (UINT8 *) pCtrlCmd_p) != kDualprocSuccessful)
             return;
+
+        if (pCtrlCmd_p->cmd == 0)
+            break;
     }
 
     if (cmd == kCtrlInitStack && pCtrlCmd_p->retVal == kErrorOk)
     {
         
-        target_msleep(10000);
+        target_msleep(1000);
         ret = initEvent();
         if (ret != kErrorOk)
         {
             DbgPrint("Event Initialization Failed %x\n", ret);
             pCtrlCmd_p->retVal = ret;
+            return;
         }
         ret = initErrHndl();
         if (ret != kErrorOk)
         {
             DbgPrint("Error Module Initialization Failed %x\n", ret);
             pCtrlCmd_p->retVal = ret;
+            return;
         }
         ret = initDllQueues();
         if (ret != kErrorOk)
         {
             DbgPrint("Dll Queues Initialization Failed %x\n", ret);
             pCtrlCmd_p->retVal = ret;
+            return;
         }
     }
 
@@ -310,7 +316,7 @@ void drv_sendAsyncFrame(unsigned char* pArg_p)
 
     if (!drvInstance_l.fDriverActive)
         return;
-
+    //PRINTF("Command %x queue %x\n", frameInfo.pFrame->data.asnd.payload.nmtCommandService.nmtCommandId, asyncFrameInfo->queue);
     ret = insertDataBlock(drvInstance_l.dllQueueInst[asyncFrameInfo->queue],
                           (UINT8*) frameInfo.pFrame,
                           &(frameInfo.frameSize));
@@ -429,7 +435,7 @@ void drv_postEvent(void* pEvent_p)
     if (event.eventArgSize != 0)
     {
         pArg = (char*) ((UINT8*) pEvent_p + sizeof(tEvent));
-        event.pEventArg = pArg;
+        event.pEventArg = (ULONGLONG)pArg;
     }
     //DbgPrint("%s() Event:%x Sink:%x Size %d Event%d\n", __func__, event.eventType, event.eventSink, event.eventArgSize, sizeof(tEvent));
     if (event.eventArgSize == 0)
@@ -439,7 +445,7 @@ void drv_postEvent(void* pEvent_p)
     else
     {
         circError = circbuf_writeMultipleData(pCircBufInstance, pEvent_p, sizeof(tEvent),
-                                              event.pEventArg, event.eventArgSize);
+                                              (void*)event.pEventArg, event.eventArgSize);
     }
 
     if (circError != kCircBufOk)

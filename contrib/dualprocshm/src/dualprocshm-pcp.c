@@ -59,8 +59,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // global function prototypes
 //------------------------------------------------------------------------------
-void target_regSyncIrqHdl(void* callback_p,void* pArg_p);
-void target_enableSyncIrq(BOOL fEnable_p);
+
 //============================================================================//
 //            P R I V A T E   D E F I N I T I O N S                           //
 //============================================================================//
@@ -324,7 +323,7 @@ used by the application for PDO and event synchronization.
 //------------------------------------------------------------------------------
 void dualprocshm_regSyncIrqHdl(targetSyncHdl callback_p,void* pArg_p)
 {
-    target_regSyncIrqHdl(callback_p,pArg_p);
+	DPSHM_REG_SYNC_INTR(callback_p,pArg_p);
 }
 
 //------------------------------------------------------------------------------
@@ -340,7 +339,10 @@ The function is used to enable or disable the sync interrupt
 //------------------------------------------------------------------------------
 void dualprocshm_enableSyncIrq(BOOL fEnable_p)
 {
-    target_enableSyncIrq(fEnable_p);
+	if(fEnable_p)
+		DPSHM_ENABLE_SYNC_INTR();
+	else
+		DPSHM_DISABLE_SYNC_INTR();
 }
 
 //------------------------------------------------------------------------------
@@ -382,7 +384,7 @@ void dualprocshm_targetSetDynBuffAddr(UINT8* pMemTableBase , UINT16 index_p, UIN
 */
 //------------------------------------------------------------------------------
 // TODO test if UINT32 is correct data specifier to hold address in 64 bit systems
-UINT32 dualprocshm_targetGetDynBuffAddr(UINT8* pMemTableBase, UINT16 index_p)
+UINT8* dualprocshm_targetGetDynBuffAddr(UINT8* pMemTableBase, UINT16 index_p)
 {
     UINT32          tableEntryOffs = index_p * DYN_MEM_TABLE_ENTRY_SIZE;
     UINT32          buffoffset = 0x00;
