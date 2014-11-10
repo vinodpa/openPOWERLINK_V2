@@ -219,7 +219,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DUMMY(...)
 // FIXME screwed if the base address flooring truncates more address than the range ceiling appends //EDIT: now its fixed
-#if 0 // TODO find a way to detect the cache configuration
+#if 1 // TODO find a way to detect the cache configuration
 #define OPLK_DCACHE_FLUSH(base, range)                                                                                                                \
     ({                                                                                                                                                \
          uint32_t tempBase = (uint32_t) (((uint32_t) base) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK));                                                 \

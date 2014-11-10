@@ -191,8 +191,8 @@ tOplkError target_init(void)
     }
 
     // Enable Cache
-    //halRet = alt_cache_system_enable();
-    halRet = alt_cache_system_disable();
+    halRet = alt_cache_system_enable();
+    //halRet = alt_cache_system_disable();
     //alt_cache_l1_data_disable();
     if (halRet != ALT_E_SUCCESS)
     {
