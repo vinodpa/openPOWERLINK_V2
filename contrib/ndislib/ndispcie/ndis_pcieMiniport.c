@@ -49,6 +49,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 //#define MAX_TX_FRAME_LENGTH     OPLK_MAX_FRAME_SIZE
+//#define READ_WRITE_PROTO
+
+#ifdef READ_WRITE_PROTO
+#define OCM_OFFSET          0x00004000
+#define SSRAM_OFFSET        0x0c400000
+#endif
 //------------------------------------------------------------------------------
 // module global vars
 //------------------------------------------------------------------------------
@@ -137,6 +143,10 @@ BOOLEAN interruptHandler(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
                          PBOOLEAN queueDefaultInterruptDpc_p, PULONG targetProcessors_p);
 VOID interruptDpc(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
                   PVOID dpcContext_p, PULONG reserved1_p, PULONG reserved2_p);
+
+#ifdef READ_WRITE_PROTO
+void readWriteTest(void);
+#endif
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
 //============================================================================//
@@ -174,13 +184,15 @@ NDIS_STATUS miniportInitialize(NDIS_HANDLE adapterHandle_p,
 
     UNREFERENCED_PARAMETER(driverContext_p);
 
-    DbgPrint("%s()... \n", __FUNCTION__);
+    TRACE("%s()... \n", __FUNCTION__);
 
     NdisZeroMemory(&miniportAttributes, sizeof(NDIS_MINIPORT_ADAPTER_ATTRIBUTES));
 
     NdisZeroMemory(&vethInstance_l, sizeof(tVEthInstance));
     // Register IOCTL interface here
+#ifndef READ_WRITE_PROTO
     ndis_createAppIntf();
+#endif
 
     // TODO: Initialize the miniport resources here
     //
@@ -201,7 +213,7 @@ NDIS_STATUS miniportInitialize(NDIS_HANDLE adapterHandle_p,
 
     if (status != NDIS_STATUS_SUCCESS)
     {
-        DbgPrint("%s() Miniport registration atrribute configuration failed\n");
+        TRACE("%s() Miniport registration atrribute configuration failed\n");
         goto ExitFail;
     }
 
@@ -247,7 +259,7 @@ NDIS_STATUS miniportInitialize(NDIS_HANDLE adapterHandle_p,
 
     if (status != NDIS_STATUS_SUCCESS)
     {
-        DbgPrint("%s() General attribute registration failed\n");
+        TRACE("%s() General attribute registration failed\n");
         goto ExitFail;
     }
 
@@ -268,7 +280,7 @@ NDIS_STATUS miniportInitialize(NDIS_HANDLE adapterHandle_p,
 
     if (status != NDIS_STATUS_SUCCESS)
     {
-        DbgPrint("%s() Failed to register interrupt\n", __FUNCTION__);
+        TRACE("%s() Failed to register interrupt\n", __FUNCTION__);
         goto ExitFail;
     }
 
@@ -276,19 +288,23 @@ NDIS_STATUS miniportInitialize(NDIS_HANDLE adapterHandle_p,
     if (intrChars.InterruptType == NDIS_CONNECT_MESSAGE_BASED)
     {
         vethInstance_l.intrMsgInfo = intrChars.MessageInfoTable;
-        DbgPrint("Message Based Interrupt\n");
+        TRACE("Message Based Interrupt\n");
     }
 
     status = prepareHardware(initParams_p->AllocatedResources);
 
     if (status != NDIS_STATUS_SUCCESS)
     {
-        DbgPrint("%s() Failed to parse resources\n", __FUNCTION__);
+        TRACE("%s() Failed to parse resources\n", __FUNCTION__);
         status = NDIS_STATUS_FAILURE;
         goto ExitFail;
     }
 
     vethInstance_l.state = NdisBindingReady;
+
+#ifdef READ_WRITE_PROTO
+    readWriteTest();
+#endif
     goto Exit;
 
 ExitFail:
@@ -300,7 +316,7 @@ ExitFail:
     
 
 Exit:
-    DbgPrint("%s() - OK \n", __FUNCTION__);
+    TRACE("%s() - OK \n", __FUNCTION__);
     return status;
 }
 
@@ -365,15 +381,17 @@ Stop all pending I/O on the VEth and then unlink it from lower miniport.
 //------------------------------------------------------------------------------
 VOID miniportHalt(NDIS_HANDLE adapterContext_p, NDIS_HALT_ACTION haltAction_p)
 {
-    DbgPrint("%s()...\n", __FUNCTION__);
+    TRACE("%s()...\n", __FUNCTION__);
 
     vethInstance_l.miniportHalting = TRUE;
 
     releaseHardware();
+#ifndef READ_WRITE_PROTO
     ndis_closeAppIntf();
+#endif
     vethInstance_l.miniportAdapterHandle = NULL;
 
-    DbgPrint("%s() - OK\n", __FUNCTION__);
+    TRACE("%s() - OK\n", __FUNCTION__);
 }
 
 //------------------------------------------------------------------------------
@@ -426,12 +444,12 @@ This handler is used to unload the miniport
 //------------------------------------------------------------------------------
 VOID miniportUnload(PDRIVER_OBJECT driverObject_p)
 {
-    DbgPrint("%s()...\n", __FUNCTION__);
+    TRACE("%s()...\n", __FUNCTION__);
     UNREFERENCED_PARAMETER(driverObject_p);
 
     NdisMDeregisterMiniportDriver(driverInstance_l.pMiniportHandle);
 
-    DbgPrint("%s() - OK\n", __FUNCTION__);
+    TRACE("%s() - OK\n", __FUNCTION__);
 }
 
 //------------------------------------------------------------------------------
@@ -453,12 +471,12 @@ NDIS_STATUS miniportPause(NDIS_HANDLE adapterContext_p,
     tVEthInstance*   pVEthInstance = (tVEthInstance*) adapterContext_p;
     NDIS_STATUS      status = NDIS_STATUS_SUCCESS;
 
-    DbgPrint("%s()...\n", __FUNCTION__);
+    TRACE("%s()...\n", __FUNCTION__);
     NdisAcquireSpinLock(&pVEthInstance->pauseLock);
     pVEthInstance->miniportPaused = TRUE;
     NdisReleaseSpinLock(&pVEthInstance->pauseLock);
 
-    DbgPrint("%s() - OK\n", __FUNCTION__);
+    TRACE("%s() - OK\n", __FUNCTION__);
     return status;
 }
 
@@ -482,11 +500,11 @@ NDIS_STATUS miniportRestart(NDIS_HANDLE adapterContext_p,
     tVEthInstance*   pVEthInstance = (tVEthInstance*) adapterContext_p;
     NDIS_STATUS      status = NDIS_STATUS_SUCCESS;
 
-    DbgPrint("%s()... \n", __FUNCTION__);
+    TRACE("%s()... \n", __FUNCTION__);
     NdisAcquireSpinLock(&pVEthInstance->pauseLock);
     pVEthInstance->miniportPaused = FALSE;
     NdisReleaseSpinLock(&pVEthInstance->pauseLock);
-    DbgPrint("%s() - OK \n", __FUNCTION__);
+    TRACE("%s() - OK \n", __FUNCTION__);
     return status;
 }
 
@@ -701,10 +719,10 @@ NDIS_STATUS miniportReset(NDIS_HANDLE adapterContext_p, PBOOLEAN addressingReset
 {
 
     NDIS_STATUS ndisStatus = NDIS_STATUS_SUCCESS;
-    DbgPrint("====> MPReset\n");
+    TRACE("====> MPReset\n");
     UNREFERENCED_PARAMETER(adapterContext_p);
     UNREFERENCED_PARAMETER(addressingReset_p);
-    DbgPrint("<==== MPReset\n");
+    TRACE("<==== MPReset\n");
     return(ndisStatus);
 }
 //------------------------------------------------------------------------------
@@ -765,14 +783,14 @@ NDIS_STATUS prepareHardware(PNDIS_RESOURCE_LIST resourceList_p)
 
                             if (status != NDIS_STATUS_SUCCESS)
                             {
-                                DbgPrint("%s() BAR 0 not mapped\n", __FUNCTION__);
+                                TRACE("%s() BAR 0 not mapped\n", __FUNCTION__);
                                 goto Exit;
                             }
 
                             vethInstance_l.lengthBar0 = pResDescriptor->u.Memory.Length;
                             //NdisZeroMappedMemory(vethInstance_l.virtualAddrBar0,
                             //                    vethInstance_l.lengthBar0);
-                            DbgPrint("BAR 0 PhyAddr:%x VirtAddr: %x Size %d\n",
+                            TRACE("BAR 0 PhyAddr:%x VirtAddr: %x Size %d\n",
                                             vethInstance_l.phyAddrBar0,
                                             vethInstance_l.virtualAddrBar0,
                                             vethInstance_l.lengthBar0);
@@ -794,20 +812,49 @@ NDIS_STATUS prepareHardware(PNDIS_RESOURCE_LIST resourceList_p)
 
                             if (status != NDIS_STATUS_SUCCESS)
                             {
-                                DbgPrint("%s() BAR 1 not mapped\n", __FUNCTION__);
+                                TRACE("%s() BAR 1 not mapped\n", __FUNCTION__);
                                 goto Exit;
                             }
 
                             vethInstance_l.lengthBar1 = pResDescriptor->u.Memory.Length;
                             //NdisZeroMappedMemory(vethInstance_l.virtualAddrBar1,
                             //                    vethInstance_l.lengthBar1);
-                            DbgPrint("BAR 1 PhyAddr:%x VirtAddr: %x Size %d\n",
+                            TRACE("BAR 1 PhyAddr:%x VirtAddr: %x Size %d\n",
                                                 vethInstance_l.phyAddrBar1,
                                                 vethInstance_l.virtualAddrBar1,
                                                 vethInstance_l.lengthBar1);
 
                         }
                         break;
+                    }
+                    case 2:
+                    {
+                              // Second BAR Found
+                              if (pResDescriptor->u.Memory.Length > 0)
+                              {
+                                  barCount++;
+                                  vethInstance_l.phyAddrBar2 = pResDescriptor->u.Memory.Start;
+                                  status = NdisMMapIoSpace(&vethInstance_l.virtualAddrBar2,
+                                                           vethInstance_l.miniportAdapterHandle,
+                                                           pResDescriptor->u.Memory.Start,
+                                                           pResDescriptor->u.Memory.Length);
+
+                                  if (status != NDIS_STATUS_SUCCESS)
+                                  {
+                                      TRACE("%s() BAR 2 not mapped\n", __FUNCTION__);
+                                      goto Exit;
+                                  }
+
+                                  vethInstance_l.lengthBar2 = pResDescriptor->u.Memory.Length;
+                                  //NdisZeroMappedMemory(vethInstance_l.virtualAddrBar1,
+                                  //                    vethInstance_l.lengthBar1);
+                                  TRACE("BAR 2 PhyAddr:%x VirtAddr: %x Size %d\n",
+                                           vethInstance_l.phyAddrBar2,
+                                           vethInstance_l.virtualAddrBar2,
+                                           vethInstance_l.lengthBar2);
+
+                              }
+                              break;
                     }
                     default:
                     {
@@ -916,10 +963,70 @@ VOID interruptDpc(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
     }
     else
     {
-        DbgPrint("NO Sync Handler\n");
+        TRACE("NO Sync Handler\n");
     }
 
 }
 
+#ifdef READ_WRITE_PROTO
+void readWriteTest(void)
+{
+    UCHAR*      ocmBase = (UCHAR*)vethInstance_l.virtualAddrBar0 + OCM_OFFSET;
+    UCHAR*      ssramBase = (UCHAR*) vethInstance_l.virtualAddrBar2 + SSRAM_OFFSET;
+    UCHAR*      shareMemory = ssramBase + *((UINT*) ocmBase);
+    UCHAR*      handshakeMemory = ssramBase + *((UINT*) (ocmBase + 4));
+    int         index = 0;
+    int count = 0;
+
+    if (shareMemory == NULL || handshakeMemory == NULL)
+    {
+        DbgPrint("Error in initilaization\n");
+        return;
+    }
+    DbgPrint("Handshake %p %x Sharedmemory %p &x\n", handshakeMemory, *handshakeMemory, shareMemory, shareMemory[1]);
+
+    while (1)
+    {
+        while (1)
+        {
+            if (!(*handshakeMemory))
+            {
+                DbgPrint("%p %x\n", shareMemory, shareMemory[1]);
+                break;
+            }
+            else
+            {
+                DbgPrint("%x-%d\n", *handshakeMemory, count);
+            }
+        }
+
+        shareMemory[0] = count;
+
+        count++;
+        if (count == 256)
+            break;
+
+        *handshakeMemory = 1;
+    }
+/*    // Read and Write OCM memmory
+    DbgPrint(" Begin OCM read Write at base %p\n", ocmBase);
+
+    for (index = 0; index < 256; index++)
+    {
+        ocmBase[index] = (UCHAR)index;
+        DbgPrint("Index %d Address %p Value %x\n", index, &ocmBase[index], ocmBase[index]);
+    }
+
+    DbgPrint(" Begin SSRAM read Write at base %p\n", ssramBase);
+
+    for (index = 0; index < 256; index++)
+    {
+        ssramBase[index] = (UCHAR)index;
+        DbgPrint("Index %d Address %p Value %x\n", index, &ssramBase[index], ssramBase[index]);
+    }*/
+
+}
+
+#endif
 ///\}
 

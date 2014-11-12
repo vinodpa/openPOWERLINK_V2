@@ -174,10 +174,13 @@ typedef struct
     PIO_INTERRUPT_MESSAGE_INFO  intrMsgInfo;
     PHYSICAL_ADDRESS            phyAddrBar0;
     PHYSICAL_ADDRESS            phyAddrBar1;
+    PHYSICAL_ADDRESS            phyAddrBar2;
     PULONG                      virtualAddrBar0;
     PULONG                      virtualAddrBar1;
+    PULONG                      virtualAddrBar2;
     ULONG                       lengthBar0;
     ULONG                       lengthBar1;
+    ULONG                       lengthBar2;
     ULONG                       msiVector;
 }tVEthInstance;
 //------------------------------------------------------------------------------

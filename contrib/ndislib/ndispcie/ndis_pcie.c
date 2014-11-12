@@ -262,6 +262,20 @@ PULONG ndis_getBar1Addr(void)
 
 }
 
+PULONG ndis_getBar2Addr(void)
+{
+    if (vethInstance_l.state == NdisBindingReady)
+    {
+        DbgPrint("%s %p \n", __FUNCTION__, vethInstance_l.virtualAddrBar2);
+        return vethInstance_l.virtualAddrBar2;
+    }
+    else
+    {
+        return NULL;
+    }
+
+}
+
 void ndis_registerSyncHandler(tSyncHandler pfnSyncCb_p)
 {
     DbgPrint("%s\n", __FUNCTION__);

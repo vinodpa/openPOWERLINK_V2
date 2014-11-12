@@ -83,6 +83,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define COMMON_MEM_BASE             0xC4000000
 #define MEM_ADDR_TABLE_OFFSET       MAX_COMMON_MEM_SIZE
 #define MEM_INTR_OFFSET             MAX_COMMON_MEM_SIZE + MAX_DYNAMIC_BUFF_SIZE
+#define OCM_OFFSET                  0x00004000
+#define SSRAM_OFFSET                0x0C400000
 #else
 
 #error "unknown target for Zynq"

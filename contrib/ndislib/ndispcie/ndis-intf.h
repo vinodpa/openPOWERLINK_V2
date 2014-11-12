@@ -120,6 +120,7 @@ NDIS_HANDLE      ndis_getAdapterHandle(void);
 void             ndis_getMacAddress(UCHAR*  pMac_p);
 PULONG           ndis_getBar0Addr(void);
 PULONG           ndis_getBar1Addr(void);
+PULONG           ndis_getBar2Addr(void);
 void             ndis_registerSyncHandler(tSyncHandler pfnSyncCb);
 
 #ifdef __cplusplus
