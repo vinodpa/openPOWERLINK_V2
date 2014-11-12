@@ -99,7 +99,6 @@ SOURCE_GROUP("Object Dictionary" FILES
     ${OBJDICT_HEADERS}
     ${OBJDICT_DIR}/${OBJDICT}/objdict.h
     )
-
 # Define library and installation rules
 ADD_LIBRARY(${LIB_NAME} ${LIB_TYPE} ${LIB_SOURCES})
 TARGET_LINK_LIBRARIES(${LIB_NAME} ${ARCH_LIBRARIES})

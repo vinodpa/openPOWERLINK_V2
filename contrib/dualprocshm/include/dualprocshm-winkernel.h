@@ -71,6 +71,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DUALPROCSHM_INVALIDATE_DCACHE_RANGE(base,range)
 
+#ifndef NDEBUG
+#define TRACE(...) DbgPrint(__VA_ARGS__)
+#else
+#define TRACE(...)
+#endif
+
 //------------------------------------------------------------------------------
 // typedef
 //------------------------------------------------------------------------------

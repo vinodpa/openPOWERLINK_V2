@@ -458,6 +458,7 @@ NTSTATUS powerlinkIoctl(PDEVICE_OBJECT pDeviceObject_p, PIRP pIrp_p)
         case PLK_CMD_CLEAN:
         {
             syncCleanUp();
+            break;
         }
         default:
             DEBUG_LVL_ERROR_TRACE("PLK: - Invalid cmd (cmd=%d)\n", irpStack->Parameters.DeviceIoControl.IoControlCode);
@@ -547,7 +548,7 @@ static void registerAppIntf(NDIS_HANDLE driverHandle_p)
     }
     else
     {
-        DbgPrint("Unable to retrieve Device Extension\n");
+        TRACE("Unable to retrieve Device Extension\n");
     }
 
 
@@ -611,11 +612,11 @@ void syncCleanUp(void)
     PIRP            pIrp;
     PLIST_ENTRY     pListEntry;
     static BOOL     fClean = TRUE;
-    DbgPrint("CleanUp\n");
+    TRACE("CleanUp\n");
 
     if (&plkDriverInstance_l.pDeviceInst->syncQueueHead != NULL && fClean)
     {
-        DbgPrint("%s\n", __func__);
+        TRACE("%s\n", __func__);
         while (!IsListEmpty(&plkDriverInstance_l.pDeviceInst->syncQueueHead))
         {
             pListEntry = NdisInterlockedRemoveHeadList(&plkDriverInstance_l.pDeviceInst->syncQueueHead,

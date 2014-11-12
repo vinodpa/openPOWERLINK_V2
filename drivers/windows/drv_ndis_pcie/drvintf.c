@@ -165,25 +165,25 @@ void drv_executeCmd(tCtrlCmd* pCtrlCmd_p)
     if (cmd == kCtrlInitStack && pCtrlCmd_p->retVal == kErrorOk)
     {
         
-        target_msleep(1000);
+        //target_msleep(1000);
         ret = initEvent();
         if (ret != kErrorOk)
         {
-            DbgPrint("Event Initialization Failed %x\n", ret);
+            DEBUG_LVL_ERROR_TRACE("Event Initialization Failed %x\n", ret);
             pCtrlCmd_p->retVal = ret;
             return;
         }
         ret = initErrHndl();
         if (ret != kErrorOk)
         {
-            DbgPrint("Error Module Initialization Failed %x\n", ret);
+            DEBUG_LVL_ERROR_TRACE("Error Module Initialization Failed %x\n", ret);
             pCtrlCmd_p->retVal = ret;
             return;
         }
         ret = initDllQueues();
         if (ret != kErrorOk)
         {
-            DbgPrint("Dll Queues Initialization Failed %x\n", ret);
+            DEBUG_LVL_ERROR_TRACE("Dll Queues Initialization Failed %x\n", ret);
             pCtrlCmd_p->retVal = ret;
             return;
         }
@@ -263,7 +263,7 @@ void drv_getStatus(UINT16* pStatus_p)
     if (dualprocshm_readDataCommon(drvInstance_l.dualProcDrvInst, FIELD_OFFSET(tCtrlBuf, status),
         sizeof(UINT16), (UINT8*) pStatus_p) != kDualprocSuccessful)
     {
-        DbgPrint("Error Reading Status\n");
+        DEBUG_LVL_ERROR_TRACE("Error Reading Status\n");
     }
 
     //PRINTF("Status %x\n", *pStatus_p);
@@ -289,7 +289,7 @@ void drv_getHeartbeat(UINT16* pHeartbeat)
     if (dualprocshm_readDataCommon(drvInstance_l.dualProcDrvInst, FIELD_OFFSET(tCtrlBuf, heartbeat),
         sizeof(UINT16), (UINT8*) pHeartbeat) != kDualprocSuccessful)
     {
-        DbgPrint("Error Reading HeartBeat\n");
+        DEBUG_LVL_ERROR_TRACE("Error Reading HeartBeat\n");
     }
 }
 
@@ -323,7 +323,7 @@ void drv_sendAsyncFrame(unsigned char* pArg_p)
 
     if (ret != kErrorOk)
     {
-        DbgPrint("Error Sending ASync Frame Queue %d\n", asyncFrameInfo->queue);
+        DEBUG_LVL_ERROR_TRACE("Error Sending ASync Frame Queue %d\n", asyncFrameInfo->queue);
     }
 }
 
@@ -405,7 +405,7 @@ tOplkError drv_initDualProcDrv(void)
 void drv_exitDualProcDrv(void)
 {
     tDualprocReturn dualRet;
-    DbgPrint("%s\n", __func__);
+
     drvInstance_l.fIrqMasterEnable = FALSE;
     drvInstance_l.fDriverActive = FALSE;
     // disable system irq
@@ -450,7 +450,7 @@ void drv_postEvent(void* pEvent_p)
 
     if (circError != kCircBufOk)
     {
-        DbgPrint("Error in Post event %x\n", circError);
+        DEBUG_LVL_ERROR_TRACE("Error in Post event %x\n", circError);
         ret = kErrorEventPostError;
     }
 

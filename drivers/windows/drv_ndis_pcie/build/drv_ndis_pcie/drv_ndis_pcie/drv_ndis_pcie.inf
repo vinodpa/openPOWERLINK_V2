@@ -19,7 +19,8 @@ ExcludeFromSelect = *
 [OPLK.NT$ARCH$]
 ; DisplayName                 Section             DeviceID
 ; -----------                 -------             --------
-%OPLK.DevDesc%              = OPLK.xil_pcie,      PCI\VEN_10EE&DEV_6011
+%OPLK.DevDesc%              = OPLK.xil_pcie,      PCI\VEN_10EE&DEV_6011     ; Xilinx SP605
+%OPLK.DevDesc%              = OPLK.xil_pcie,      PCI\VEN_1172&DEV_E001     ; Terasic DE2i-150
 
 [OPLK.xil_pcie]
 Characteristics = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
