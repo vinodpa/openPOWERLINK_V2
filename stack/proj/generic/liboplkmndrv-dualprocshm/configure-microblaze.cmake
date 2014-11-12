@@ -69,7 +69,7 @@ ENDIF()
 ################################################################################
 # Set architecture specific includes
 
-IF(${CFG_MB_UART} AND ${CFG_MB_UART} STREQUAL "TRUE")
+IF(DEFINED CFG_MB_UART AND CFG_MB_UART)
 MESSAGE(STATUS " YEAH now I got this")
     INCLUDE_DIRECTORIES(${OPLK_BASE_DIR}/hardware/boards/xilinx-z702/common/drivers/mb_uart/include)
 ENDIF()
@@ -93,7 +93,7 @@ IF(${CFG_DEMO_BOARD_NAME} STREQUAL "xilinx-sp605eb")
 ADD_DEFINITIONS("-D__SP605EB__")
 ENDIF()
 
-IF(${CFG_PCIE_DESIGN} STREQUAL "TRUE")
+IF(DEFINED CFG_PCIE_DESIGN AND CFG_PCIE_DESIGN)
 ADD_DEFINITIONS("-DCONFIG_PCIE")
 ENDIF()
 ################################################################################

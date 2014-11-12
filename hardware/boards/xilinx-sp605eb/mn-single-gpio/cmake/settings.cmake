@@ -61,24 +61,24 @@ SET(CFG_PCP_CPU_VERSION "v8.50.c")
 SET(CFG_PCIE_DESIGN "TRUE")
 
 # Microblaze has enabled multiplier
-OPTION(CFG_MICROBLAZE_HW_MULT "Microblaze has enabled hardware multiplier" ON)
-MARK_AS_ADVANCED(CFG_MICROBLAZE_HW_MULT)
+OPTION(CFG_PCP_MICROBLAZE_HW_MULT "Microblaze has enabled hardware multiplier" ON)
+MARK_AS_ADVANCED(CFG_PCP_MICROBLAZE_HW_MULT)
 
 # Microblaze has enabled divider
-OPTION(CFG_MICROBLAZE_HW_DIV "Microblaze has enabled hardware divider" OFF)
-MARK_AS_ADVANCED(CFG_MICROBLAZE_HW_DIV)
+OPTION(CFG_PCP_MICROBLAZE_HW_DIV "Microblaze has enabled hardware divider" OFF)
+MARK_AS_ADVANCED(CFG_PCP_MICROBLAZE_HW_DIV)
 
 # Microblaze has enabled pattern compare
-OPTION(CFG_MICROBLAZE_PAT_COMP "Microblaze has enabled pattern compare" ON)
-MARK_AS_ADVANCED(CFG_MICROBLAZE_PAT_COMP)
+OPTION(CFG_PCP_MICROBLAZE_PAT_COMP "Microblaze has enabled pattern compare" ON)
+MARK_AS_ADVANCED(CFG_PCP_MICROBLAZE_PAT_COMP)
 
 # Microblaze has enabled the barrel shifter
-OPTION(CFG_MICROBLAZE_BARREL_SHIFT "Microblaze has enabled the barrel shifter" ON)
-MARK_AS_ADVANCED(CFG_MICROBLAZE_BARREL_SHIFT)
+OPTION(CFG_PCP_MICROBLAZE_BARREL_SHIFT "Microblaze has enabled the barrel shifter" ON)
+MARK_AS_ADVANCED(CFG_PCP_MICROBLAZE_BARREL_SHIFT)
 
 # Microblaze has enabled the byte swapping instruction
-OPTION(CFG_MICROBLAZE_REORDER "Microblaze has enabled the byte swapping instruction" ON)
-MARK_AS_ADVANCED(CFG_MICROBLAZE_REORDER)
+OPTION(CFG_PCP_MICROBLAZE_REORDER "Microblaze has enabled the byte swapping instruction" ON)
+MARK_AS_ADVANCED(CFG_PCP_MICROBLAZE_REORDER)
 
 ################################################################################
 # E N A B L E   P R O C E S S O R   S O F T W A R E   ( P C P )
