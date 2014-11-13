@@ -2,7 +2,7 @@
 ********************************************************************************
 \file   targetsection.h
 
-\brief  Special function linking for Xilinx ZC7020 development Board - MN design
+\brief  Special function linking for Xilinx SP605EB development Board - MN design
 
 This header file defines macros for Microblaze targets to link specific functions
 to local memory.

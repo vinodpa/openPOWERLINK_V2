@@ -2,7 +2,7 @@
 #
 # CMake settings file for mn-single-gpio demo on xilinx-sp605eb
 #
-# Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+# Copyright (c) 2014, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -43,8 +43,7 @@ SET(CFG_DEMO_BUS_SYSTEM "axi")
 # Pcp's tightly coupled instruction memory name
 SET(CFG_PCP_TCIMEM_NAME pcp_ilmb_cntlr)
 
-# Dual processor design
-SET(CFG_DESIGN_DUAL "yes")
+SET(CFG_BOARD_SP605EB "TRUE")
 
 #################################################################################
 # P R O C E S S O R   F E A T U R E S
@@ -57,8 +56,6 @@ SET(CFG_PCP_PROCESSOR Microblaze)
 
 # Version of the Microblaze instance
 SET(CFG_PCP_CPU_VERSION "v8.50.c")
-
-SET(CFG_PCIE_DESIGN "TRUE")
 
 # Microblaze has enabled multiplier
 OPTION(CFG_PCP_MICROBLAZE_HW_MULT "Microblaze has enabled hardware multiplier" ON)
@@ -88,4 +85,6 @@ SET(CFG_PCP_DUALPROCSHM_ENABLE "TRUE")
 
 # Enable openMAC driver (omethlib)
 SET(CFG_PCP_OMETHLIB_ENABLE "TRUE")
+
+SET(CFG_PCP_PCIE_ENABLE "TRUE")
 

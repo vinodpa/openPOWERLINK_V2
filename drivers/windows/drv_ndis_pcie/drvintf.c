@@ -78,7 +78,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // local types
 //------------------------------------------------------------------------------
+/**
+\brief PDO memory information
 
+This structure stores the information for the PDO memory shared between user and
+kernel space.
+*/
 typedef struct
 {
     PMDL      pMdl;                 ///< Memory descriptor list describing the PDO memory.
@@ -107,17 +112,18 @@ typedef struct
 // local vars
 //------------------------------------------------------------------------------
 static tDriverInstance     drvInstance_l;
+
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
-static tOplkError initEvent(void);
-static tOplkError initDllQueues(void);
-static tOplkError initErrHndl(void);
-static void exitEvent(void);
-static void exitDllQueues(void);
-static void exitErrHndl(void);
-static tOplkError insertDataBlock(tCircBufInstance* pDllCircBuffInst_p,
-                                  BYTE* pData_p, UINT* pDataSize_p);
+static tOplkError   initEvent(void);
+static tOplkError   initDllQueues(void);
+static tOplkError   initErrHndl(void);
+static void         exitEvent(void);
+static void         exitDllQueues(void);
+static void         exitErrHndl(void);
+static tOplkError   insertDataBlock(tCircBufInstance* pDllCircBuffInst_p,
+                                    BYTE* pData_p, UINT* pDataSize_p);
 
 
 //============================================================================//
@@ -144,7 +150,6 @@ void drv_executeCmd(tCtrlCmd* pCtrlCmd_p)
     UINT16              cmd = pCtrlCmd_p->cmd;
     int                 timeout;
 
-    PRINTF("Execute Command %x....", cmd);
     if (dualprocshm_writeDataCommon(drvInstance_l.dualProcDrvInst, FIELD_OFFSET(tCtrlBuf, ctrlCmd),
         sizeof(tCtrlCmd), (UINT8 *) pCtrlCmd_p) != kDualprocSuccessful)
         return;
@@ -164,8 +169,6 @@ void drv_executeCmd(tCtrlCmd* pCtrlCmd_p)
 
     if (cmd == kCtrlInitStack && pCtrlCmd_p->retVal == kErrorOk)
     {
-        
-        //target_msleep(1000);
         ret = initEvent();
         if (ret != kErrorOk)
         {
@@ -173,6 +176,7 @@ void drv_executeCmd(tCtrlCmd* pCtrlCmd_p)
             pCtrlCmd_p->retVal = ret;
             return;
         }
+
         ret = initErrHndl();
         if (ret != kErrorOk)
         {
@@ -180,6 +184,7 @@ void drv_executeCmd(tCtrlCmd* pCtrlCmd_p)
             pCtrlCmd_p->retVal = ret;
             return;
         }
+
         ret = initDllQueues();
         if (ret != kErrorOk)
         {
@@ -195,7 +200,7 @@ void drv_executeCmd(tCtrlCmd* pCtrlCmd_p)
         exitErrHndl();
         exitEvent();
     }
-    PRINTF("OK\n");
+
 }
 
 //------------------------------------------------------------------------------
@@ -240,6 +245,7 @@ void drv_storeInitParam(tCtrlInitParam* pInitParam_p)
 {
     if (!drvInstance_l.fDriverActive)
         return;
+
     dualprocshm_writeDataCommon(drvInstance_l.dualProcDrvInst, FIELD_OFFSET(tCtrlBuf, initParam),
                                 sizeof(tCtrlInitParam), (UINT8*) pInitParam_p);
 }
@@ -259,15 +265,12 @@ void drv_getStatus(UINT16* pStatus_p)
 {
     if (!drvInstance_l.fDriverActive)
         return;
-    //PRINTF("Get Status offset %d\n", FIELD_OFFSET(tCtrlBuf, status));
+
     if (dualprocshm_readDataCommon(drvInstance_l.dualProcDrvInst, FIELD_OFFSET(tCtrlBuf, status),
         sizeof(UINT16), (UINT8*) pStatus_p) != kDualprocSuccessful)
     {
         DEBUG_LVL_ERROR_TRACE("Error Reading Status\n");
     }
-
-    //PRINTF("Status %x\n", *pStatus_p);
-
 }
 
 //------------------------------------------------------------------------------
@@ -289,7 +292,7 @@ void drv_getHeartbeat(UINT16* pHeartbeat)
     if (dualprocshm_readDataCommon(drvInstance_l.dualProcDrvInst, FIELD_OFFSET(tCtrlBuf, heartbeat),
         sizeof(UINT16), (UINT8*) pHeartbeat) != kDualprocSuccessful)
     {
-        DEBUG_LVL_ERROR_TRACE("Error Reading HeartBeat\n");
+        DEBUG_LVL_ERROR_TRACE("%s()Error Reading HeartBeat\n");
     }
 }
 
@@ -310,13 +313,14 @@ void drv_sendAsyncFrame(unsigned char* pArg_p)
     tIoctlDllCalAsync*    asyncFrameInfo;
     tFrameInfo            frameInfo;
     tOplkError            ret;
+
+    if (!drvInstance_l.fDriverActive)
+        return;
+
     asyncFrameInfo = (tIoctlDllCalAsync*) pArg_p;
     frameInfo.frameSize = asyncFrameInfo->size;
     frameInfo.pFrame = (tPlkFrame*) (pArg_p + sizeof(tIoctlDllCalAsync));
 
-    if (!drvInstance_l.fDriverActive)
-        return;
-    //PRINTF("Command %x queue %x\n", frameInfo.pFrame->data.asnd.payload.nmtCommandService.nmtCommandId, asyncFrameInfo->queue);
     ret = insertDataBlock(drvInstance_l.dllQueueInst[asyncFrameInfo->queue],
                           (UINT8*) frameInfo.pFrame,
                           &(frameInfo.frameSize));
@@ -343,6 +347,7 @@ void drv_writeErrorObject(tErrHndIoctl* pWriteObject_p)
     tErrHndObjects*   errorObjects = drvInstance_l.pErrorObjects;
     if (!drvInstance_l.fDriverActive)
         return;
+
     *((UINT32*) ((char*) errorObjects + pWriteObject_p->offset)) = pWriteObject_p->errVal;
 }
 
@@ -360,17 +365,30 @@ This routines fetches the error objects in kernel to be passed to user.
 void drv_readErrorObject(tErrHndIoctl* pReadObject_p)
 {
     tErrHndObjects*   errorObjects = drvInstance_l.pErrorObjects;
+
     if (!drvInstance_l.fDriverActive)
         return;
+
     pReadObject_p->errVal = *((UINT32*)((char*) errorObjects + pReadObject_p->offset));
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Initialize dual processor shared memory driver instance
+
+This routine initializes the driver instance of dualprocshm for HOST processor.
+
+\return Returns tOplkError error code.
+
+\ingroup module_driver_ndispcie
+*/
+//------------------------------------------------------------------------------
 tOplkError drv_initDualProcDrv(void)
 {
     tDualprocReturn dualRet;
     tDualprocConfig dualProcConfig;
 
-    PRINTF(" Initialize Driver interface...");
+    TRACE(" Initialize Driver interface...");
     OPLK_MEMSET(&drvInstance_l, 0, sizeof(tDriverInstance));
 
     OPLK_MEMSET(&dualProcConfig, 0, sizeof(tDualprocConfig));
@@ -398,10 +416,20 @@ tOplkError drv_initDualProcDrv(void)
     }
 
     drvInstance_l.fDriverActive = TRUE;
-    PRINTF(" OK\n");
+    TRACE(" OK\n");
     return kErrorOk;
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Delete dual processor shared memory driver instance
+
+This routine Deletes the driver instance of dualprocshm created during
+initialization.
+
+\ingroup module_driver_ndispcie
+*/
+//------------------------------------------------------------------------------
 void drv_exitDualProcDrv(void)
 {
     tDualprocReturn dualRet;
@@ -418,18 +446,29 @@ void drv_exitDualProcDrv(void)
     }
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Post an user event
+
+Posts the user to kernel event into the user to kernel event queue.
+
+\param  pEvent_p    Pointer to event memory.
+
+\ingroup module_driver_ndispcie
+*/
+//------------------------------------------------------------------------------
 void drv_postEvent(void* pEvent_p)
 {
-    tOplkError          ret = kErrorOk;
-    tCircBufError       circError;
-    tEvent              event;
-    char*               pArg = NULL;
-    tPdoAllocationParam* allocParam;
-    tPdoChannelConf* pChannelConf;
+    tOplkError              ret = kErrorOk;
+    tCircBufError           circError;
+    tEvent                  event;
+    char*                   pArg = NULL;
+
     tCircBufInstance*   pCircBufInstance = drvInstance_l.eventQueueInst[kEventQueueU2K];
 
     if (!drvInstance_l.fDriverActive)
         return;
+
     OPLK_MEMCPY(&event, pEvent_p, sizeof(tEvent));
 
     if (event.eventArgSize != 0)
@@ -437,7 +476,7 @@ void drv_postEvent(void* pEvent_p)
         pArg = (char*) ((UINT8*) pEvent_p + sizeof(tEvent));
         event.pEventArg = (ULONGLONG)pArg;
     }
-    //DbgPrint("%s() Event:%x Sink:%x Size %d Event%d\n", __func__, event.eventType, event.eventSink, event.eventArgSize, sizeof(tEvent));
+
     if (event.eventArgSize == 0)
     {
         circError = circbuf_writeData(pCircBufInstance, &event, sizeof(tEvent));
@@ -456,6 +495,18 @@ void drv_postEvent(void* pEvent_p)
 
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Get an user event
+
+Retreives an event from kernel to user event queue.
+
+\param  pEvent_p    Pointer to event memory.
+\param  pSize_p     Size of the event buffer.
+
+\ingroup module_driver_ndispcie
+*/
+//------------------------------------------------------------------------------
 void drv_getEvent(void* pEvent_p, size_t* pSize_p)
 {
     tCircBufInstance*   pCircBufInstance = drvInstance_l.eventQueueInst[kEventQueueK2U];
@@ -466,7 +517,6 @@ void drv_getEvent(void* pEvent_p, size_t* pSize_p)
     {
         circbuf_readData(pCircBufInstance, pEvent_p,
                          sizeof(tEvent) + MAX_EVENT_ARG_SIZE, pSize_p);
-        //DbgPrint("Get Event %d Type %x Sink %x\n", *pSize_p, ((tEvent*) pEvent_p)->eventType, ((tEvent*) pEvent_p)->eventSink);
     }
     else
     {
@@ -474,11 +524,25 @@ void drv_getEvent(void* pEvent_p, size_t* pSize_p)
     }
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Get PDO memory
+
+Retrieves the PDO memory from the dualprocshm library and maps it into user space
+before sharing it to user application.
+
+\param  ppPdoMem_p    Pointer to PDO memory.
+\param  memSize_p     Size of the PDO memory.
+
+\ingroup module_driver_ndispcie
+*/
+//------------------------------------------------------------------------------
 tOplkError drv_getPdoMem(UINT8** ppPdoMem_p, size_t memSize_p)
 {
     tDualprocReturn         dualRet;
     UINT8*                  pMem;
     tPdoMemInfo*            pPdoMemInfo = &drvInstance_l.pdoMem;
+
     if (!drvInstance_l.fDriverActive)
         return kErrorNoResource;
 
@@ -490,9 +554,10 @@ tOplkError drv_getPdoMem(UINT8** ppPdoMem_p, size_t memSize_p)
                               __func__, dualRet);
         return kErrorNoResource;
     }
-    DbgPrint("%s",__func__);
+
     pPdoMemInfo->pKernelVa = pMem;
     pPdoMemInfo->memSize = memSize_p;
+
     // Allocate new MDL pointing to PDO memory
     pPdoMemInfo->pMdl = IoAllocateMdl(pPdoMemInfo->pKernelVa, pPdoMemInfo->memSize,
                                       FALSE, FALSE, NULL);
@@ -506,13 +571,12 @@ tOplkError drv_getPdoMem(UINT8** ppPdoMem_p, size_t memSize_p)
     // Update the MDL with physical addresses
     MmBuildMdlForNonPagedPool(pPdoMemInfo->pMdl);
     // Map the memory in user space and get the address
-
-    pPdoMemInfo->pUserVa = MmMapLockedPagesSpecifyCache(pPdoMemInfo->pMdl,      // MDL
+    pPdoMemInfo->pUserVa = MmMapLockedPagesSpecifyCache(pPdoMemInfo->pMdl,  // MDL
                                                       UserMode,             // Mode
                                                       MmCached,             // Caching
                                                       NULL,                 // Address
                                                       FALSE,                // Bugcheck?
-                                                      NormalPagePriority); // Priority
+                                                      NormalPagePriority);  // Priority
 
     if (pPdoMemInfo->pUserVa == NULL)
     {
@@ -523,15 +587,28 @@ tOplkError drv_getPdoMem(UINT8** ppPdoMem_p, size_t memSize_p)
     }
 
     *ppPdoMem_p = pPdoMemInfo->pUserVa;
-    DbgPrint("PDO mem %p...OK\n", pPdoMemInfo->pUserVa);
+
+    TARCE("%s() PDO mem address in user space %p\n", pPdoMemInfo->pUserVa);
     return kErrorOk;
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Free PDO memory
+
+Frees the PDO memory previously allocated.
+
+\param  ppPdoMem_p    Pointer to PDO memory.
+\param  memSize_p     Size of the PDO memory.
+
+\ingroup module_driver_ndispcie
+*/
+//------------------------------------------------------------------------------
 void drv_freePdoMem(UINT8* pPdoMem_p, size_t memSize_p)
 {
     tPdoMemInfo*           pPdoMemInfo = &drvInstance_l.pdoMem;
     tDualprocReturn        dualRet;
-    DbgPrint("%s", __func__);
+
     if (pPdoMemInfo->pMdl == NULL)
     {
         DEBUG_LVL_ERROR_TRACE("%s() MDL already deleted !\n", __func__);
@@ -539,6 +616,7 @@ void drv_freePdoMem(UINT8* pPdoMem_p, size_t memSize_p)
     }
 
     PRINTF("%s() try to free address %p\n", __func__, pPdoMem_p);
+
     if (pPdoMemInfo->pUserVa != NULL)
     {
         MmUnmapLockedPages(pPdoMemInfo->pUserVa, pPdoMemInfo->pMdl);
@@ -552,7 +630,7 @@ void drv_freePdoMem(UINT8* pPdoMem_p, size_t memSize_p)
                               __func__, dualRet);
         return;
     }
-    DbgPrint("... OK");
+
     pPdoMem_p = NULL;
 }
 
@@ -562,10 +640,22 @@ void drv_freePdoMem(UINT8* pPdoMem_p, size_t memSize_p)
 /// \name Private Functions
 /// \{
 
+//------------------------------------------------------------------------------
+/**
+\brief  Initialize event queues
+
+Initializes shared event queues between user and kernel. The memory for the
+queues are allocated in PCIe memory and is retrieved using dualprocshm library.
+The circular buffer library is used to manage the queues.
+
+\return Returns tOplkError error code.
+
+*/
+//------------------------------------------------------------------------------
 static tOplkError initEvent(void)
 {
     tCircBufError           circError = kCircBufOk;
-    PRINTF("%s()\n",__func__);
+
     if (!drvInstance_l.fDriverActive)
         return kErrorNoResource;
 
@@ -586,18 +676,39 @@ static tOplkError initEvent(void)
     return kErrorOk;
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Close event queues
+
+Close event queues initialized earlier.
+
+\return Returns tOplkError error code.
+
+*/
+//------------------------------------------------------------------------------
 static void exitEvent(void)
 {
     circbuf_disconnect(drvInstance_l.eventQueueInst[kEventQueueK2U]);
     circbuf_disconnect(drvInstance_l.eventQueueInst[kEventQueueU2K]);
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Initialize error handler memory
+
+Retrieves the shared memory for the error handler module. This memory is only
+accesible to user space through IOCTL calls.
+
+\return Returns tOplkError error code.
+
+*/
+//------------------------------------------------------------------------------
 static tOplkError initErrHndl(void)
 {
     tDualprocReturn      dualRet;
     UINT8*               pBase;
     size_t               span;
-    PRINTF("%s()\n", __func__);
+
     if (!drvInstance_l.fDriverActive)
         return kErrorNoResource;
 
@@ -621,10 +732,16 @@ static tOplkError initErrHndl(void)
     }
 
     drvInstance_l.pErrorObjects = (tErrHndObjects*) pBase;
-    PRINTF("....OK");
+
     return kErrorOk;
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Free error handler memory
+
+*/
+//------------------------------------------------------------------------------
 static void exitErrHndl(void)
 {
     if (drvInstance_l.pErrorObjects != NULL)
@@ -634,10 +751,20 @@ static void exitErrHndl(void)
     }
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Initialize DLL queues for user layer
+
+This routine initializes the DLL queues shared between user and kernel stack.
+The memories for the queue are located in PCIe memory and is accesses using
+circular buffer and dualprocshm library
+
+\return Returns tOplkError error code.
+*/
+//------------------------------------------------------------------------------
 static tOplkError initDllQueues(void)
 {
     tCircBufError           circError = kCircBufOk;
-    PRINTF("%s()\n", __func__);
 
     if (!drvInstance_l.fDriverActive)
         return kErrorNoResource;
@@ -662,6 +789,7 @@ static tOplkError initDllQueues(void)
         TRACE("PLK : Could not allocate CIRCBUF_DLLCAL_TXSYNC circbuffer\n");
         return kErrorNoResource;
     }
+
 #if 0
     circError = circbuf_connect(CIRCBUF_DLLCAL_TXVETH, &drvInstance_l.dllQueueInst[kDllCalQueueTxVeth]);
     
@@ -675,6 +803,12 @@ static tOplkError initDllQueues(void)
 
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Free DLL queues for user layer
+
+*/
+//------------------------------------------------------------------------------
 static void exitDllQueues(void)
 {
     circbuf_disconnect(drvInstance_l.dllQueueInst[kDllCalQueueTxGen]);
@@ -685,12 +819,25 @@ static void exitDllQueues(void)
 #endif
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Write data into DLL queue
+
+Writes the data into specified DLL queue shared between user and kernel.
+
+\param  pDllCircBuffInst_p  Pointer to the DLL queue instance.
+\param  pData_p             Pointer to the data to be insterted.
+\param  pDataSize_p         Pointer to size of data.
+
+\return Returns tOplkError error code.
+*/
+//------------------------------------------------------------------------------
 static tOplkError insertDataBlock(tCircBufInstance* pDllCircBuffInst_p,
                                   BYTE* pData_p, UINT* pDataSize_p)
 {
     tOplkError                  ret = kErrorOk;
     tCircBufError               error;
-    //PRINTF("%s()\n", __func__);
+
     if (!drvInstance_l.fDriverActive)
         return kErrorNoResource;
 

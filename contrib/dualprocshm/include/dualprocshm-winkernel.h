@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _INC_dualprocshm_winkernel_H_
 #define _INC_dualprocshm_winkernel_H_
 
-
+//#error
 //------------------------------------------------------------------------------
 // includes
 //------------------------------------------------------------------------------
@@ -71,8 +71,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DUALPROCSHM_INVALIDATE_DCACHE_RANGE(base,range)
 
+#define DPSHM_REG_SYNC_INTR(callback, arg)
+
+#define DPSHM_ENABLE_SYNC_INTR()
+
+#define DPSHM_DISABLE_SYNC_INTR()
+
 #ifndef NDEBUG
-#define TRACE(...) DbgPrint(__VA_ARGS__)
+#define TRACE(...)      DbgPrint(__VA_ARGS__)
 #else
 #define TRACE(...)
 #endif

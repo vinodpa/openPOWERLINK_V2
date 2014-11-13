@@ -48,7 +48,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-//#define MAX_TX_FRAME_LENGTH     OPLK_MAX_FRAME_SIZE
 //#define READ_WRITE_PROTO
 
 #ifdef READ_WRITE_PROTO
@@ -137,15 +136,14 @@ static BOOLEAN    fInitialize = FALSE;
 //------------------------------------------------------------------------------
 // local function prototypes
 //------------------------------------------------------------------------------
-NDIS_STATUS prepareHardware(PNDIS_RESOURCE_LIST resourceList_p);
-void releaseHardware(void);
-BOOLEAN interruptHandler(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
+NDIS_STATUS     prepareHardware(PNDIS_RESOURCE_LIST resourceList_p);
+void            releaseHardware(void);
+BOOLEAN         interruptHandler(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
                          PBOOLEAN queueDefaultInterruptDpc_p, PULONG targetProcessors_p);
-VOID interruptDpc(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
+VOID            interruptDpc(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
                   PVOID dpcContext_p, PULONG reserved1_p, PULONG reserved2_p);
-
 #ifdef READ_WRITE_PROTO
-void readWriteTest(void);
+void            readWriteTest(void);
 #endif
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -233,7 +231,7 @@ NDIS_STATUS miniportInitialize(NDIS_HANDLE adapterHandle_p,
 
     miniportAttributes.GeneralAttributes.PowerManagementCapabilities = NULL;
     miniportAttributes.GeneralAttributes.MacOptions = NDIS_MAC_OPTION_TRANSFERS_NOT_PEND |
-                                                        NDIS_MAC_OPTION_NO_LOOPBACK;
+                                                      NDIS_MAC_OPTION_NO_LOOPBACK;
 
     miniportAttributes.GeneralAttributes.SupportedPacketFilters = NDIS_PACKET_TYPE_DIRECTED |
                                                                   NDIS_PACKET_TYPE_MULTICAST |
@@ -288,7 +286,6 @@ NDIS_STATUS miniportInitialize(NDIS_HANDLE adapterHandle_p,
     if (intrChars.InterruptType == NDIS_CONNECT_MESSAGE_BASED)
     {
         vethInstance_l.intrMsgInfo = intrChars.MessageInfoTable;
-        TRACE("Message Based Interrupt\n");
     }
 
     status = prepareHardware(initParams_p->AllocatedResources);
@@ -316,7 +313,7 @@ ExitFail:
     
 
 Exit:
-    TRACE("%s() - OK \n", __FUNCTION__);
+    TRACE("%s() Return with status 0x%X\n", __FUNCTION__, status);
     return status;
 }
 
@@ -333,7 +330,6 @@ Exit:
 NDIS_STATUS miniportOidRequest(NDIS_HANDLE adapterContext_p,
                                PNDIS_OID_REQUEST ndisRequest_p)
 {
-    //    tVEthInstance*          pVEthInstance = (tVEthInstance*) adapterContext_p;
     NDIS_REQUEST_TYPE    requestType;
     NDIS_STATUS          status;
 
@@ -555,6 +551,7 @@ VOID miniportSendNetBufferLists(NDIS_HANDLE adapterContext_p, PNET_BUFFER_LIST n
                                         currentNbl,
                                         completeFlags);
     }
+    // TODO: Veth Intergration to be done later
     /*
     pVethTxData = NdisAllocateMemoryWithTagPriority(driverInstance_l.pMiniportHandle,
                                                     (OPLK_MAX_FRAME_SIZE),
@@ -719,10 +716,10 @@ NDIS_STATUS miniportReset(NDIS_HANDLE adapterContext_p, PBOOLEAN addressingReset
 {
 
     NDIS_STATUS ndisStatus = NDIS_STATUS_SUCCESS;
-    TRACE("====> MPReset\n");
+    TRACE("%s() ....");
     UNREFERENCED_PARAMETER(adapterContext_p);
     UNREFERENCED_PARAMETER(addressingReset_p);
-    TRACE("<==== MPReset\n");
+    TRACE("OK\n");
     return(ndisStatus);
 }
 //------------------------------------------------------------------------------
@@ -756,7 +753,6 @@ NDIS_STATUS prepareHardware(PNDIS_RESOURCE_LIST resourceList_p)
             return STATUS_DEVICE_CONFIGURATION_ERROR;
         }
 
-
         switch (pResDescriptor->Type)
         {
             case CmResourceTypePort:
@@ -764,7 +760,6 @@ NDIS_STATUS prepareHardware(PNDIS_RESOURCE_LIST resourceList_p)
                  // Device Doesnt have any I/O Port Resources so Ignore This
                  break;
             }
-
             case CmResourceTypeMemory:
             {
                 switch (barCount)
@@ -772,93 +767,88 @@ NDIS_STATUS prepareHardware(PNDIS_RESOURCE_LIST resourceList_p)
                     case 0:
                     {
                         // First BAR found, map the memory and store the details
-                        if (pResDescriptor->u.Memory.Length > 0)
+                        if (pResDescriptor->u.Memory.Length <= 0)
+                            break;
+
+                        barCount++;
+                        vethInstance_l.phyAddrBar0 = pResDescriptor->u.Memory.Start;
+                        status = NdisMMapIoSpace(&vethInstance_l.virtualAddrBar0,
+                                                vethInstance_l.miniportAdapterHandle,
+                                                pResDescriptor->u.Memory.Start,
+                                                pResDescriptor->u.Memory.Length);
+
+                        if (status != NDIS_STATUS_SUCCESS)
                         {
-                            barCount++;
-                            vethInstance_l.phyAddrBar0 = pResDescriptor->u.Memory.Start;
-                            status = NdisMMapIoSpace(&vethInstance_l.virtualAddrBar0,
-                                                    vethInstance_l.miniportAdapterHandle,
-                                                    pResDescriptor->u.Memory.Start,
-                                                    pResDescriptor->u.Memory.Length);
-
-                            if (status != NDIS_STATUS_SUCCESS)
-                            {
-                                TRACE("%s() BAR 0 not mapped\n", __FUNCTION__);
-                                goto Exit;
-                            }
-
-                            vethInstance_l.lengthBar0 = pResDescriptor->u.Memory.Length;
-                            //NdisZeroMappedMemory(vethInstance_l.virtualAddrBar0,
-                            //                    vethInstance_l.lengthBar0);
-                            TRACE("BAR 0 PhyAddr:%x VirtAddr: %x Size %d\n",
-                                            vethInstance_l.phyAddrBar0,
-                                            vethInstance_l.virtualAddrBar0,
-                                            vethInstance_l.lengthBar0);
-
+                            TRACE("%s() BAR 0 not mapped\n", __FUNCTION__);
+                            goto Exit;
                         }
+
+                        vethInstance_l.lengthBar0 = pResDescriptor->u.Memory.Length;
+
+                        TRACE("BAR 0 PhyAddr:%x VirtAddr: %x Size %d\n",
+                                        vethInstance_l.phyAddrBar0,
+                                        vethInstance_l.virtualAddrBar0,
+                                        vethInstance_l.lengthBar0);
                         break;
                     }
                     case 1:
                     {
-                              // Second BAR Found
-                        if (pResDescriptor->u.Memory.Length > 0)
+                        // Second BAR Found
+                        if (pResDescriptor->u.Memory.Length <= 0)
+                            break;
+
+                        barCount++;
+                        vethInstance_l.phyAddrBar1 = pResDescriptor->u.Memory.Start;
+                        status = NdisMMapIoSpace(&vethInstance_l.virtualAddrBar1,
+                                                vethInstance_l.miniportAdapterHandle,
+                                                pResDescriptor->u.Memory.Start,
+                                                pResDescriptor->u.Memory.Length);
+
+                        if (status != NDIS_STATUS_SUCCESS)
                         {
-                            barCount++;
-                            vethInstance_l.phyAddrBar1 = pResDescriptor->u.Memory.Start;
-                            status = NdisMMapIoSpace(&vethInstance_l.virtualAddrBar1,
-                                                    vethInstance_l.miniportAdapterHandle,
-                                                    pResDescriptor->u.Memory.Start,
-                                                    pResDescriptor->u.Memory.Length);
-
-                            if (status != NDIS_STATUS_SUCCESS)
-                            {
-                                TRACE("%s() BAR 1 not mapped\n", __FUNCTION__);
-                                goto Exit;
-                            }
-
-                            vethInstance_l.lengthBar1 = pResDescriptor->u.Memory.Length;
-                            //NdisZeroMappedMemory(vethInstance_l.virtualAddrBar1,
-                            //                    vethInstance_l.lengthBar1);
-                            TRACE("BAR 1 PhyAddr:%x VirtAddr: %x Size %d\n",
-                                                vethInstance_l.phyAddrBar1,
-                                                vethInstance_l.virtualAddrBar1,
-                                                vethInstance_l.lengthBar1);
-
+                            TRACE("%s() BAR 1 not mapped\n", __FUNCTION__);
+                            goto Exit;
                         }
+
+                        vethInstance_l.lengthBar1 = pResDescriptor->u.Memory.Length;
+
+                        TRACE("BAR 1 PhyAddr:%x VirtAddr: %x Size %d\n",
+                                            vethInstance_l.phyAddrBar1,
+                                            vethInstance_l.virtualAddrBar1,
+                                            vethInstance_l.lengthBar1);
                         break;
                     }
                     case 2:
                     {
-                              // Second BAR Found
-                              if (pResDescriptor->u.Memory.Length > 0)
-                              {
-                                  barCount++;
-                                  vethInstance_l.phyAddrBar2 = pResDescriptor->u.Memory.Start;
-                                  status = NdisMMapIoSpace(&vethInstance_l.virtualAddrBar2,
-                                                           vethInstance_l.miniportAdapterHandle,
-                                                           pResDescriptor->u.Memory.Start,
-                                                           pResDescriptor->u.Memory.Length);
+                        // Third BAR Found
+                        if (pResDescriptor->u.Memory.Length <= 0)
+                            break;
 
-                                  if (status != NDIS_STATUS_SUCCESS)
-                                  {
-                                      TRACE("%s() BAR 2 not mapped\n", __FUNCTION__);
-                                      goto Exit;
-                                  }
+                        barCount++;
+                        vethInstance_l.phyAddrBar2 = pResDescriptor->u.Memory.Start;
+                        status = NdisMMapIoSpace(&vethInstance_l.virtualAddrBar2,
+                                                vethInstance_l.miniportAdapterHandle,
+                                                pResDescriptor->u.Memory.Start,
+                                                pResDescriptor->u.Memory.Length);
 
-                                  vethInstance_l.lengthBar2 = pResDescriptor->u.Memory.Length;
-                                  //NdisZeroMappedMemory(vethInstance_l.virtualAddrBar1,
-                                  //                    vethInstance_l.lengthBar1);
-                                  TRACE("BAR 2 PhyAddr:%x VirtAddr: %x Size %d\n",
-                                           vethInstance_l.phyAddrBar2,
-                                           vethInstance_l.virtualAddrBar2,
-                                           vethInstance_l.lengthBar2);
+                        if (status != NDIS_STATUS_SUCCESS)
+                        {
+                            TRACE("%s() BAR 2 not mapped\n", __FUNCTION__);
+                            goto Exit;
+                        }
 
-                              }
-                              break;
+                        vethInstance_l.lengthBar2 = pResDescriptor->u.Memory.Length;
+
+                        TRACE("BAR 2 PhyAddr:%x VirtAddr: %x Size %d\n",
+                                vethInstance_l.phyAddrBar2,
+                                vethInstance_l.virtualAddrBar2,
+                                vethInstance_l.lengthBar2);
+
+                        break;
                     }
                     default:
                     {
-                        // We have only two BARs for now.
+                        // Only Three BARs available.
                         break;
                     }
                 }
@@ -884,9 +874,6 @@ Exit:
 \brief Release hardware resources
 
 This routine frees resources allocated during intialization
-
-
-\param  resourceList_p    Pointer to resources allocated for device.
 
 */
 //------------------------------------------------------------------------------
@@ -921,8 +908,12 @@ void releaseHardware(void)
 /**
 \brief Interrupt service routine
 
+\param  interruptContext_p          Pointer to context memory of the driver.
+\param  messageId_p                 Message ID of the interrupt.
+\param  queueDefaultInterruptDpc_p  Flag to invoke DPC.
+\param  targetProcessors_p          Target processor interrupted.
 
-\param  resourceList_p    Pointer to resources allocated for device.
+\return Returns TRUE if the interrupt is handled else FALSE.
 
 */
 //------------------------------------------------------------------------------
@@ -933,7 +924,7 @@ BOOLEAN interruptHandler(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
     UNREFERENCED_PARAMETER(interruptContext_p);
     UNREFERENCED_PARAMETER(messageId_p);
     UNREFERENCED_PARAMETER(targetProcessors_p);
-    //DbgPrint("Interrupt\n");
+
     *queueDefaultInterruptDpc_p = TRUE;
 
     return TRUE;
@@ -961,11 +952,6 @@ VOID interruptDpc(NDIS_HANDLE  interruptContext_p, ULONG messageId_p,
     {
         vethInstance_l.pfnSyncCb();
     }
-    else
-    {
-        TRACE("NO Sync Handler\n");
-    }
-
 }
 
 #ifdef READ_WRITE_PROTO

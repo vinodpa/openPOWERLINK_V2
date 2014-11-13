@@ -50,15 +50,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #elif defined(__SP605EB__)
 
-#include "dualprocshm-pcp.h"
+#include "dualprocshm-pcie.h"
 
 #elif defined(_KERNEL_MODE)
 
-#include "dualprocshm-pcp.h"
+#include "dualprocshm-pcie.h"
 
 #else
 
-#error "Paltform is not supported! Please point the target platform file in dualprocshm-target.h "
+#error "Platform is not supported! Please point the target platform file in dualprocshm-target.h "
 
 #endif
 

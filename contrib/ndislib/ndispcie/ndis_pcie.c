@@ -116,13 +116,13 @@ NDIS_STATUS ndis_initDriver(PDRIVER_OBJECT pDriverObject_p, PUNICODE_STRING pReg
     NdisZeroMemory(&driverInstance_l, sizeof(tNdisDriverInstance));
 
     NdisZeroMemory(&miniportChars, sizeof(NDIS_MINIPORT_DRIVER_CHARACTERISTICS));
-    miniportChars.Header.Type = NDIS_OBJECT_TYPE_MINIPORT_DRIVER_CHARACTERISTICS;
-    miniportChars.Header.Size = sizeof(NDIS_MINIPORT_DRIVER_CHARACTERISTICS);
-    miniportChars.Header.Revision = NDIS_MINIPORT_DRIVER_CHARACTERISTICS_REVISION_1;
-    miniportChars.MajorNdisVersion = OPLK_MAJOR_NDIS_VERSION;
-    miniportChars.MinorNdisVersion = OPLK_MINOR_NDIS_VERSION;
-    miniportChars.MajorDriverVersion = OPLK_MAJOR_DRIVER_VERSION;
-    miniportChars.MinorDriverVersion = OPLK_MINOR_DRIVER_VERSION;
+    miniportChars.Header.Type                   = NDIS_OBJECT_TYPE_MINIPORT_DRIVER_CHARACTERISTICS;
+    miniportChars.Header.Size                   = sizeof(NDIS_MINIPORT_DRIVER_CHARACTERISTICS);
+    miniportChars.Header.Revision               = NDIS_MINIPORT_DRIVER_CHARACTERISTICS_REVISION_1;
+    miniportChars.MajorNdisVersion              = OPLK_MAJOR_NDIS_VERSION;
+    miniportChars.MinorNdisVersion              = OPLK_MINOR_NDIS_VERSION;
+    miniportChars.MajorDriverVersion            = OPLK_MAJOR_DRIVER_VERSION;
+    miniportChars.MinorDriverVersion            = OPLK_MINOR_DRIVER_VERSION;
 
     miniportChars.SetOptionsHandler             = miniportSetOptions;
     miniportChars.InitializeHandlerEx           = miniportInitialize;
@@ -145,7 +145,7 @@ NDIS_STATUS ndis_initDriver(PDRIVER_OBJECT pDriverObject_p, PUNICODE_STRING pReg
                                              &miniportChars, &driverInstance_l.pMiniportHandle);
     if (ndisStatus != NDIS_STATUS_SUCCESS)
     {
-        DbgPrint("%s() Miniport driver registration failed 0x%X\n", __FUNCTION__, ndisStatus);
+        TRACE("%s() Miniport driver registration failed 0x%X\n", __FUNCTION__, ndisStatus);
         return ndisStatus;
     }
 
@@ -219,9 +219,9 @@ void ndis_closeAppIntf(void)
 
 //------------------------------------------------------------------------------
 /**
-\brief  Close Application interface device
+\brief  Get Bar 0 base address
 
-Close the IOCTL interface created before.
+\return Returns the address of PCIe BAR 0
 
 \ingroup module_ndis
 */
@@ -230,7 +230,6 @@ PULONG ndis_getBar0Addr(void)
 {
     if (vethInstance_l.state == NdisBindingReady)
     {
-        DbgPrint("%s %p \n", __FUNCTION__, vethInstance_l.virtualAddrBar0);
         return vethInstance_l.virtualAddrBar0;
     }
     else
@@ -241,9 +240,9 @@ PULONG ndis_getBar0Addr(void)
 
 //------------------------------------------------------------------------------
 /**
-\brief  Close Application interface device
+\brief  Get Bar 1 base address
 
-Close the IOCTL interface created before.
+\return Returns the address of PCIe BAR 1
 
 \ingroup module_ndis
 */
@@ -252,40 +251,49 @@ PULONG ndis_getBar1Addr(void)
 {
     if (vethInstance_l.state == NdisBindingReady)
     {
-        DbgPrint("%s %p \n", __FUNCTION__, vethInstance_l.virtualAddrBar1);
         return vethInstance_l.virtualAddrBar1;
     }
     else
     {
         return NULL;
     }
-
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Get BAR 2 base address
+
+\return Returns the address of PCIe BAR 2
+
+\ingroup module_ndis
+*/
+//------------------------------------------------------------------------------
 PULONG ndis_getBar2Addr(void)
 {
     if (vethInstance_l.state == NdisBindingReady)
     {
-        DbgPrint("%s %p \n", __FUNCTION__, vethInstance_l.virtualAddrBar2);
         return vethInstance_l.virtualAddrBar2;
     }
     else
     {
         return NULL;
     }
-
 }
 
+//------------------------------------------------------------------------------
+/**
+\brief  Register synchronization handler
+
+Register application specific synchronization routine called from the ISR.
+
+\param  pfnSyncCb_p     Pointer to synchronization routine.
+
+\ingroup module_ndis
+*/
+//------------------------------------------------------------------------------
 void ndis_registerSyncHandler(tSyncHandler pfnSyncCb_p)
 {
-    DbgPrint("%s\n", __FUNCTION__);
-    if (pfnSyncCb_p == NULL)
-        DbgPrint("How ??????\n");
-
     vethInstance_l.pfnSyncCb = pfnSyncCb_p;
-
-    if (vethInstance_l.pfnSyncCb != NULL)
-        DbgPrint("%p\n", vethInstance_l.pfnSyncCb);
 }
 //============================================================================//
 //            P R I V A T E   F U N C T I O N S                               //

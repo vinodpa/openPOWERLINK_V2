@@ -2,10 +2,10 @@
 ********************************************************************************
 \file   dualprocshm-pcp.c
 
-\brief  Dual Processor Library Support File - sp605eb
+\brief  Dual Processor Library Support File - PCP on on external PCIe
 
-This file provides specific function definition for Zynq SoC to support shared
-memory interface using dual processor library.
+This file provides specific function definition for PCPs running on a external
+PCIe cards.
 
 \ingroup module_dualprocshm
 *******************************************************************************/
@@ -88,15 +88,15 @@ two processors.
 //------------------------------------------------------------------------------
 UINT8* dualprocshm_getCommonMemAddr(UINT16* pSize_p)
 {
-    UINT8* pAddr;
+    UINT8*     pAddr;
 
     if (*pSize_p > MAX_COMMON_MEM_SIZE )
     {
-        printf("%s Common memory not available\n",__func__);
+        TRACE("%s Common memory not available\n", __func__);
         return NULL;
     }
 
-    pAddr = (UINT8*) (COMMON_MEM_BASE);
+    pAddr = (UINT8*)(COMMON_MEM_BASE);
 
     *pSize_p = MAX_COMMON_MEM_SIZE - 1;
 
@@ -118,7 +118,6 @@ common memory.
 void dualprocshm_releaseCommonMemAddr(UINT16 pSize_p)
 {
     UNUSED_PARAMETER(pSize_p);
-    // nothing to do be done on zynq
 }
 
 //------------------------------------------------------------------------------
@@ -135,7 +134,7 @@ dynamic mapping table
 //------------------------------------------------------------------------------
 UINT8* dualprocshm_getDynMapTableAddr(void)
 {
-    UINT8* pAddr;
+    UINT8*   pAddr;
 
     pAddr = (UINT8*) MEM_ADDR_TABLE_BASE;
 
@@ -154,7 +153,6 @@ dynamic mapping table
 //------------------------------------------------------------------------------
 void dualprocshm_releaseDynMapTableAddr(void)
 {
-    // nothing to be done on zynq
 }
 
 //------------------------------------------------------------------------------
@@ -171,7 +169,7 @@ interrupt synchronization registers.
 //------------------------------------------------------------------------------
 UINT8* dualprocshm_getIntrMemAddr(void)
 {
-    UINT8* pAddr;
+    UINT8*   pAddr;
 
     pAddr = (UINT8*) MEM_INTR_BASE;
 
@@ -210,13 +208,12 @@ void dualprocshm_targetReadData(UINT8* pBase_p, UINT16 size_p, UINT8* pData_p)
 {
     if (pBase_p == NULL || pData_p == NULL)
     {
-        printf("%s Invalid parameters\n",__func__);
+        TRACE("%s Invalid parameters\n", __func__);
         return;
     }
 
-    DUALPROCSHM_INVALIDATE_DCACHE_RANGE((UINT32)pBase_p,size_p);
-//pData_p = COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE;
-    memcpy(pData_p,pBase_p,size_p);
+    DUALPROCSHM_INVALIDATE_DCACHE_RANGE((UINT32)pBase_p, size_p);
+    memcpy(pData_p, pBase_p, size_p);
 }
 
 //------------------------------------------------------------------------------
@@ -236,13 +233,13 @@ void dualprocshm_targetWriteData(UINT8* pBase_p, UINT16 size_p, UINT8* pData_p)
 {
     if (pBase_p == NULL || pData_p == NULL)
     {
-        printf("%s Invalid parameters\n",__func__);
+        TRACE("%s Invalid parameters\n", __func__);
         return;
     }
-//pData_p = MEM_ADDR_TABLE_BASE - MAX_COMMON_MEM_SIZE;
-    memcpy(pBase_p,pData_p,size_p);
 
-    DUALPROCSHM_FLUSH_DCACHE_RANGE((UINT32)pBase_p,size_p);
+    memcpy(pBase_p, pData_p, size_p);
+
+    DUALPROCSHM_FLUSH_DCACHE_RANGE((UINT32)pBase_p, size_p);
 }
 
 //------------------------------------------------------------------------------
@@ -261,7 +258,7 @@ such as memory buffers
 //------------------------------------------------------------------------------
 void dualprocshm_targetAcquireLock(UINT8* pBase_p, UINT8 lockToken_p)
 {
-    UINT8 lock = 0;
+    UINT8    lock = 0;
 
     if (pBase_p == NULL)
     {
@@ -269,18 +266,18 @@ void dualprocshm_targetAcquireLock(UINT8* pBase_p, UINT8 lockToken_p)
     }
 
     // spin till the passed token is written into memory
-    do{
-        DUALPROCSHM_INVALIDATE_DCACHE_RANGE((UINT32)pBase_p,1);
+    do
+    {
+        DUALPROCSHM_INVALIDATE_DCACHE_RANGE((UINT32)pBase_p, 1);
         lock = DPSHM_READ8((UINT32)pBase_p);
 
         if (lock == DEFAULT_LOCK_ID)
         {
-            DPSHM_WRITE8((UINT32)pBase_p,lockToken_p);
-            DUALPROCSHM_FLUSH_DCACHE_RANGE((UINT32)pBase_p,1);
+            DPSHM_WRITE8((UINT32)pBase_p, lockToken_p);
+            DUALPROCSHM_FLUSH_DCACHE_RANGE((UINT32)pBase_p, 1);
             continue;
         }
-      }while (lock != lockToken_p);
-
+    } while (lock != lockToken_p);
 }
 
 //------------------------------------------------------------------------------
@@ -296,16 +293,16 @@ This routine is used to release a lock acquired before at a address specified
 //------------------------------------------------------------------------------
 void dualprocshm_targetReleaseLock(UINT8* pBase_p)
 {
-    UINT8   defaultlock = DEFAULT_LOCK_ID;
+    UINT8    defaultlock = DEFAULT_LOCK_ID;
 
     if (pBase_p == NULL)
     {
         return;
     }
 
-    DPSHM_WRITE8((UINT32)pBase_p,defaultlock);
+    DPSHM_WRITE8((UINT32)pBase_p, defaultlock);
 
-    DUALPROCSHM_FLUSH_DCACHE_RANGE((UINT32)pBase_p,sizeof(UINT8));
+    DUALPROCSHM_FLUSH_DCACHE_RANGE((UINT32)pBase_p, sizeof(UINT8));
 }
 
 //------------------------------------------------------------------------------
@@ -321,9 +318,9 @@ used by the application for PDO and event synchronization.
 \ingroup module_dualprocshm
 */
 //------------------------------------------------------------------------------
-void dualprocshm_regSyncIrqHdl(targetSyncHdl callback_p,void* pArg_p)
+void dualprocshm_regSyncIrqHdl(targetSyncHdl callback_p, void* pArg_p)
 {
-	DPSHM_REG_SYNC_INTR(callback_p,pArg_p);
+    DPSHM_REG_SYNC_INTR(callback_p, pArg_p);
 }
 
 //------------------------------------------------------------------------------
@@ -339,10 +336,10 @@ The function is used to enable or disable the sync interrupt
 //------------------------------------------------------------------------------
 void dualprocshm_enableSyncIrq(BOOL fEnable_p)
 {
-	if(fEnable_p)
-		DPSHM_ENABLE_SYNC_INTR();
-	else
-		DPSHM_DISABLE_SYNC_INTR();
+    if (fEnable_p)
+        DPSHM_ENABLE_SYNC_INTR();
+    else
+        DPSHM_DISABLE_SYNC_INTR();
 }
 
 //------------------------------------------------------------------------------
@@ -356,19 +353,18 @@ void dualprocshm_enableSyncIrq(BOOL fEnable_p)
 \ingroup module_dualprocshm
 */
 //------------------------------------------------------------------------------
-void dualprocshm_targetSetDynBuffAddr(UINT8* pMemTableBase , UINT16 index_p, UINT32 addr_p)
+void dualprocshm_targetSetDynBuffAddr(UINT8* pMemTableBase, UINT16 index_p, UINT32 addr_p)
 {
-    UINT32          tableEntryOffs = index_p * DYN_MEM_TABLE_ENTRY_SIZE;
-    UINT32          offset = 0;
+    UINT32    tableEntryOffs = index_p * DYN_MEM_TABLE_ENTRY_SIZE;
+    UINT32    offset = 0;
 
-    if(addr_p != 0)
+    if (addr_p != 0)
     {
-    	offset = (UINT32)(addr_p - DDR_BASE);
+        offset = (UINT32)(addr_p - SHARED_MEM_BASE);
     }
 
     DPSHM_WRITE32(pMemTableBase + tableEntryOffs, offset);
     DUALPROCSHM_FLUSH_DCACHE_RANGE((UINT32) (pMemTableBase + tableEntryOffs), sizeof(UINT32));
-    printf("%s I %d Addr %x\n",__func__,index_p, offset);
 }
 
 //------------------------------------------------------------------------------
@@ -385,15 +381,17 @@ void dualprocshm_targetSetDynBuffAddr(UINT8* pMemTableBase , UINT16 index_p, UIN
 //------------------------------------------------------------------------------
 UINT8* dualprocshm_targetGetDynBuffAddr(UINT8* pMemTableBase, UINT16 index_p)
 {
-    UINT32          tableEntryOffs = index_p * DYN_MEM_TABLE_ENTRY_SIZE;
-    UINT32          buffoffset = 0x00;
-    UINT32           bufAddr;
+    UINT32    tableEntryOffs = index_p * DYN_MEM_TABLE_ENTRY_SIZE;
+    UINT32    buffoffset = 0x00;
+    UINT32    bufAddr;
+
     while (buffoffset == 0x00000000)
     {
         DUALPROCSHM_INVALIDATE_DCACHE_RANGE((pMemTableBase + tableEntryOffs), sizeof(UINT32));
         buffoffset = DPSHM_READ32(pMemTableBase + tableEntryOffs);
     }
-    bufAddr = (DDR_BASE + buffoffset);
-    printf("%s Addr %x\n",__func__, bufAddr);
+
+    bufAddr = (SHARED_MEM_BASE + buffoffset);
     return bufAddr;
 }
+

@@ -320,7 +320,10 @@ tOplkError timeru_setTimer(tTimerHdl* pTimerHdl_p, ULONG timeInMs_p, tTimerArg a
 
     // check pointer to handle
     if (pTimerHdl_p == NULL)
+    {   
+        printf("***1\n");
         return kErrorTimerInvalidHandle;
+    }
 
     // We can only handle timeouts less than the maximum 32 bit value minus
     // the timeru_process() frequency. On Windows the timeru_process() is called
@@ -432,7 +435,10 @@ tOplkError timeru_deleteTimer(tTimerHdl* pTimerHdl_p)
 
     // check pointer to handle
     if (pTimerHdl_p == NULL)
+    {
+        printf("***2\n");
         return kErrorTimerInvalidHandle;
+    }
 
     // check handle itself, i.e. was the handle initialized before
     if (*pTimerHdl_p == 0)

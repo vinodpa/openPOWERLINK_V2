@@ -246,6 +246,12 @@ NDIS_STATUS protocol_sendOidRequest(NDIS_REQUEST_TYPE requestType_p, NDIS_OID oi
 NDIS_STATUS protocol_sendPacket(void* pToken_p, size_t size_p, void* pTxLink_p);
 UCHAR*      protocol_getCurrentMac(void);
 
+#ifndef NDEBUG
+#define TRACE(...)      DbgPrint(__VA_ARGS__)
+#else
+#define TRACE(...)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -138,7 +138,7 @@ tOplkError dllk_addInstance(tDllkInitParam* pInitParam_p)
 
     // reset instance structure
     OPLK_MEMSET(&dllkInstance_g, 0, sizeof(dllkInstance_g));
-
+    printf("%p-%p-%d\n",&dllkInstance_g,&dllkInstance_g.timerHdlCycle,dllkInstance_g.timerHdlCycle);
     //jba able to work without hresk?
 #if CONFIG_TIMER_USE_HIGHRES != FALSE
     if ((ret = hrestimer_init()) != kErrorOk)

@@ -215,10 +215,13 @@ tOplkError hrestimer_modifyTimer(tTimerHdl* pTimerHdl_p, ULONGLONG time_p,
     tTimerInfo* pTimerInfo;
     UINT32      timeNs;
     UINT32      timeSteps;
+    static		entryCount = 0;
 
+    entryCount++;
     // check pointer to handle
     if (pTimerHdl_p == NULL)
     {
+    	printf("1 %p\n", pTimerHdl_p);
         ret = kErrorTimerInvalidHandle;
         goto Exit;
     }
@@ -243,6 +246,7 @@ tOplkError hrestimer_modifyTimer(tTimerHdl* pTimerHdl_p, ULONGLONG time_p,
         index = (*pTimerHdl_p >> TIMERHDL_SHIFT) - 1;
         if (index >= TIMER_COUNT)
         {   // invalid handle
+        	printf("2 %p-%x-%d-%d\n", pTimerHdl_p, *pTimerHdl_p,index, entryCount);
             ret = kErrorTimerInvalidHandle;
             goto Exit;
         }
@@ -313,6 +317,7 @@ tOplkError hrestimer_deleteTimer(tTimerHdl* pTimerHdl_p)
     // check pointer to handle
     if (pTimerHdl_p == NULL)
     {
+    	printf("3 %p\n", pTimerHdl_p);
         ret = kErrorTimerInvalidHandle;
         goto Exit;
     }
@@ -328,6 +333,7 @@ tOplkError hrestimer_deleteTimer(tTimerHdl* pTimerHdl_p)
         index = (*pTimerHdl_p >> TIMERHDL_SHIFT) - 1;
         if (index >= TIMER_COUNT)
         {   // invalid handle
+        	printf("4 %p\n", pTimerHdl_p);
             ret = kErrorTimerInvalidHandle;
             goto Exit;
         }
