@@ -21,7 +21,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -34,7 +34,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -47,7 +47,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -60,7 +60,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -73,7 +73,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -86,7 +86,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -112,7 +112,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -127,10 +127,12 @@
  <parameter name="generationId" value="0" />
  <parameter name="globalResetBus" value="false" />
  <parameter name="hdlLanguage" value="VERILOG" />
+ <parameter name="hideFromIPCatalog" value="false" />
  <parameter name="maxAdditionalLatency" value="1" />
  <parameter name="projectName" value="toplevel.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="0" />
+ <parameter name="testBenchDutName" value="" />
  <parameter name="timeStamp" value="0" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
@@ -180,16 +182,12 @@
    dir="end" />
  <interface
    name="dipsw_pio_external_connection"
-   internal="host_0.dipsw_pio_external_connection"
-   type="conduit"
-   dir="end" />
+   internal="host_0.dipsw_pio_external_connection" />
  <interface
    name="button_pio_external_connection"
-   internal="host_0.button_pio_external_connection"
-   type="conduit"
-   dir="end" />
- <interface name="memory" internal="host_0.memory" type="conduit" dir="end" />
- <interface name="hps_io" internal="host_0.hps_0_hps_io" type="conduit" dir="end" />
+   internal="host_0.button_pio_external_connection" />
+ <interface name="memory" internal="host_0.memory" />
+ <interface name="hps_io" internal="host_0.hps_0_hps_io" />
  <interface name="host_0_hps_0_h2f_reset" internal="host_0.hps_0_h2f_reset" />
  <interface
    name="openmac_0_mii"
@@ -208,22 +206,16 @@
    dir="end" />
  <interface
    name="hps_0_f2h_cold_reset_req"
-   internal="host_0.hps_0_f2h_cold_reset_req"
-   type="reset"
-   dir="end" />
+   internal="host_0.hps_0_f2h_cold_reset_req" />
  <interface
    name="hps_0_f2h_debug_reset_req"
-   internal="host_0.hps_0_f2h_debug_reset_req"
-   type="reset"
-   dir="end" />
+   internal="host_0.hps_0_f2h_debug_reset_req" />
  <interface
    name="hps_0_f2h_warm_reset_req"
-   internal="host_0.hps_0_f2h_warm_reset_req"
-   type="reset"
-   dir="end" />
+   internal="host_0.hps_0_f2h_warm_reset_req" />
  <module
    kind="altera_mem_if_ddr3_emif"
-   version="13.1"
+   version="14.0"
    enabled="1"
    name="ddr3_emif_0">
   <parameter name="MEM_VENDOR" value="Micron" />
@@ -232,6 +224,7 @@
   <parameter name="LRDIMM_EXTENDED_CONFIG">0x000000000000000000</parameter>
   <parameter name="DISCRETE_FLY_BY" value="true" />
   <parameter name="DEVICE_DEPTH" value="1" />
+  <parameter name="DEVICE_WIDTH" value="1" />
   <parameter name="MEM_MIRROR_ADDRESSING" value="0" />
   <parameter name="MEM_CLK_FREQ_MAX" value="800.0" />
   <parameter name="MEM_ROW_ADDR_WIDTH" value="12" />
@@ -255,6 +248,7 @@
   <parameter name="MEM_GUARANTEED_WRITE_INIT" value="false" />
   <parameter name="MEM_VERBOSE" value="true" />
   <parameter name="PINGPONGPHY_EN" value="false" />
+  <parameter name="DUPLICATE_AC" value="false" />
   <parameter name="REFRESH_BURST_VALIDATION" value="false" />
   <parameter name="MEM_BL" value="OTF" />
   <parameter name="MEM_BT" value="Sequential" />
@@ -450,7 +444,6 @@
   <parameter name="ENABLE_ISS_PROBES" value="false" />
   <parameter name="CALIB_REG_WIDTH" value="8" />
   <parameter name="USE_SEQUENCER_BFM" value="false" />
-  <parameter name="DEFAULT_FAST_SIM_MODEL" value="true" />
   <parameter name="PLL_SHARING_MODE" value="None" />
   <parameter name="NUM_PLL_SHARING_INTERFACES" value="1" />
   <parameter name="EXPORT_AFI_HALF_CLK" value="true" />
@@ -460,6 +453,7 @@
   <parameter name="USE_FAKE_PHY" value="false" />
   <parameter name="FORCE_MAX_LATENCY_COUNT_WIDTH" value="0" />
   <parameter name="ENABLE_NON_DESTRUCTIVE_CALIB" value="false" />
+  <parameter name="ENABLE_DELAY_CHAIN_WRITE" value="false" />
   <parameter name="TRACKING_ERROR_TEST" value="false" />
   <parameter name="TRACKING_WATCH_TEST" value="false" />
   <parameter name="MARGIN_VARIATION_TEST" value="false" />
@@ -532,13 +526,13 @@
   <parameter name="NUM_OCT_SHARING_INTERFACES" value="1" />
   <parameter name="AUTO_DEVICE" value="5CSXFC6D6F31C6" />
  </module>
- <module kind="clock_source" version="13.1" enabled="1" name="clk_50">
+ <module kind="clock_source" version="14.0" enabled="1" name="clk_50">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="DEASSERT" />
  </module>
- <module kind="clock_source" version="13.1" enabled="1" name="clk_100">
+ <module kind="clock_source" version="14.0" enabled="1" name="clk_100">
   <parameter name="clockFrequency" value="100000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
@@ -555,28 +549,31 @@
   <parameter name="AUTO_CLK100_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_CLK100_CLOCK_DOMAIN" value="1" />
   <parameter name="AUTO_CLK100_RESET_DOMAIN" value="1" />
+  <parameter name="AUTO_MAC_IRQ_INTERRUPTS_USED" value="1" />
+  <parameter name="AUTO_SYNC_IRQ_INTERRUPTS_USED" value="1" />
  </module>
  <module
    kind="altera_avalon_sysid_qsys"
-   version="13.1"
-   enabled="1"
+   version="14.0"
+   enabled="0"
    name="sysid_qsys">
-  <parameter name="id" value="305419896" />
+  <parameter name="id" value="-1395322092" />
   <parameter name="timestamp" value="0" />
   <parameter name="AUTO_CLK_CLOCK_RATE" value="50000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
  </module>
- <module kind="mn_soc_host" version="1.0" enabled="1" name="host_0">
+ <module kind="mn_soc_host" version="1.0" enabled="0" name="host_0">
   <parameter name="AUTO_GENERATION_ID" value="0" />
-  <parameter name="AUTO_UNIQUE_ID" value="$${FILENAME}_host_0" />
+  <parameter name="AUTO_UNIQUE_ID">mnDualHostifGpio_host_0</parameter>
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="AUTO_DEVICE" value="5CSXFC6D6F31C6" />
   <parameter name="AUTO_CLK50_CLOCK_RATE" value="50000000" />
-  <parameter name="AUTO_CLK50_CLOCK_DOMAIN" value="2" />
-  <parameter name="AUTO_CLK50_RESET_DOMAIN" value="2" />
+  <parameter name="AUTO_CLK50_CLOCK_DOMAIN" value="3" />
+  <parameter name="AUTO_CLK50_RESET_DOMAIN" value="3" />
   <parameter name="AUTO_CLK100_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_CLK100_CLOCK_DOMAIN" value="1" />
   <parameter name="AUTO_CLK100_RESET_DOMAIN" value="1" />
+  <parameter name="AUTO_HOSTIF_IRQ_I_INTERRUPTS_USED" value="1" />
  </module>
  <module kind="openmac" version="1.0.0" enabled="1" name="openmac_0">
   <parameter name="sys_mainClk" value="50000000" />
@@ -617,37 +614,38 @@
   <parameter name="gui_sizeU2KQ" value="8" />
   <parameter name="gui_sizePdo" value="36864" />
   <parameter name="AUTO_C0_CLOCK_RATE" value="50000000" />
+  <parameter name="AUTO_IRQSYNC_INTERRUPTS_USED" value="1" />
  </module>
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="clk_100.clk_in_reset" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="pcp.resetclk50" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="pcp.resetclk100" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="pcp.resetclk100" />
- <connection kind="clock" version="13.1" start="clk_50.clk" end="pcp.clk50" />
- <connection kind="clock" version="13.1" start="clk_100.clk" end="pcp.clk100" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="pcp.clk50" />
+ <connection kind="clock" version="14.0" start="clk_100.clk" end="pcp.clk100" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="pcp.resetclk50" />
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="pcp.slow_bridge_m0"
    end="sysid_qsys.control_slave">
   <parameter name="arbitrationPriority" value="1" />
@@ -656,63 +654,63 @@
  </connection>
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk"
    end="ddr3_emif_0.mp_cmd_clk_0" />
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk"
    end="ddr3_emif_0.mp_rfifo_clk_0" />
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk"
    end="ddr3_emif_0.mp_wfifo_clk_0" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="ddr3_emif_0.mp_cmd_reset_n_0" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="ddr3_emif_0.mp_cmd_reset_n_0" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="ddr3_emif_0.mp_rfifo_reset_n_0" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="ddr3_emif_0.mp_rfifo_reset_n_0" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="ddr3_emif_0.mp_wfifo_reset_n_0" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="ddr3_emif_0.mp_wfifo_reset_n_0" />
- <connection kind="clock" version="13.1" start="clk_50.clk" end="sysid_qsys.clk" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="sysid_qsys.clk" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="sysid_qsys.reset" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="sysid_qsys.reset" />
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="pcp.cpu_bridge_m0"
    end="ddr3_emif_0.avl_0">
   <parameter name="arbitrationPriority" value="1" />
@@ -721,94 +719,94 @@
  </connection>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="host_0.lw_bridge_m0"
    end="sysid_qsys.control_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x6810" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection kind="clock" version="13.1" start="clk_100.clk" end="host_0.clk100" />
- <connection kind="clock" version="13.1" start="clk_50.clk" end="host_0.clk50" />
+ <connection kind="clock" version="14.0" start="clk_100.clk" end="host_0.clk100" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="host_0.clk50" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="host_0.reset_clk50" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="host_0.reset_clk50" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="host_0.reset_clk100" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="host_0.reset_clk100" />
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk"
    end="openmac_0.mainClk" />
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk"
    end="openmac_0.mainClkx2" />
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk"
    end="openmac_0.dmaClk" />
- <connection kind="clock" version="13.1" start="clk_50.clk" end="openmac_0.pktClk" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="openmac_0.pktClk" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="openmac_0.mainRst" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="openmac_0.mainRst" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="openmac_0.dmaRst" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="openmac_0.dmaRst" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="openmac_0.pktRst" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="openmac_0.pktRst" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="hostinterface_0.r0" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="hostinterface_0.r0" />
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="host_0.lw_bridge_m0"
    end="hostinterface_0.host">
   <parameter name="arbitrationPriority" value="1" />
@@ -817,7 +815,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="pcp.slow_bridge_m0"
    end="hostinterface_0.pcp">
   <parameter name="arbitrationPriority" value="1" />
@@ -826,7 +824,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="pcp.slow_bridge_m0"
    end="openmac_0.macReg">
   <parameter name="arbitrationPriority" value="1" />
@@ -835,7 +833,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="pcp.slow_bridge_m0"
    end="openmac_0.macTimer">
   <parameter name="arbitrationPriority" value="1" />
@@ -844,7 +842,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="pcp.slow_bridge_m0"
    end="openmac_0.pktBuf">
   <parameter name="arbitrationPriority" value="1" />
@@ -853,7 +851,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="openmac_0.dma"
    end="ddr3_emif_0.avl_0">
   <parameter name="arbitrationPriority" value="1" />
@@ -862,7 +860,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="hostinterface_0.hostBridge"
    end="ddr3_emif_0.avl_0">
   <parameter name="arbitrationPriority" value="1" />
@@ -871,33 +869,33 @@
  </connection>
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk"
    end="hostinterface_0.c0" />
  <connection
    kind="interrupt"
-   version="13.1"
+   version="14.0"
    start="pcp.mac_irq"
    end="openmac_0.macIrq">
   <parameter name="irqNumber" value="0" />
  </connection>
  <connection
    kind="interrupt"
-   version="13.1"
+   version="14.0"
    start="pcp.sync_irq"
    end="openmac_0.timerIrq">
   <parameter name="irqNumber" value="0" />
  </connection>
  <connection
    kind="interrupt"
-   version="13.1"
+   version="14.0"
    start="hostinterface_0.irqSync"
    end="openmac_0.timerIrq">
   <parameter name="irqNumber" value="0" />
  </connection>
  <connection
    kind="interrupt"
-   version="13.1"
+   version="14.0"
    start="host_0.hostif_irq_i"
    end="hostinterface_0.irqOut">
   <parameter name="irqNumber" value="0" />
