@@ -21,7 +21,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -34,7 +34,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -49,6 +49,14 @@
       {
          value = "1";
          type = "boolean";
+      }
+   }
+   element epcs_flash_controller_0
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
       }
    }
    element host_0
@@ -626,6 +634,18 @@
   <parameter name="AUTO_C0_CLOCK_RATE" value="50000000" />
   <parameter name="AUTO_IRQSYNC_INTERRUPTS_USED" value="1" />
  </module>
+ <module
+   kind="altera_avalon_epcs_flash_controller"
+   version="14.0"
+   enabled="1"
+   name="epcs_flash_controller_0">
+  <parameter name="autoSelectASMIAtom" value="true" />
+  <parameter name="useASMIAtom" value="false" />
+  <parameter name="resetrequest_enabled" value="true" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="deviceFamilyString" value="Cyclone V" />
+  <parameter name="autoInitializationFileName">$${FILENAME}_epcs_flash_controller_0</parameter>
+ </module>
  <connection
    kind="reset"
    version="14.0"
@@ -910,6 +930,30 @@
   <parameter name="baseAddress" value="0x6810" />
   <parameter name="defaultConnection" value="false" />
  </connection>
+ <connection
+   kind="clock"
+   version="14.0"
+   start="clk_100.clk"
+   end="epcs_flash_controller_0.clk" />
+ <connection
+   kind="avalon"
+   version="14.0"
+   start="pcp.flash_bridge_m0"
+   end="epcs_flash_controller_0.epcs_control_port">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="reset"
+   version="14.0"
+   start="clk_50.clk_reset"
+   end="epcs_flash_controller_0.reset" />
+ <connection
+   kind="reset"
+   version="14.0"
+   start="clk_100.clk_reset"
+   end="epcs_flash_controller_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
