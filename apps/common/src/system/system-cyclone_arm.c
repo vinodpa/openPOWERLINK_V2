@@ -117,7 +117,7 @@ work correctly.
 \ingroup module_app_common
 */
 //------------------------------------------------------------------------------
-int initSystem(void)
+int system_init(void)
 {
     tOplkError          oplkRet = kErrorOk;
 
@@ -156,7 +156,7 @@ The function shuts-down the system.
 \ingroup module_app_common
 */
 //------------------------------------------------------------------------------
-void shutdownSystem(void)
+void system_exit(void)
 {
     alt_bridge_uninit(ALT_BRIDGE_H2F, NULL, NULL);
     alt_bridge_uninit(ALT_BRIDGE_LWH2F, NULL, NULL);
@@ -177,12 +177,25 @@ The function starts the thread used for synchronous data handling.
 \ingroup module_app_common
 */
 //------------------------------------------------------------------------------
-void startSyncThread(tSyncCb pfnSync_p)
+void system_startSyncThread(tSyncCb pfnSync_p)
 {
     UNUSED_PARAMETER(pfnSync_p);
 }
-#endif
 
+//------------------------------------------------------------------------------
+/**
+\brief  Stop synchronous data thread
+
+The function stops the thread used for synchronous data handling.
+
+\ingroup module_app_common
+*/
+//------------------------------------------------------------------------------
+void system_stopSyncThread(void)
+{
+    syncThreadInstance_l.fTerminate = TRUE;
+}
+#endif
 
 //------------------------------------------------------------------------------
 /**
@@ -211,7 +224,7 @@ milliseconds have elapsed.
 \ingroup module_target
 */
 //------------------------------------------------------------------------------
-void msleep(unsigned int milliSeconds_p)
+void system_msleep(unsigned int milliSeconds_p)
 {
     uint64_t                startTickStamp = alt_globaltmr_get64();
     uint64_t                waitTickCount = getTimerTicksFromScaled(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS, milliSeconds_p);

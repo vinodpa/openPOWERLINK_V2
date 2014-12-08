@@ -204,6 +204,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * macro is applied with spin lock.
  */
 
+#define OPLK_MUTEX_T                uint8_t
 #define OPLK_ATOMIC_T               uint8_t
 #define OPLK_LOCK_T                 LOCK_T
 #define OPLK_ATOMIC_INIT(base)             \
@@ -244,4 +245,5 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define OPLK_DCACHE_FLUSH(base, range)
 #define OPLK_DCACHE_INVALIDATE(base, range)
 #endif
+
 #endif /* _INC_targetdefs_arm_altera_H_ */

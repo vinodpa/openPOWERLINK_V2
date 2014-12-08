@@ -147,12 +147,9 @@ int main(void)
 #if (CONFIG_CDC_ON_SD != FALSE)
     tCdcBuffInfo    cdcBuffInfo;
 #endif
-    tOplkError  ret = kErrorOk;
-    const UINT8 aMacAddr[] = {MAC_ADDR};
-    UINT8       nodeid;
 
     // initialize the target platform
-    initSystem();
+    system_init();
     lcd_init();
     gpio_init();
 
@@ -213,7 +210,7 @@ Exit:
     shutdownApp();
     lcd_exit();
     gpio_shutdown();
-    shutdownSystem();
+    system_exit();
 
     return 0;
 }
