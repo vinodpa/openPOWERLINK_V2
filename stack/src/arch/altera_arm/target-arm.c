@@ -249,7 +249,7 @@ milliseconds have elapsed.
 //------------------------------------------------------------------------------
 void target_msleep(UINT32 milliSeconds_p)
 {
-    msleep(milliSeconds_p);
+    system_msleep(milliSeconds_p);
 }
 
 //------------------------------------------------------------------------------
