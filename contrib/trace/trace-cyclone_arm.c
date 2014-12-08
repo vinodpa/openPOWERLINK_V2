@@ -41,51 +41,52 @@
 #include "socal/socal.h"
 
 #if 1
-#define STDOUT_FILENO    1
+#define STDOUT_FILENO 1
+#define STDERR_FILENO 2
 
 int _close(int file)
 {
     /* Succeeds only for STDOUT */
-    return (file == STDOUT_FILENO) ? 0 : -1;
+    return ((file == STDOUT_FILENO) || (file == STDERR_FILENO)) ? 0 : -1;
 }
 
-int _fstat(int file, void*st)
+int _fstat(int file, void *st)
 {
     /* Succeeds only for STDOUT */
-    return (file == STDOUT_FILENO) ? 0 : -1;
+    return ((file == STDOUT_FILENO) || (file == STDERR_FILENO)) ? 0 : -1;
 }
 
 int _isatty(int file)
 {
     /* Succeeds only for STDOUT */
-    return (file == STDOUT_FILENO) ? 1 : -1;
+    return ((file == STDOUT_FILENO) || (file == STDERR_FILENO)) ? 1 : -1;
 }
 
 off_t _lseek(int file, off_t ptr, int dir)
 {
     /* Succeeds only for STDOUT */
-    return (file == STDOUT_FILENO) ? 0 : -1;
+    return ((file == STDOUT_FILENO) || (file == STDERR_FILENO)) ? 0 : -1;
 }
 
-int _read(int file, void*ptr, size_t len)
+int _read(int file, void *ptr, size_t len)
 {
     /* Always fails */
     return -1;
 }
 
-int _write(int file, char* ptr, unsigned len, int flag )
+int _write(int file, char * ptr, unsigned len, int flag )
 {
     /* Fails if not STDOUT */
-    if (file != STDOUT_FILENO)
+    if ((file != STDOUT_FILENO) && (file != STDERR_FILENO))
     {
         return -1;
     }
 
     /* Print each character to UART */
-    for (int i = 0; i < len; i++)
+    for(int i=0; i<len; i++)
     {
         /* Wait until THR is empty*/
-        while (1 != ALT_UART_LSR_THRE_GET(alt_read_word(ALT_UART0_LSR_ADDR)))
+        while(1 != ALT_UART_LSR_THRE_GET(alt_read_word(ALT_UART0_LSR_ADDR)))
         {
         }
 
