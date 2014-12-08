@@ -28,6 +28,8 @@
 
 library ieee;
 use ieee.std_logic_1164.all;
+library libcommon;
+use libcommon.global.all;
 
 entity toplevel is
     port (
@@ -311,35 +313,6 @@ architecture rtl of toplevel is
         );
     end component mnDualHostifGpio;
 
-     -- De-bounce eliminator for GPIO
-     component debounce
-     generic (
-      WIDTH     : integer := 32 ;
-      POLARITY  : string := "HIGH" ;
-      TIMEOUT   : integer := 50000 ;
-      TIMEOUT_WIDTH : integer := 16
-     );
-     port (
-        clk     : in std_logic ;
-        reset_n  : in std_logic ;
-        data_in  : in std_logic_vector (WIDTH-1 downto 0) ;
-        data_out : out std_logic_vector (WIDTH-1 downto 0)
-     );
-    end component debounce;
-    -- Edge Detector
-    component altera_edge_detector
-    generic (
-        PULSE_EXT : integer := 0;
-        EDGE_TYPE : integer := 0;
-        IGNORE_RST_WHILE_BUSY : integer := 0
-     );
-    port(
-        clk   : in std_logic;
-        rst_n : in std_logic ;
-        signal_in : in std_logic;
-        pulse_out : out std_logic
-    );
-    end component altera_edge_detector;
     -- Altera Reset Controller
     component altera_reset_controller
     generic(
@@ -367,14 +340,6 @@ architecture rtl of toplevel is
         locked      : OUT STD_LOGIC
     );
    end component pll;
-
-   component hps_reset 
-   port(
-        --probe		:	in std_logic;
-        source_clk : in std_logic;
-        source     : out std_logic_vector (2 downto 0)
-   );
-   end component hps_reset ;
 
  begin
  
@@ -406,7 +371,7 @@ architecture rtl of toplevel is
 --      dipsw_pio_external_connection_export  =>  fpga_dipsw_pio,
       led_pio_external_connection_in_port   =>  fpga_led_internal,
       led_pio_external_connection_out_port  =>  fpga_led_internal,
-      button_pio_external_connection_export =>  fpga_debounced_buttons,
+      button_pio_external_connection_export =>  fpga_button_pio,
       hps_io_hps_io_emac1_inst_TX_CLK =>  hps_emac1_TX_CLK,
       hps_io_hps_io_emac1_inst_TXD0   =>  hps_emac1_TXD0,
       hps_io_hps_io_emac1_inst_TXD1   =>  hps_emac1_TXD1,
@@ -472,11 +437,10 @@ architecture rtl of toplevel is
       hps_io_hps_io_gpio_inst_GPIO44  =>  hps_gpio_GPIO44,
       clk_50_clk                            =>  clk50,
       clk_100_clk                           =>  clk100,
-      --host_0_hps_0_h2f_reset_reset_n        =>  hps_fpga_reset_n_src,
       reset_reset_n                         =>  hps_fpga_reset_n,
-      hps_0_f2h_cold_reset_req_reset_n      =>  not hps_cold_reset,
-      hps_0_f2h_debug_reset_req_reset_n     =>  not hps_debug_reset,
-      hps_0_f2h_warm_reset_req_reset_n      =>  not hps_warm_reset,
+      hps_0_f2h_cold_reset_req_reset_n      =>  cnInactivated,
+      hps_0_f2h_debug_reset_req_reset_n     =>  cnInactivated,
+      hps_0_f2h_warm_reset_req_reset_n      =>  cnInactivated,
       memory_0_mem_a                        =>  fpga_memory_mem_a_temp,
       memory_0_mem_ba                       =>  fpga_memory_mem_ba,
       memory_0_mem_ck                       =>  fpga_memory_mem_ck,
@@ -492,8 +456,7 @@ architecture rtl of toplevel is
       memory_0_mem_dqs                      =>  fpga_memory_mem_dqs,
       memory_0_mem_dqs_n                    =>  fpga_memory_mem_dqs_n,
       memory_0_mem_odt                      =>  fpga_memory_mem_odt,
-      --ddr3_emif_0_global_reset_reset_n      =>  pulse_resetn_ddr,
-      ddr3_emif_0_global_reset_reset_n      =>  '1',
+      ddr3_emif_0_global_reset_reset_n      =>  cnInactivated,
       ddr3_emif_0_soft_reset_reset_n        =>  pulse_resetn_ddr,
       ddr3_emif_0_afi_reset_export_reset_n  =>  ddr3_afi_resetn,
       ddr3_emif_0_pll_ref_clk_clk           =>  clock_in,
@@ -511,70 +474,6 @@ architecture rtl of toplevel is
       openmac_0_mactimerout_export          =>  PLNK_MAC_TIMER
     );
 
-    --TODO: Remove debounce component. Design will work without it
-    debounce_inst: component debounce
-    generic map (
-        WIDTH         => 2,
-        POLARITY      => "LOW",
-        TIMEOUT       => 50000,     -- at 50Mhz this is a debounce time of 1ms
-        TIMEOUT_WIDTH => 16  -- ceil(log2(TIMEOUT))
-    )
-    port map (
-        clk         => clk50,
-        reset_n     => hps_fpga_reset_n,
-        data_in     => fpga_button_pio,
-        data_out    => fpga_debounced_buttons
-    );
-
-     --TODO: Remove or redesign altera reset controller.
-     --This act as a work-around for HPS & FPGA Reset synchronization
-     hps_reset_inst: component hps_reset  
-     port map(
-        source_clk => clk50,
-        source     => hps_reset_req
-     );
-    --This act as a work-around for HPS & FPGA Reset synchronization
-   pulse_cold_reset: component altera_edge_detector  
-     generic map (
-       PULSE_EXT     => 6, --6
-       EDGE_TYPE     => 1,
-       IGNORE_RST_WHILE_BUSY => 1
-     )
-     port map(
-        clk       => clk50,
-        rst_n     => hps_fpga_reset_n,
-        signal_in => hps_reset_req(0),
-        pulse_out => hps_cold_reset
-     );
-     
-    --This act as a work-around for HPS & FPGA Reset synchronization
-    pulse_warm_reset: component altera_edge_detector  
-    generic map (
-        PULSE_EXT => 2, --2
-        EDGE_TYPE => 1,
-        IGNORE_RST_WHILE_BUSY => 1
-    )
-    port map (
-         clk       => clk50,
-         rst_n     => hps_fpga_reset_n,
-         signal_in => hps_reset_req(1),
-         pulse_out => hps_warm_reset
-    );
-
-    --This act as a work-around for HPS & FPGA Reset synchronization
-    pulse_debug_reset: component altera_edge_detector  
-    generic map (
-        PULSE_EXT => 32,  --32
-        EDGE_TYPE => 1,
-        IGNORE_RST_WHILE_BUSY => 1
-    )
-    port map(
-        clk       => clk50,
-        rst_n     => hps_fpga_reset_n,
-        signal_in => hps_reset_req(2),
-        pulse_out => hps_debug_reset
-   );
-
     --TODO: Remove or redesign altera reset controller.
     --This act as a work-around for DDR and Nios Reset synchronization
     rst_ctrl_inst: component altera_reset_controller
@@ -586,7 +485,6 @@ architecture rtl of toplevel is
     )
     port map(
       clk              => clk50,
-      --reset_n_src      => pllLocked & hps_fpga_reset_n_src & ddr3_afi_resetn,
       reset_n_src      => pllLocked & ddr3_afi_resetn,
       combined_reset_n => hps_fpga_reset_n,
       pulse_reset_n    => pulse_resetn_ddr
