@@ -274,8 +274,7 @@ architecture rtl of toplevel is
             hps_0_f2h_cold_reset_req_reset_n            : in    std_logic := 'X';
             hps_0_f2h_debug_reset_req_reset_n           : in    std_logic := 'X';
             hps_0_f2h_warm_reset_req_reset_n            : in    std_logic := 'X';
-            led_pio_external_connection_in_port               : in    std_logic_vector(3 downto 0)  := (others => 'X');
-            led_pio_external_connection_out_port              : out   std_logic_vector(3 downto 0);
+            led_pio_external_connection_export                : out   std_logic_vector(3 downto 0);
             dipsw_pio_external_connection_export              : in    std_logic_vector(3 downto 0)  := (others => 'X');
             button_pio_external_connection_export             : in    std_logic_vector(1 downto 0)  := (others => 'X');
             ddr3_emif_0_status_local_init_done                : out   std_logic;
@@ -367,8 +366,7 @@ architecture rtl of toplevel is
       memory_oct_rzqin                      =>  hps_memory_oct_rzqin,
       --DIP Switch FPGA
       dipsw_pio_external_connection_export  =>  fpga_dipsw_pio,
-      led_pio_external_connection_in_port   =>  fpga_led_internal,
-      led_pio_external_connection_out_port  =>  fpga_led_internal,
+      led_pio_external_connection_export    =>  fpga_led_internal,
       button_pio_external_connection_export =>  fpga_button_pio,
       hps_io_hps_io_emac1_inst_TX_CLK =>  hps_emac1_TX_CLK,
       hps_io_hps_io_emac1_inst_TXD0   =>  hps_emac1_TXD0,

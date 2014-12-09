@@ -47,7 +47,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -57,6 +57,11 @@
       {
          value = "8";
          type = "int";
+      }
+      datum sopceditor_expanded
+      {
+         value = "0";
+         type = "boolean";
       }
    }
    element host_0
@@ -68,7 +73,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -82,6 +87,19 @@
       datum sopceditor_expanded
       {
          value = "1";
+         type = "boolean";
+      }
+   }
+   element led_pio
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+      datum sopceditor_expanded
+      {
+         value = "0";
          type = "boolean";
       }
    }
@@ -111,6 +129,14 @@
          type = "boolean";
       }
    }
+   element led_pio.s1
+   {
+      datum baseAddress
+      {
+         value = "26880";
+         type = "String";
+      }
+   }
    element sysid_qsys
    {
       datum _sortIndex
@@ -120,7 +146,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "1";
+         value = "0";
          type = "boolean";
       }
    }
@@ -185,7 +211,7 @@
    dir="end" />
  <interface
    name="led_pio_external_connection"
-   internal="pcp.led_pio_external_connection"
+   internal="led_pio.external_connection"
    type="conduit"
    dir="end" />
  <interface
@@ -646,6 +672,20 @@
   <parameter name="deviceFamilyString" value="Cyclone V" />
   <parameter name="autoInitializationFileName">$${FILENAME}_epcq_flash_controller_0</parameter>
  </module>
+ <module kind="altera_avalon_pio" version="14.0" enabled="1" name="led_pio">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="true" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="4" />
+  <parameter name="clockRate" value="50000000" />
+ </module>
  <connection
    kind="reset"
    version="14.0"
@@ -954,6 +994,26 @@
    version="14.0"
    start="clk_100.clk_reset"
    end="epcq_flash_controller_0.reset" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="led_pio.clk" />
+ <connection
+   kind="avalon"
+   version="14.0"
+   start="pcp.slow_bridge_m0"
+   end="led_pio.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x6900" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="reset"
+   version="14.0"
+   start="clk_50.clk_reset"
+   end="led_pio.reset" />
+ <connection
+   kind="reset"
+   version="14.0"
+   start="clk_100.clk_reset"
+   end="led_pio.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
