@@ -51,7 +51,7 @@
          type = "boolean";
       }
    }
-   element epcs_flash_controller_0
+   element epcq_flash_controller_0
    {
       datum _sortIndex
       {
@@ -638,13 +638,13 @@
    kind="altera_avalon_epcs_flash_controller"
    version="14.0"
    enabled="1"
-   name="epcs_flash_controller_0">
+   name="epcq_flash_controller_0">
   <parameter name="autoSelectASMIAtom" value="true" />
   <parameter name="useASMIAtom" value="false" />
   <parameter name="resetrequest_enabled" value="true" />
   <parameter name="clockRate" value="100000000" />
   <parameter name="deviceFamilyString" value="Cyclone V" />
-  <parameter name="autoInitializationFileName">$${FILENAME}_epcs_flash_controller_0</parameter>
+  <parameter name="autoInitializationFileName">$${FILENAME}_epcq_flash_controller_0</parameter>
  </module>
  <connection
    kind="reset"
@@ -934,12 +934,12 @@
    kind="clock"
    version="14.0"
    start="clk_100.clk"
-   end="epcs_flash_controller_0.clk" />
+   end="epcq_flash_controller_0.clk" />
  <connection
    kind="avalon"
    version="14.0"
    start="pcp.flash_bridge_m0"
-   end="epcs_flash_controller_0.epcs_control_port">
+   end="epcq_flash_controller_0.epcs_control_port">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
@@ -948,12 +948,12 @@
    kind="reset"
    version="14.0"
    start="clk_50.clk_reset"
-   end="epcs_flash_controller_0.reset" />
+   end="epcq_flash_controller_0.reset" />
  <connection
    kind="reset"
    version="14.0"
    start="clk_100.clk_reset"
-   end="epcs_flash_controller_0.reset" />
+   end="epcq_flash_controller_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
