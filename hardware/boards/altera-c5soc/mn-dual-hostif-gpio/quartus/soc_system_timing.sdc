@@ -1,6 +1,14 @@
+derive_pll_clocks
+derive_clock_uncertainty
 # board input clock
 create_clock -period 20 [get_ports fpga_clk_50]
-create_clock -period 10 [get_ports fpga_memory_refclk_100]
+
+set ext_clk     fpga_clk_50
+set clk50       pllInst|altpll_component|auto_generated|generic_pll1~PLL_OUTPUT_COUNTER|divclk
+set clk100      pllInst|altpll_component|auto_generated|generic_pll2~PLL_OUTPUT_COUNTER|divclk
+
+set afi_wr_clk  mnDualHostifGpio:soc_inst|mnDualHostifGpio_host_0:host_0|mnDualHostifGpio_host_0_hps_0:hps_0|mnDualHostifGpio_host_0_hps_0_hps_io:hps_io|mnDualHostifGpio_host_0_hps_0_hps_io_border:border|hps_sdram:hps_sdram_inst|hps_sdram_pll:pll|afi_clk_write_clk
+set wr_clk      mnDualHostifGpio:soc_inst|mnDualHostifGpio_host_0:host_0|mnDualHostifGpio_host_0_hps_0:hps_0|mnDualHostifGpio_host_0_hps_0_hps_io:hps_io|mnDualHostifGpio_host_0_hps_0_hps_io_border:border|hps_sdram:hps_sdram_inst|hps_sdram_pll:pll|pll_write_clk_dq_write_clk
 
 # for enhancing USB BlasterII to be reliable, 25MHz
 create_clock -name {altera_reserved_tck} -period 40 {altera_reserved_tck}
