@@ -146,8 +146,7 @@ entity toplevel is
    PLNK_MII_RXCLK           : in    std_logic_vector(1 downto 0)  := (others => 'X'); -- rxClk
    PLNK_SMI_PHYRSTN         : out   std_logic_vector(0 downto 0);-- nPhyRst
    PLNK_SMI_CLK             : out   std_logic_vector(0 downto 0);-- clk
-   PLNK_SMI_DIO             : inout std_logic_vector(0 downto 0)  := (others => 'X');-- dio
-   PLNK_MAC_TIMER           : out   std_logic_vector(0 downto 0)  -- export
+   PLNK_SMI_DIO             : inout std_logic_vector(0 downto 0)  := (others => 'X')-- dio
 );
 end toplevel;
 
@@ -190,21 +189,21 @@ architecture rtl of toplevel is
             memory_mem_odt                              : out   std_logic;
             memory_mem_dm                               : out   std_logic_vector(4 downto 0);
             memory_oct_rzqin                            : in    std_logic := 'X';
-            memory_0_mem_a                              : out   std_logic_vector(12 downto 0);
-            memory_0_mem_ba                             : out   std_logic_vector(2 downto 0);
-            memory_0_mem_ck                             : out   std_logic_vector(0 downto 0);
-            memory_0_mem_ck_n                           : out   std_logic_vector(0 downto 0);
-            memory_0_mem_cke                            : out   std_logic_vector(0 downto 0);
-            memory_0_mem_cs_n                           : out   std_logic_vector(0 downto 0);
-            memory_0_mem_dm                             : out   std_logic_vector(3 downto 0);
-            memory_0_mem_ras_n                          : out   std_logic_vector(0 downto 0);
-            memory_0_mem_cas_n                          : out   std_logic_vector(0 downto 0);
-            memory_0_mem_we_n                           : out   std_logic_vector(0 downto 0);
-            memory_0_mem_reset_n                        : out   std_logic;
-            memory_0_mem_dq                             : inout std_logic_vector(31 downto 0) := (others => 'X');
-            memory_0_mem_dqs                            : inout std_logic_vector(3 downto 0)  := (others => 'X');
-            memory_0_mem_dqs_n                          : inout std_logic_vector(3 downto 0)  := (others => 'X');
-            memory_0_mem_odt                            : out   std_logic_vector(0 downto 0);
+            memory_fpga_mem_a                           : out   std_logic_vector(12 downto 0);
+            memory_fpga_mem_ba                          : out   std_logic_vector(2 downto 0);
+            memory_fpga_mem_ck                          : out   std_logic_vector(0 downto 0);
+            memory_fpga_mem_ck_n                        : out   std_logic_vector(0 downto 0);
+            memory_fpga_mem_cke                         : out   std_logic_vector(0 downto 0);
+            memory_fpga_mem_cs_n                        : out   std_logic_vector(0 downto 0);
+            memory_fpga_mem_dm                          : out   std_logic_vector(3 downto 0);
+            memory_fpga_mem_ras_n                       : out   std_logic_vector(0 downto 0);
+            memory_fpga_mem_cas_n                       : out   std_logic_vector(0 downto 0);
+            memory_fpga_mem_we_n                        : out   std_logic_vector(0 downto 0);
+            memory_fpga_mem_reset_n                     : out   std_logic;
+            memory_fpga_mem_dq                          : inout std_logic_vector(31 downto 0) := (others => 'X');
+            memory_fpga_mem_dqs                         : inout std_logic_vector(3 downto 0)  := (others => 'X');
+            memory_fpga_mem_dqs_n                       : inout std_logic_vector(3 downto 0)  := (others => 'X');
+            memory_fpga_mem_odt                         : out   std_logic_vector(0 downto 0);
             oct_rzqin                                   : in    std_logic := 'X';
             clk_50_clk                                  : in    std_logic := 'X';
             clk_100_clk                                 : in    std_logic := 'X';
@@ -279,7 +278,6 @@ architecture rtl of toplevel is
             led_pio_external_connection_out_port              : out   std_logic_vector(3 downto 0);
             dipsw_pio_external_connection_export              : in    std_logic_vector(3 downto 0)  := (others => 'X');
             button_pio_external_connection_export             : in    std_logic_vector(1 downto 0)  := (others => 'X');
-            --host_0_hps_0_h2f_reset_reset_n                    : out   std_logic;
             ddr3_emif_0_status_local_init_done                : out   std_logic;
             ddr3_emif_0_status_local_cal_success              : out   std_logic;
             ddr3_emif_0_status_local_cal_fail                 : out   std_logic;
@@ -368,7 +366,7 @@ architecture rtl of toplevel is
       memory_mem_dm                         =>  hps_memory_mem_dm,
       memory_oct_rzqin                      =>  hps_memory_oct_rzqin,
       --DIP Switch FPGA
---      dipsw_pio_external_connection_export  =>  fpga_dipsw_pio,
+      dipsw_pio_external_connection_export  =>  fpga_dipsw_pio,
       led_pio_external_connection_in_port   =>  fpga_led_internal,
       led_pio_external_connection_out_port  =>  fpga_led_internal,
       button_pio_external_connection_export =>  fpga_button_pio,
@@ -441,21 +439,21 @@ architecture rtl of toplevel is
       hps_0_f2h_cold_reset_req_reset_n      =>  cnInactivated,
       hps_0_f2h_debug_reset_req_reset_n     =>  cnInactivated,
       hps_0_f2h_warm_reset_req_reset_n      =>  cnInactivated,
-      memory_0_mem_a                        =>  fpga_memory_mem_a_temp,
-      memory_0_mem_ba                       =>  fpga_memory_mem_ba,
-      memory_0_mem_ck                       =>  fpga_memory_mem_ck,
-      memory_0_mem_ck_n                     =>  fpga_memory_mem_ck_n,
-      memory_0_mem_cke                      =>  fpga_memory_mem_cke,
-      memory_0_mem_cs_n                     =>  fpga_memory_mem_cs_n,
-      memory_0_mem_dm                       =>  fpga_memory_mem_dm,
-      memory_0_mem_ras_n                    =>  fpga_memory_mem_ras_n,
-      memory_0_mem_cas_n                    =>  fpga_memory_mem_cas_n,
-      memory_0_mem_we_n                     =>  fpga_memory_mem_we_n,
-      memory_0_mem_reset_n                  =>  fpga_memory_mem_reset_n,
-      memory_0_mem_dq                       =>  fpga_memory_mem_dq,
-      memory_0_mem_dqs                      =>  fpga_memory_mem_dqs,
-      memory_0_mem_dqs_n                    =>  fpga_memory_mem_dqs_n,
-      memory_0_mem_odt                      =>  fpga_memory_mem_odt,
+      memory_fpga_mem_a                     =>  fpga_memory_mem_a_temp,
+      memory_fpga_mem_ba                    =>  fpga_memory_mem_ba,
+      memory_fpga_mem_ck                    =>  fpga_memory_mem_ck,
+      memory_fpga_mem_ck_n                  =>  fpga_memory_mem_ck_n,
+      memory_fpga_mem_cke                   =>  fpga_memory_mem_cke,
+      memory_fpga_mem_cs_n                  =>  fpga_memory_mem_cs_n,
+      memory_fpga_mem_dm                    =>  fpga_memory_mem_dm,
+      memory_fpga_mem_ras_n                 =>  fpga_memory_mem_ras_n,
+      memory_fpga_mem_cas_n                 =>  fpga_memory_mem_cas_n,
+      memory_fpga_mem_we_n                  =>  fpga_memory_mem_we_n,
+      memory_fpga_mem_reset_n               =>  fpga_memory_mem_reset_n,
+      memory_fpga_mem_dq                    =>  fpga_memory_mem_dq,
+      memory_fpga_mem_dqs                   =>  fpga_memory_mem_dqs,
+      memory_fpga_mem_dqs_n                 =>  fpga_memory_mem_dqs_n,
+      memory_fpga_mem_odt                   =>  fpga_memory_mem_odt,
       ddr3_emif_0_global_reset_reset_n      =>  cnInactivated,
       ddr3_emif_0_soft_reset_reset_n        =>  pulse_resetn_ddr,
       ddr3_emif_0_afi_reset_export_reset_n  =>  ddr3_afi_resetn,
@@ -471,7 +469,7 @@ architecture rtl of toplevel is
       openmac_0_smi_nPhyRst                 =>  PLNK_SMI_PHYRSTN,
       openmac_0_smi_clk                     =>  PLNK_SMI_CLK,
       openmac_0_smi_dio                     =>  PLNK_SMI_DIO,
-      openmac_0_mactimerout_export          =>  PLNK_MAC_TIMER
+      openmac_0_mactimerout_export          =>  open
     );
 
     --TODO: Remove or redesign altera reset controller.
@@ -491,7 +489,6 @@ architecture rtl of toplevel is
      );
 
    -- PLL for Qsys
-
     pllInst : pll
     port map
         (

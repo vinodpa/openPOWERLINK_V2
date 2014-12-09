@@ -145,7 +145,7 @@
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface
-   name="memory_0"
+   name="memory_fpga"
    internal="ddr3_emif_0.memory"
    type="conduit"
    dir="end" />
