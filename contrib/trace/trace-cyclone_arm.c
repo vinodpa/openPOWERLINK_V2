@@ -40,7 +40,7 @@
 #include "socal/hps.h"
 #include "socal/socal.h"
 
-#if 1
+#ifndef NDEBUG
 #define STDOUT_FILENO 1
 #define STDERR_FILENO 2
 
