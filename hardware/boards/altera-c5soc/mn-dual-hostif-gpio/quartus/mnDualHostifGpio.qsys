@@ -619,7 +619,7 @@
   <parameter name="AUTO_CLK100_RESET_DOMAIN" value="1" />
   <parameter name="AUTO_HOSTIF_IRQ_I_INTERRUPTS_USED" value="1" />
  </module>
- <module kind="openmac" version="1.0.0" enabled="1" name="openmac_0">
+ <module kind="openmac" version="1.0.2" enabled="1" name="openmac_0">
   <parameter name="sys_mainClk" value="50000000" />
   <parameter name="sys_mainClkx2" value="100000000" />
   <parameter name="sys_dmaAddrWidth" value="27" />
@@ -642,7 +642,7 @@
  </module>
  <module
    kind="hostinterface"
-   version="1.0.0"
+   version="1.0.2"
    enabled="1"
    name="hostinterface_0">
   <parameter name="sys_uniqueId" value="0" />
