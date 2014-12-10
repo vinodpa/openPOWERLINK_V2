@@ -152,24 +152,16 @@ end toplevel;
 
 architecture rtl of toplevel is
 -- internal wires and registers declaration
-  signal fpga_debounced_buttons : std_logic_vector (1 downto 0);
-  signal fpga_led_internal      : std_logic_vector (3 downto 0);
+
   signal hps_fpga_reset_n       : std_logic;
-  signal hps_reset_req          : std_logic_vector (2 downto 0);
-  signal hps_cold_reset         : std_logic;
-  signal hps_warm_reset         : std_logic;
-  signal hps_debug_reset        : std_logic;
-  signal pulse_resetn_ddr       : std_logic;
-  signal hps_fpga_reset_n_src   : std_logic;
   signal ddr3_afi_resetn        : std_logic;
-  signal fpga_memory_mem_a_temp :  std_logic_vector (12 downto 0);
+  signal fpga_memory_mem_addr :  std_logic_vector (12 downto 0);
 
   signal clk50                  : std_logic;
   signal clk25                  : std_logic;
   signal clk100                 : std_logic;
   signal clk100_p               : std_logic;
   signal pllLocked              : std_logic;
-  signal clock_in       : std_logic;
 
   component mnDualHostifGpio is
         port (
@@ -310,21 +302,6 @@ architecture rtl of toplevel is
         );
     end component mnDualHostifGpio;
 
-    -- Altera Reset Controller
-    component altera_reset_controller
-    generic(
-        RESET_SOURCE_COUNT : integer := 1;
-        RESET_SYNC_LENGTH  : integer := 8;
-        GENERATE_PULSE_OUT : integer := 1;
-      PULSE_LENGTH       : integer := 1
-    );
-    port(
-        clk : in std_logic ;
-        reset_n_src : in std_logic_vector (RESET_SOURCE_COUNT-1 downto 0);
-        combined_reset_n : out std_logic;
-        pulse_reset_n : out std_logic
-     );
-    end component altera_reset_controller ;
     -- PLL
     component pll
     PORT
@@ -340,10 +317,8 @@ architecture rtl of toplevel is
 
  begin
  
--- connection of internal logics
-  fpga_led_pio <= fpga_led_internal;
-  clock_in <= fpga_clk_50 ;
-  fpga_memory_mem_a <= "00" & fpga_memory_mem_a_temp;
+  -- Append 0 for MSB bits of DDR Memory
+  fpga_memory_mem_a <= "00" & fpga_memory_mem_addr;
 
     soc_inst: component mnDualHostifGpio
     port map (
@@ -366,7 +341,7 @@ architecture rtl of toplevel is
       memory_oct_rzqin                      =>  hps_memory_oct_rzqin,
       --DIP Switch FPGA
       dipsw_pio_external_connection_export  =>  fpga_dipsw_pio,
-      led_pio_external_connection_export    =>  fpga_led_internal,
+      led_pio_external_connection_export    =>  fpga_led_pio,
       button_pio_external_connection_export =>  fpga_button_pio,
       hps_io_hps_io_emac1_inst_TX_CLK =>  hps_emac1_TX_CLK,
       hps_io_hps_io_emac1_inst_TXD0   =>  hps_emac1_TXD0,
@@ -437,7 +412,7 @@ architecture rtl of toplevel is
       hps_0_f2h_cold_reset_req_reset_n      =>  cnInactivated,
       hps_0_f2h_debug_reset_req_reset_n     =>  cnInactivated,
       hps_0_f2h_warm_reset_req_reset_n      =>  cnInactivated,
-      memory_fpga_mem_a                     =>  fpga_memory_mem_a_temp,
+      memory_fpga_mem_a                     =>  fpga_memory_mem_addr,
       memory_fpga_mem_ba                    =>  fpga_memory_mem_ba,
       memory_fpga_mem_ck                    =>  fpga_memory_mem_ck,
       memory_fpga_mem_ck_n                  =>  fpga_memory_mem_ck_n,
@@ -455,7 +430,7 @@ architecture rtl of toplevel is
       ddr3_emif_0_global_reset_reset_n      =>  cnInactivated,
       ddr3_emif_0_soft_reset_reset_n        =>  cnInactivated,
       ddr3_emif_0_afi_reset_export_reset_n  =>  ddr3_afi_resetn,
-      ddr3_emif_0_pll_ref_clk_clk           =>  clock_in,
+      ddr3_emif_0_pll_ref_clk_clk           =>  fpga_clk_50,
       oct_rzqin                             =>  fpga_oct_rzqin,
       openmac_0_mii_txEnable                =>  PLNK_MII_TXEN,
       openmac_0_mii_txData                  =>  PLNK_MII_TXD,
@@ -470,22 +445,8 @@ architecture rtl of toplevel is
       openmac_0_mactimerout_export          =>  open
     );
 
-    --TODO: Remove or redesign altera reset controller.
-    --This act as a work-around for DDR and Nios Reset synchronization
-    rst_ctrl_inst: component altera_reset_controller
-    generic map (
-      RESET_SOURCE_COUNT => 2,
-      RESET_SYNC_LENGTH  => 10,
-      GENERATE_PULSE_OUT => 1,
-      PULSE_LENGTH       => 5
-    )
-    port map(
-      clk              => clk50,
-      reset_n_src      => pllLocked & ddr3_afi_resetn,
-      combined_reset_n => hps_fpga_reset_n,
-      pulse_reset_n    => pulse_resetn_ddr
-     );
-
+    --Remove NIOS out of reset after DDR3 and PLL ready to operate
+     hps_fpga_reset_n <= pllLocked and ddr3_afi_resetn;
    -- PLL for Qsys
     pllInst : pll
     port map

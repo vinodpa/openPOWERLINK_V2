@@ -1084,12 +1084,8 @@ set_instance_assignment -name D5_DELAY 4 -to fpga_memory_mem_dqs_n[2] -tag __mnD
 set_instance_assignment -name D6_DELAY 0 -to fpga_memory_mem_dqs_n[2] -tag __mnDualHostifGpio_ddr3_emif_0_p0
 set_instance_assignment -name D5_DELAY 4 -to fpga_memory_mem_dqs_n[3] -tag __mnDualHostifGpio_ddr3_emif_0_p0
 set_instance_assignment -name D6_DELAY 0 -to fpga_memory_mem_dqs_n[3] -tag __mnDualHostifGpio_ddr3_emif_0_p0
-set_global_assignment -name SDC_FILE ../../common/ipcore/reset_controller/altera_reset_controller.sdc
 set_global_assignment -name QIP_FILE ../../../../ipcore/altera/components/libcommon.qip
-set_global_assignment -name VERILOG_FILE ../../common/ipcore/reset_controller/rst_ctrl_bit_sync.v
-set_global_assignment -name VERILOG_FILE ../../common/ipcore/reset_controller/altera_reset_controller.v
 set_global_assignment -name QIP_FILE ../../common/ipcore/pll/pll.qip
-set_global_assignment -name VERILOG_FILE ../../common/ipcore/edge_detect/altera_edge_detector.v
 set_global_assignment -name QIP_FILE mnDualHostifGpio/synthesis/mnDualHostifGpio.qip
 set_global_assignment -name VHDL_FILE toplevel.vhd
 set_global_assignment -name SDC_FILE soc_system_timing.sdc
