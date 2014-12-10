@@ -453,7 +453,7 @@ architecture rtl of toplevel is
       memory_fpga_mem_dqs_n                 =>  fpga_memory_mem_dqs_n,
       memory_fpga_mem_odt                   =>  fpga_memory_mem_odt,
       ddr3_emif_0_global_reset_reset_n      =>  cnInactivated,
-      ddr3_emif_0_soft_reset_reset_n        =>  pulse_resetn_ddr,
+      ddr3_emif_0_soft_reset_reset_n        =>  cnInactivated,
       ddr3_emif_0_afi_reset_export_reset_n  =>  ddr3_afi_resetn,
       ddr3_emif_0_pll_ref_clk_clk           =>  clock_in,
       oct_rzqin                             =>  fpga_oct_rzqin,
