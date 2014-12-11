@@ -247,10 +247,10 @@ tOplkError arp_setDefGateway(UINT32 defGateway_p)
 {
     UINT32 defGateway = htonl(defGateway_p); // Swap to get network order
 
-    memcpy(arpInstance_l.aDefaultGwIp, (UINT8*)&defGateway, ARP_PROADDR_LENGTH);
+    memcpy(&arpInstance_l.aDefaultGwIp[0], (UINT8*)&defGateway, ARP_PROADDR_LENGTH);
 
     // Invalidate default gateway's MAC address
-    memset(arpInstance_l.aDefaultGwMac, 0, ARP_HWADDR_LENGTH);
+    memset(&arpInstance_l.aDefaultGwMac[0], 0, ARP_HWADDR_LENGTH);
 
     return kErrorOk;
 }
