@@ -238,32 +238,16 @@ tOplkError ctrlk_executeCmd(tCtrlCmdType cmd_p, UINT16* pRet_p, UINT16* pStatus_
     {
         case kCtrlInitStack:
             DEBUG_LVL_CTRL_TRACE("Initialize kernel modules...\n");
-<<<<<<< HEAD
             retVal = initStack();
             *pRet_p = (UINT16)retVal;
-=======
-            *pRet_p = initStack();
-<<<<<<< HEAD
-            printf("Initialize kernel modules...\n");
->>>>>>> 765f179... MN and CN Operational
-=======
->>>>>>> 1d5c51d... Prelimnary Cleanup
             status = kCtrlStatusRunning;
             fExit = FALSE;
             break;
 
         case kCtrlCleanupStack:
             DEBUG_LVL_CTRL_TRACE("Shutdown kernel modules...\n");
-<<<<<<< HEAD
             retVal = shutdownStack();
             *pRet_p = (UINT16)retVal;
-=======
-            *pRet_p = shutdownStack();
-<<<<<<< HEAD
-            printf("Shutdown kernel modules...\n");
->>>>>>> 765f179... MN and CN Operational
-=======
->>>>>>> 1d5c51d... Prelimnary Cleanup
             status = kCtrlStatusReady;
             fExit = FALSE;
             break;
