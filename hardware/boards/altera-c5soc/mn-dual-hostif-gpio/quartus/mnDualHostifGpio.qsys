@@ -47,7 +47,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -60,7 +60,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -73,7 +73,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -99,7 +99,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -146,7 +146,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -996,15 +996,6 @@
    end="epcq_flash_controller_0.reset" />
  <connection kind="clock" version="14.0" start="clk_50.clk" end="led_pio.clk" />
  <connection
-   kind="avalon"
-   version="14.0"
-   start="pcp.slow_bridge_m0"
-   end="led_pio.s1">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x6900" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
    kind="reset"
    version="14.0"
    start="clk_50.clk_reset"
@@ -1014,6 +1005,15 @@
    version="14.0"
    start="clk_100.clk_reset"
    end="led_pio.reset" />
+ <connection
+   kind="avalon"
+   version="14.0"
+   start="host_0.lw_bridge_m0"
+   end="led_pio.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x6900" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
