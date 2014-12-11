@@ -73,7 +73,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef  INLINE_FUNCTION_DEF
 #endif
 
-#include <oplk/section-default.h>
 
 #ifndef NDEBUG
 #define PRINTF(...)                             printf(__VA_ARGS__)

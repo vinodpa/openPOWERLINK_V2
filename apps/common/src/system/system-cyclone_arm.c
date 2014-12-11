@@ -278,9 +278,13 @@ void system_msleep(unsigned int milliSeconds_p)
                 waitCount--;
             }
         }
-
+//
+//        if (waitCount % 5000 == 0)
+//        printf(".");
         waitCount++;
     }
+
+//    printf("\n");
 }
 
 //============================================================================//
