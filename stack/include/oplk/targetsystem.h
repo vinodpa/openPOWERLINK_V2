@@ -162,7 +162,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TARGET_SYSTEM   _NO_OS_
 #define DEV_SYSTEM      _DEV_ARM_ALTERA_EABI_
 
-#elif defined (__arm__)
+#elif defined (__xilinx_arm__)
 // FIXME: Xilinx Zyqn ARM identification can only be done with __arm__.
 //        There is no other way to identify Xilinx Zynq ARM.
 //        To identify another ARM platform, a specific platform dependent
