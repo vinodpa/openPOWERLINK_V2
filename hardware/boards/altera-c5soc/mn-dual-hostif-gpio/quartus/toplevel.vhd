@@ -163,7 +163,7 @@ architecture rtl of toplevel is
   signal clk100_p               : std_logic;
   signal pllLocked              : std_logic;
 
-  component mnDualHostifGpio is
+  component mnSocHostifGpio is
         port (
             memory_mem_a                                : out   std_logic_vector(14 downto 0);
             memory_mem_ba                               : out   std_logic_vector(2 downto 0);
@@ -300,7 +300,7 @@ architecture rtl of toplevel is
             openmac_0_smi_dio                                 : inout std_logic_vector(0 downto 0)  := (others => 'X');
             openmac_0_mactimerout_export                      : out   std_logic_vector(0 downto 0)
         );
-    end component mnDualHostifGpio;
+    end component mnSocHostifGpio;
 
     -- PLL
     component pll
@@ -320,7 +320,7 @@ architecture rtl of toplevel is
   -- Append 0 for MSB bits of DDR Memory
   fpga_memory_mem_a <= "00" & fpga_memory_mem_addr;
 
-    soc_inst: component mnDualHostifGpio
+    soc_inst: component mnSocHostifGpio
     port map (
       --HPS External Memory
       memory_mem_a                          =>  hps_memory_mem_a,
