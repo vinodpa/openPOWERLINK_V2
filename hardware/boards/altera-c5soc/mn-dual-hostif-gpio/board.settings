@@ -32,16 +32,16 @@
 # DRIVER PROCESSOR
 
 # Qsys sub of processor that processes drv
-CFG_DRV_SUB_NAME=pcp
+CFG_DRV_SUB_NAME=pcp_0
 # Processor that processes drv
-CFG_DRV_PROC_NAME=pcp
+CFG_DRV_PROC_NAME=cpu_0
 # -> Build complete name
 CFG_DRV_CPU_NAME=${CFG_DRV_SUB_NAME}_${CFG_DRV_PROC_NAME}
 
 # System timer
 CFG_DRV_SYS_TIMER_NAME=${CFG_DRV_SUB_NAME}_timer_0
 # Tightly coupled instruction memory
-CFG_DRV_TCI_MEM_NAME=${CFG_DRV_SUB_NAME}_tc_i_m
+CFG_DRV_TCI_MEM_NAME=${CFG_DRV_SUB_NAME}_tc_i_mem
 
 # BSP type
 CFG_DRV_BSP_TYPE=hal
