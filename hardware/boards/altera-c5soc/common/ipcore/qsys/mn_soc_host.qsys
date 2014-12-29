@@ -253,7 +253,7 @@
    type="interrupt"
    dir="start" />
  <interface name="lw_bridge_m0" internal="lw_bridge.m0" type="avalon" dir="start" />
- <module kind="altera_hps" version="13.1" enabled="1" name="hps_0">
+ <module kind="altera_hps" version="14.0" enabled="1" name="hps_0">
   <parameter name="MEM_VENDOR" value="JEDEC" />
   <parameter name="MEM_FORMAT" value="DISCRETE" />
   <parameter name="RDIMM_CONFIG" value="0000000000000000" />
@@ -713,7 +713,7 @@
   <parameter name="quartus_ini_hps_ip_enable_bsel_csel" value="false" />
   <parameter name="quartus_ini_hps_ip_f2sdram_bonding_out" value="false" />
  </module>
- <module kind="altera_avalon_pio" version="13.1" enabled="1" name="button_pio">
+ <module kind="altera_avalon_pio" version="14.0" enabled="1" name="button_pio">
   <parameter name="bitClearingEdgeCapReg" value="true" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="true" />
@@ -727,7 +727,7 @@
   <parameter name="width" value="2" />
   <parameter name="clockRate" value="50000000" />
  </module>
- <module kind="altera_avalon_pio" version="13.1" enabled="1" name="dipsw_pio">
+ <module kind="altera_avalon_pio" version="14.0" enabled="1" name="dipsw_pio">
   <parameter name="bitClearingEdgeCapReg" value="true" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="true" />
@@ -743,7 +743,7 @@
  </module>
  <module
    kind="altera_avalon_mm_bridge"
-   version="13.1"
+   version="14.0"
    enabled="1"
    name="pb_h2f_common">
   <parameter name="DATA_WIDTH" value="32" />
@@ -758,19 +758,19 @@
   <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
  </module>
- <module kind="clock_source" version="13.1" enabled="1" name="clk_50">
+ <module kind="clock_source" version="14.0" enabled="1" name="clk_50">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
- <module kind="clock_source" version="13.1" enabled="1" name="clk_100">
+ <module kind="clock_source" version="14.0" enabled="1" name="clk_100">
   <parameter name="clockFrequency" value="100000000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
- <module kind="altera_irq_bridge" version="13.1" enabled="1" name="hostif_irq">
+ <module kind="altera_irq_bridge" version="14.0" enabled="1" name="hostif_irq">
   <parameter name="IRQ_WIDTH" value="1" />
   <parameter name="IRQ_N" value="0" />
   <parameter name="AUTO_CLK_CLOCK_RATE" value="50000000" />
@@ -778,7 +778,7 @@
  </module>
  <module
    kind="altera_avalon_mm_bridge"
-   version="13.1"
+   version="14.0"
    enabled="1"
    name="lw_bridge">
   <parameter name="DATA_WIDTH" value="32" />
@@ -795,7 +795,7 @@
  </module>
  <module
    kind="altera_avalon_jtag_uart"
-   version="13.1"
+   version="14.0"
    enabled="1"
    name="jtag_uart_0">
   <parameter name="allowMultipleConnections" value="false" />
@@ -811,7 +811,7 @@
   <parameter name="writeIRQThreshold" value="8" />
   <parameter name="avalonSpec" value="2.0" />
  </module>
- <module kind="altera_avalon_timer" version="13.1" enabled="1" name="timer_0">
+ <module kind="altera_avalon_timer" version="14.0" enabled="1" name="timer_0">
   <parameter name="alwaysRun" value="true" />
   <parameter name="counterSize" value="32" />
   <parameter name="fixedPeriod" value="true" />
@@ -824,7 +824,7 @@
  </module>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="hps_0.h2f_lw_axi_master"
    end="dipsw_pio.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -833,7 +833,7 @@
  </connection>
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="hps_0.h2f_lw_axi_master"
    end="button_pio.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -842,77 +842,77 @@
  </connection>
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="button_pio.reset" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="dipsw_pio.reset" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="pb_h2f_common.reset" />
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="hps_0.h2f_axi_master"
    end="pb_h2f_common.s0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection kind="clock" version="13.1" start="clk_50.clk" end="dipsw_pio.clk" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="dipsw_pio.clk" />
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk"
    end="hps_0.h2f_axi_clock" />
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk"
    end="hps_0.h2f_lw_axi_clock" />
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk"
    end="pb_h2f_common.clk" />
- <connection kind="clock" version="13.1" start="clk_50.clk" end="button_pio.clk" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="button_pio.clk" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="hostif_irq.clk_reset" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="hostif_irq.clk_reset" />
- <connection kind="clock" version="13.1" start="clk_50.clk" end="hostif_irq.clk" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="hostif_irq.clk" />
  <connection
    kind="interrupt"
-   version="13.1"
+   version="14.0"
    start="hps_0.f2h_irq0"
    end="hostif_irq.sender0_irq">
   <parameter name="irqNumber" value="0" />
  </connection>
- <connection kind="clock" version="13.1" start="clk_50.clk" end="lw_bridge.clk" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="lw_bridge.clk" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="lw_bridge.reset" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="lw_bridge.reset" />
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="hps_0.h2f_lw_axi_master"
    end="lw_bridge.s0">
   <parameter name="arbitrationPriority" value="1" />
@@ -921,40 +921,40 @@
  </connection>
  <connection
    kind="clock"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk"
    end="hps_0.f2h_axi_clock" />
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="hps_0.h2f_lw_axi_master"
    end="jtag_uart_0.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0020" />
   <parameter name="defaultConnection" value="false" />
  </connection>
- <connection kind="clock" version="13.1" start="clk_50.clk" end="jtag_uart_0.clk" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="jtag_uart_0.clk" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="jtag_uart_0.reset" />
  <connection
    kind="interrupt"
-   version="13.1"
+   version="14.0"
    start="hps_0.f2h_irq0"
    end="jtag_uart_0.irq">
   <parameter name="irqNumber" value="2" />
  </connection>
- <connection kind="clock" version="13.1" start="clk_50.clk" end="timer_0.clk" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="timer_0.clk" />
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_50.clk_reset"
    end="timer_0.reset" />
  <connection
    kind="avalon"
-   version="13.1"
+   version="14.0"
    start="hps_0.h2f_lw_axi_master"
    end="timer_0.s1">
   <parameter name="arbitrationPriority" value="1" />
@@ -963,14 +963,14 @@
  </connection>
  <connection
    kind="interrupt"
-   version="13.1"
+   version="14.0"
    start="hps_0.f2h_irq0"
    end="timer_0.irq">
   <parameter name="irqNumber" value="1" />
  </connection>
  <connection
    kind="reset"
-   version="13.1"
+   version="14.0"
    start="clk_100.clk_reset"
    end="timer_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
