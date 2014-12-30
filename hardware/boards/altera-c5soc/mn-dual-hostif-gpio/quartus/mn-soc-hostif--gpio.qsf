@@ -1036,7 +1036,7 @@ set_location_assignment PIN_U8 -to altera_reserved_tdi
 set_location_assignment PIN_AB9 -to altera_reserved_tdo
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
 set_location_assignment PIN_Y24 -to PLNK_MII_RXCLK[0]
-set_location_assignment PIN_AB27 -to PLNK_MII_RXD[3]
+set_location_assignment PIN_AE27 -to PLNK_MII_RXD[3]
 set_location_assignment PIN_AB25 -to PLNK_MII_RXD[2]
 set_location_assignment PIN_AA24 -to PLNK_MII_RXD[1]
 set_location_assignment PIN_AB23 -to PLNK_MII_RXD[0]
