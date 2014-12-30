@@ -409,7 +409,7 @@ architecture rtl of toplevel is
       clk_50_clk                            =>  clk50,
       clk_100_clk                           =>  clk100,
       reset_reset_n                         =>  hps_fpga_reset_n,
-      hps_0_f2h_cold_reset_req_reset_n      =>  cnInactivated,
+      hps_0_f2h_cold_reset_req_reset_n      =>  hps_fpga_reset_n,
       hps_0_f2h_debug_reset_req_reset_n     =>  cnInactivated,
       hps_0_f2h_warm_reset_req_reset_n      =>  cnInactivated,
       memory_fpga_mem_a                     =>  fpga_memory_mem_addr,
