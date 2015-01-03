@@ -247,9 +247,9 @@ static ometh_internal_typ    omethInternal;    // driver internal data
     unsigned short        len;                                                                      \
                                                                                                     \
     /* check if descriptor is free */                                                               \
-    if(pPacket == 0)                return 0;    /* invalid packet passed */                        \
-    if(hEth->txQueueEnable == 0)    return 0;                                                       \
-    if(pDesc->pData != 0)            return 0;    /* descriptor is not free (queue full !) */       \
+    if(pPacket == 0)               {printf("1"); while(1); return 0;}    /* invalid packet passed */                        \
+    if(hEth->txQueueEnable == 0)    {printf("2"); while(1); return 0;}                                                       \
+    if(pDesc->pData != 0)            {printf("3"); while(1); return 0;}    /* descriptor is not free (queue full !) */       \
                                                                                                     \
     len = pPacket->length;    /* padding, ethernet frames must be at least 64 byte long */          \
     if(len < OMETH_MIN_TX_FRAME) len=OMETH_MIN_TX_FRAME;                                            \
@@ -273,7 +273,7 @@ static ometh_internal_typ    omethInternal;    // driver internal data
         pDesc->flags.byte.low    = OMETH_MAX_RETRY;                                                 \
     }                                                                                               \
     pDesc->flags.byte.high    = pInfo->flags1 | addFlags;    /* set flag to start transmitter */    \
-                                                                                                    \
+if (len == 0){printf("4"); while(1); return 0;}                                                                                                    \
     return len                                                                                      \
 
 //*************************************************************************************
