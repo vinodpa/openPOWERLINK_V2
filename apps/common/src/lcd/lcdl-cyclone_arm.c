@@ -58,7 +58,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <oplk/debug.h>
 #include <system.h>
 #include "lcdl.h"
-
+#include <sleep.h>
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -171,7 +171,6 @@ static tLcdCmdDesc       lcdCommands_l[] =
 static inline ALT_STATUS_CODE   sendLcdCommand(ALT_I2C_DEV_t* deviceHdl_p,
                                               tLcdCmd command_p,
                                               uint8_t* pArg_p);
-static inline void              usDelay(uint32_t usDelay_p);
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
 //============================================================================//
@@ -349,7 +348,7 @@ void lcdl_printText(const char* sText_p)
             break;
         }
 
-        usDelay(LCD_PRINT_DELAY_US);
+        usleep(LCD_PRINT_DELAY_US);
     }
 }
 
@@ -390,31 +389,8 @@ static inline ALT_STATUS_CODE sendLcdCommand(ALT_I2C_DEV_t* deviceHdl_p,
 
     halRet = alt_i2c_master_transmit(deviceHdl_p, data, dataLen,
                                      ALT_E_FALSE, ALT_E_TRUE);
-    usDelay(lcdCommandDesc.executionDuration);
+    usleep(lcdCommandDesc.executionDuration);
 
     return halRet;
 }
-
-//------------------------------------------------------------------------------
-/**
-\brief  Delay execution
-
-\param usDelay_p        Delay in microseconds
-*/
-//------------------------------------------------------------------------------
-static inline void usDelay(uint32_t usDelay_p)
-{
-    uint64_t        startTime = alt_globaltmr_get64();
-    uint32_t        timerPrescaler = alt_globaltmr_prescaler_get() + 1;
-    uint64_t        endTime;
-    alt_freq_t      timerClkSrc;
-
-    alt_clk_freq_get(ALT_CLK_MPU_PERIPH, &timerClkSrc);
-    endTime = startTime + usDelay_p * ((timerClkSrc / timerPrescaler) / 1000000);
-
-    while (alt_globaltmr_get64() < endTime)
-    {
-    }
-}
-
 ///\}

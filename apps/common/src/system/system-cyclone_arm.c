@@ -58,7 +58,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <oplk/oplk.h>
 #include <oplk/debug.h>
 #include <system/system.h>
-
+#include <sleep.h>
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -66,7 +66,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
-#define SECS_TO_MILLISECS                           1000
+
 //------------------------------------------------------------------------------
 // module global vars
 //------------------------------------------------------------------------------
@@ -98,10 +98,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static int              initializeFpga(void);
 static int              initializeTimer(void);
 static int              cleanupTimer(void);
-
-static inline uint64_t  getTimerTicksFromScaled(ALT_GPT_TIMER_t timerId_p,
-                                                uint32_t scalingFactor_p,
-                                                uint32_t scaledTimeDuration_p);
 
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
@@ -221,70 +217,12 @@ milliseconds have elapsed.
 
 \param  milliSeconds_p      Number of milliseconds to sleep
 
-\ingroup module_target
+\ingroup module_app_common
 */
 //------------------------------------------------------------------------------
 void system_msleep(unsigned int milliSeconds_p)
 {
-    uint64_t                startTickStamp = alt_globaltmr_get64();
-    uint64_t                waitTickCount = getTimerTicksFromScaled(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS, milliSeconds_p);
-    volatile uint32_t*      glbTimerRegCntBase_l = (volatile uint32_t*) (GLOBALTMR_BASE + GLOBALTMR_CNTR_LO_REG_OFFSET);
-    volatile uint32_t*      glbTimerRegCntBase_h = (volatile uint32_t*) (GLOBALTMR_BASE + GLOBALTMR_CNTR_HI_REG_OFFSET);
-    uint64_t                curTickStamp = 0;
-    uint32_t                temp = 0;
-    uint32_t                hi = 0;
-    uint32_t                lo = 0;
-    volatile uint32_t       waitCount = 0;
-    uint32_t                waitCountLimit = (uint32_t) (5 + (waitTickCount >> 12));
-    uint8_t                 fExit = FALSE;
-    uint8_t                 readCntLimit = 3;
-
-    curTickStamp = alt_globaltmr_get64();
-
-    while (fExit != TRUE)
-    {
-        fExit = FALSE;
-
-        if (waitCount == waitCountLimit)
-        {
-            readCntLimit = 3;
-
-            do
-            {
-                temp = (*glbTimerRegCntBase_h);
-                lo =  (*glbTimerRegCntBase_l);
-                hi = (*glbTimerRegCntBase_h);
-            } while ((temp != hi) && (--readCntLimit));
-
-            if (readCntLimit != 0)
-            {
-                curTickStamp =  (uint64_t) hi;
-                curTickStamp =  (((curTickStamp << 32) & ~((uint64_t) UINT32_MAX)) | lo);
-                if ((((curTickStamp >= startTickStamp) && ((curTickStamp - startTickStamp) < waitTickCount)) ||
-                     ((curTickStamp < startTickStamp) && ((UINT64_MAX - startTickStamp) +
-                                                          curTickStamp) < waitTickCount)))
-                {
-                    fExit = FALSE;
-                }
-                else
-                {
-                    fExit = TRUE;
-                }
-
-                waitCount = 1;
-            }
-            else
-            {
-                waitCount--;
-            }
-        }
-//
-//        if (waitCount % 5000 == 0)
-//        printf(".");
-        waitCount++;
-    }
-
-//    printf("\n");
+    msleep(milliSeconds_p);
 }
 
 //============================================================================//
@@ -498,60 +436,4 @@ static int cleanupTimer(void)
 
     return ret;
 }
-
-//------------------------------------------------------------------------------
-/**
-\brief Convert time units into timer ticks
-
-The function converts the time in standard unit into ticks for the
-given timer.
-
-\param  timerId_p               The ALT_GPT_TIMER_t enum Id of the timer used
-\param  scalingFactor_p         Ratio of provided time duration scale to seconds
-\param  scaledTimeDuration_p    Time duration in standard unit to be converted
-
-\return The function returns a unsigned 64 bit value.
-\retval The converted tick count for the given timer.
-*/
-//------------------------------------------------------------------------------
-static inline uint64_t getTimerTicksFromScaled(ALT_GPT_TIMER_t timerId_p,
-                                               uint32_t scalingFactor_p,
-                                               uint32_t scaledTimeDuration_p)
-{
-    uint64_t        ticks = 0;                      // value to return
-    ALT_CLK_t       clkSrc = ALT_CLK_UNKNOWN;
-    uint32_t        preScaler = 0;
-    uint32_t        freq = 1;
-
-    preScaler = alt_gpt_prescaler_get(timerId_p);
-    if (preScaler <= UINT8_MAX)
-    {
-        if (timerId_p == ALT_GPT_CPU_GLOBAL_TMR)       // Global Timer
-        {
-            ticks = 1;
-            clkSrc = ALT_CLK_MPU_PERIPH;
-        }
-        else
-        {
-            ticks = 0;
-            goto Exit;
-        }
-
-        if (alt_clk_freq_get(clkSrc, &freq) == ALT_E_SUCCESS)
-        {
-            // clock ticks per second
-            ticks *= freq;
-
-            // total clock ticks
-            ticks *= (uint64_t) (scaledTimeDuration_p / scalingFactor_p);
-
-            // convert into timer ticks
-            ticks /= (preScaler + 1);
-        }
-    }
-
-Exit:
-    return ticks;
-}
-
 ///\}

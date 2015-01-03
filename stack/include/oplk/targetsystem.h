@@ -229,6 +229,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #elif (DEV_SYSTEM == _DEV_ARM_XILINX_EABI_)
 #include <oplk/targetdefs/zynqarm.h>
+
+#else
+#error "ERROR Target no OS System is not supported"
+
 #endif
 
 #elif (TARGET_SYSTEM == _WIN32_)
@@ -238,6 +242,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #elif (TARGET_SYSTEM == _WINCE_)
 
 #include <oplk/targetdefs/wince.h>
+
+#else
+#error "ERROR Target platform is not supported"
 
 #endif
 

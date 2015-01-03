@@ -223,21 +223,54 @@ int gpio_init(void)
         goto Exit;
     }
 
+//    alt_fpga_control_enable();
+//    //for (int i = 0; i < 10; i++)
+//    {
+//        printf ("FPGA STATE: 0x%X\n",alt_fpga_state_get());
+//        printf ("FPGA STATE: 0x%X\n",alt_fpga_mon_status_get());
+//        system_msleep(5);
+//    }
+//
+//    alt_fgpa_reset_assert();
+////    printf ("POST Reset FPGA STATE: 0x%X\n",alt_fpga_state_get());
+////    printf ("POST Reset FPGA STATE: 0x%X\n",alt_fpga_mon_status_get());
+//    alt_fgpa_reset_deassert();
+////    printf ("POST Deassert FPGA STATE: 0x%X\n",alt_fpga_state_get());
+////    printf ("POST Deassert FPGA STATE: 0x%X\n",alt_fpga_mon_status_get());
+//
+//    while ((alt_fpga_state_get() != 0x4) && (alt_fpga_mon_status_get() != 0xF07))
+//    {
+//        system_msleep(5);
+//        printf("Waiting..\n");
+//    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        printf("Waiting for FPGA..\n");
+        //msleep(2000);
+    }
     /* Initialize FPGA GPIO */
 
     // will be initialized in target intialization
 
     // clear the Leds
+#ifdef LED_PIO_BASE
     IOWR_ALTERA_AVALON_PIO_DATA(LED_PIO_BASE, FPGA_LED_ALL_TURN_OFF);
+#endif
 
     // Clear the dip switch and push button interrupt status registers
-
+#ifdef HOST_0_BUTTON_PIO_BASE
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(HOST_0_BUTTON_PIO_BASE, 0x0);
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(HOST_0_BUTTON_PIO_BASE, FPGA_PB_ALL_BIT_MASK);
+#endif
 
+#ifdef HOST_0_DIPSW_PIO_BASE
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(HOST_0_DIPSW_PIO_BASE, 0x0);
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(HOST_0_DIPSW_PIO_BASE, FPGA_DIPSW_ALL_BIT_MASK);
+#endif
 
+    printf ("POST GPIO FPGA STATE: 0x%X\n",alt_fpga_state_get());
+    printf ("POST GPIO FPGA STATE: 0x%X\n",alt_fpga_mon_status_get());
  Exit:
     return ret;
 }
@@ -259,15 +292,19 @@ void gpio_shutdown(void)
     /* Uninitialize FPGA GPIO */
 
     // will be handled by target module
-
+#ifdef HOST_0_BUTTON_PIO_BASE
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(HOST_0_BUTTON_PIO_BASE, 0x0);
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(HOST_0_BUTTON_PIO_BASE, FPGA_PB_ALL_BIT_MASK);
-
+#endif
+#ifdef HOST_0_DIPSW_PIO_BASE
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(HOST_0_DIPSW_PIO_BASE, 0x0);
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(HOST_0_DIPSW_PIO_BASE, FPGA_DIPSW_ALL_BIT_MASK);
+#endif
 
     // clear the Leds
+#ifdef LED_PIO_BASE
     IOWR_ALTERA_AVALON_PIO_DATA(LED_PIO_BASE, FPGA_LED_ALL_TURN_OFF);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -288,7 +325,10 @@ UINT8 gpio_getNodeid(void)
     UINT32      fpgaSwStatus = 0x0;
 
     hpsSwStatus = alt_gpio_port_data_read(ALT_GPIO_PORTC, HPS_DIPSW_ALL_BIT_MASK);
+
+#ifdef HOST_0_DIPSW_PIO_BASE
     fpgaSwStatus = IORD_ALTERA_AVALON_PIO_DATA(HOST_0_DIPSW_PIO_BASE);
+#endif
 
     nodeId = (UINT8) ((FPGA_DIPSW_NET_VAL(fpgaSwStatus) << HOST_0_DIPSW_PIO_DATA_WIDTH) | HPS_DIPSW_NET_VAL(hpsSwStatus));
 

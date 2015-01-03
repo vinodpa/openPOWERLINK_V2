@@ -57,8 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <oplk/oplk.h>
 #include <oplk/debug.h>
 #include <common/target.h>
-#include <system/system.h>
-
+#include "sleep.h"
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
 //============================================================================//
@@ -249,7 +248,7 @@ milliseconds have elapsed.
 //------------------------------------------------------------------------------
 void target_msleep(UINT32 milliSeconds_p)
 {
-    system_msleep(milliSeconds_p);
+    msleep(milliSeconds_p);
 }
 
 //------------------------------------------------------------------------------
