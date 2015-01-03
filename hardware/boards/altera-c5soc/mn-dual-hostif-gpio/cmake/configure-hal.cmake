@@ -1,9 +1,9 @@
 ################################################################################
 #
-# CMake macro for installing the bitstream for NIOS II
+# CMake file for HAL where target is ARM
 #
 # Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
-
+# Copyright (c) 2014, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,39 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-MACRO(INSTALL_BITSTREAM EXAMPLE_ROOT BITS_DESTINATION SKIP_BITSTREAM)
+################################################################################
 
-ENDMACRO()
+################################################################################
+# Set architecture specific sources and include directories
+
+
+SET(LIB_ARCH_HAL_SRCS
+            src/hwmgr/alt_address_space.c
+            src/hwmgr/alt_bridge_manager.c
+            src/hwmgr/alt_cache.c
+            src/hwmgr/alt_clock_manager.c
+            src/hwmgr/alt_dma_program.c
+            src/hwmgr/alt_dma.c
+
+            src/hwmgr/alt_fpga_manager.c
+            src/hwmgr/alt_generalpurpose_io.c
+            src/hwmgr/alt_globaltmr.c
+            src/hwmgr/alt_i2c.c
+            src/hwmgr/alt_interrupt.c
+            src/hwmgr/alt_mmu.c
+
+            src/hwmgr/alt_reset_manager.c
+            src/hwmgr/alt_system_manager.c
+            src/hwmgr/alt_timers.c
+            src/hwmgr/alt_watchdog.c
+    )
+
+SET(LIB_ARCH_HAL_INCS
+            ${ARM_HWLIB_PATH}/include
+    )
+
+SET(LIB_ARCH_HAL_C_FLAGS " ")
+################################################################################
+# Set architecture specific installation files
+########################################################################
+# Eclipse project files

@@ -1,9 +1,9 @@
 ################################################################################
 #
-# CMake macro for installing the bitstream for NIOS II
+# CMake file for hostif library where target is Altera ARM
 #
 # Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
-
+# Copyright (c) 2014, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,30 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-MACRO(INSTALL_BITSTREAM EXAMPLE_ROOT BITS_DESTINATION SKIP_BITSTREAM)
+################################################################################
+# Handle includes
+SET(CMAKE_MODULE_PATH "${OPLK_BASE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+# Include target specific global configuration file
+INCLUDE(setalteraarmboardconfig)
 
-ENDMACRO()
+################################################################################
+# Add support for Altera Designs in hostinterface
+# Set architecture specific sources and include directories
+
+SET(LIB_ARCH_SRCS
+        ${PROJECT_SOURCE_DIR}/src/hostiflibint_arm.c
+    )
+
+SET(LIB_ARCH_INCS
+                    ${EXAMPLE_BINARY_DIR}/bsp${CFG_${PROC_INST_NAME}_NAME}/${CFG_${PROC_INST_NAME}_NAME}/include
+                    ${LIB_ARCH_HAL_INCS}
+                   )
+
+################################################################################
+# Set architecture specific definitions
+ADD_DEFINITIONS(${ALT_${PROC_INST_NAME}_CFLAGS} "-D__altera_arm__ ")
+
+################################################################################
+# Set architecture specific installation files
+########################################################################
+# Eclipse project files

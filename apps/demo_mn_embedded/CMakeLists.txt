@@ -44,6 +44,13 @@ INCLUDE(../common/cmake/options.cmake)
 SET(OBJDICT CiA302-4_MN)              # Set object dictionary to use
 FIND_OPLK_LIBRARY("mn")
 
+IF ((NOT ${OPLKLIB} STREQUAL "OPLKLIB-NOTFOUND") AND (NOT ${OPLKLIB_DEBUG} STREQUAL "OPLKLIB_DEBUG-NOTFOUND"))
+    GET_FILENAME_COMPONENT(OPLKCFG_PATH ${OPLKLIB} DIRECTORY)
+    GET_FILENAME_COMPONENT(OPLKLIB_NAME ${OPLKLIB} NAME_WE)
+    STRING(REPLACE ${CMAKE_STATIC_LIBRARY_PREFIX} "" OPLKLIB_NAME ${OPLKLIB_NAME})
+    SET(OPLKCFG_PATH ${OPLKCFG_PATH}/config-${OPLKLIB_NAME})
+ENDIF()
+
 SET(CFG_CDC_ON_SD ON CACHE BOOL "CDC on external SDCARD")
 SET(CFG_CFM ON CACHE BOOL "Use Configuration Manager (CFM)")
 
@@ -60,6 +67,7 @@ INCLUDE_DIRECTORIES(
                     ${DEMO_SOURCE_DIR}
                     ${COMMON_SOURCE_DIR}/lcd
                     ${COMMON_SOURCE_DIR}/arp
+                    ${OPLKCFG_PATH}
                    )
 
 ################################################################################
@@ -73,6 +81,8 @@ IF (CMAKE_SYSTEM_NAME STREQUAL "Generic" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "Mi
     include(microblaze.cmake)
 ELSEIF (CMAKE_SYSTEM_NAME STREQUAL "Generic" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "zynqarm")
     include(zynqarm.cmake)
+ELSEIF (CMAKE_SYSTEM_NAME STREQUAL "Generic" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "alterac5arm")
+    include(alterac5arm.cmake)
 ELSE ()
     MESSAGE(FATAL_ERROR "System ${CMAKE_SYSTEM_NAME} with processor ${CMAKE_SYSTEM_PROCESSOR} is not supported!")
 ENDIF ()
@@ -98,6 +108,11 @@ SET_PROPERTY(TARGET ${EXECUTABLE_NAME}
 
 SET_PROPERTY(TARGET ${EXECUTABLE_NAME}
              PROPERTY LINK_FLAGS ${ARCH_LINKER_FLAGS})
+ADD_DEPENDENCIES(${EXECUTABLE_NAME} INFO)
+
+ADD_CUSTOM_TARGET(INFO
+            COMMAND echo $PWD
+)
 
 ################################################################################
 # Libraries to link

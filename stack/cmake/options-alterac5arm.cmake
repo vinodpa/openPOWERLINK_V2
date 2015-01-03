@@ -1,9 +1,9 @@
 ################################################################################
 #
-# CMake macro for installing the bitstream for NIOS II
+# CMake options for openPOWERLINK stack on Altera Cyclone V ARM
 #
 # Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
-
+# Copyright (c) 2014, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,31 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-MACRO(INSTALL_BITSTREAM EXAMPLE_ROOT BITS_DESTINATION SKIP_BITSTREAM)
+MESSAGE(STATUS "Adding CMake configuration options for ARM")
 
-ENDMACRO()
+################################################################################
+# Handle includes
+SET(CMAKE_MODULE_PATH "${OPLK_BASE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+INCLUDE(geneclipsefilelist)
+INCLUDE(geneclipseincludelist)
+
+################################################################################
+# Set Paths
+SET(ALT_HW_LIB_DIR ${OPLK_BASE_DIR}/hardware/lib/${SYSTEM_NAME_DIR}/${SYSTEM_PROCESSOR_DIR})
+SET(ALT_TOOLS_DIR ${TOOLS_DIR}/aletra-arm)
+
+################################################################################
+# Options for MN libraries
+OPTION(CFG_COMPILE_LIB_MNAPP_HOSTIF     "Compile openPOWERLINK MN host/application library" OFF)
+################################################################################
+# Add library subdirectories and hardware library path
+
+# MN libraries
+IF (CFG_COMPILE_LIB_MNAPP_HOSTIF)
+    # Path to the hardware library folder of your board example
+    SET(CFG_COMPILE_LIB_MN_APP_HOSTIF_HW_LIB_DIR ${ALT_HW_LIB_DIR}/altera-c5soc/mn-dual-hostif-gpio
+            CACHE PATH "Path to the hardware host library folder for the dual processor MN library")
+    ADD_SUBDIRECTORY(proj/generic/liboplkmnapp-hostif)
+ELSE ()
+    UNSET(CFG_COMPILE_LIB_MN_APP_HOSTIF_HW_LIB_DIR CACHE)
+ENDIF ()

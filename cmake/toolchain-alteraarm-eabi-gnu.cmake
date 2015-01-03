@@ -1,9 +1,8 @@
 ################################################################################
 #
-# CMake macro for installing the bitstream for NIOS II
+# CMake target configuration file for Xilinx Zynq ARM
 #
-# Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
-
+# Copyright (c) 2014, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,6 +28,22 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-MACRO(INSTALL_BITSTREAM EXAMPLE_ROOT BITS_DESTINATION SKIP_BITSTREAM)
+################################################################################
+# Name of the target platform
+SET(CMAKE_SYSTEM Altera-c5arm)
+SET(CMAKE_SYSTEM_NAME Generic)
+SET(CMAKE_SYSTEM_PROCESSOR alterac5arm)
 
-ENDMACRO()
+# Version of the system
+SET(CMAKE_SYSTEM_VERSION 1)
+
+# specify the cross compiler
+SET(CMAKE_C_COMPILER arm-altera-eabi-gcc)
+SET(CMAKE_CXX_COMPILER arm-altera-eabi-g++)
+SET(CMAKE_ASM-ATT_COMPILER arm-altera-eabi-as)
+
+# search for programs in the build host directories
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+# for libraries and headers in the target directories
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
