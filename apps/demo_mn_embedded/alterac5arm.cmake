@@ -83,6 +83,7 @@ SET(DEMO_ARCH_SOURCES
     ${COMMON_SOURCE_DIR}/gpio/gpio-cyclone_arm.c
     ${COMMON_SOURCE_DIR}/lcd/lcdl-cyclone_arm.c
     ${COMMON_SOURCE_DIR}/system/system-cyclone_arm.c
+    ${CONTRIB_SOURCE_DIR}/trace/trace-cyclone_arm.c
    )
 
 INCLUDE_DIRECTORIES(
