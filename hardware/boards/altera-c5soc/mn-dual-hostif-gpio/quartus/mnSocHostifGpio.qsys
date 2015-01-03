@@ -116,7 +116,7 @@
          type = "boolean";
       }
    }
-   element pcp
+   element pcp_0
    {
       datum _sortIndex
       {
@@ -582,9 +582,9 @@
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
  </module>
- <module kind="mn_soc_pcp" version="1.0" enabled="1" name="pcp">
+ <module kind="mn_soc_pcp" version="1.0" enabled="1" name="pcp_0">
   <parameter name="AUTO_GENERATION_ID" value="0" />
-  <parameter name="AUTO_UNIQUE_ID" value="$${FILENAME}_pcp" />
+  <parameter name="AUTO_UNIQUE_ID" value="$${FILENAME}_pcp_0" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
   <parameter name="AUTO_DEVICE" value="5CSXFC6D6F31C6" />
   <parameter name="AUTO_CLK50_CLOCK_RATE" value="50000000" />
@@ -695,24 +695,24 @@
    kind="reset"
    version="14.0"
    start="clk_50.clk_reset"
-   end="pcp.resetclk50" />
+   end="pcp_0.resetclk50" />
  <connection
    kind="reset"
    version="14.0"
    start="clk_50.clk_reset"
-   end="pcp.resetclk100" />
+   end="pcp_0.resetclk100" />
  <connection
    kind="reset"
    version="14.0"
    start="clk_100.clk_reset"
-   end="pcp.resetclk100" />
- <connection kind="clock" version="14.0" start="clk_50.clk" end="pcp.clk50" />
- <connection kind="clock" version="14.0" start="clk_100.clk" end="pcp.clk100" />
+   end="pcp_0.resetclk100" />
+ <connection kind="clock" version="14.0" start="clk_50.clk" end="pcp_0.clk50" />
+ <connection kind="clock" version="14.0" start="clk_100.clk" end="pcp_0.clk100" />
  <connection
    kind="reset"
    version="14.0"
    start="clk_100.clk_reset"
-   end="pcp.resetclk50" />
+   end="pcp_0.resetclk50" />
  <connection
    kind="clock"
    version="14.0"
@@ -772,7 +772,7 @@
  <connection
    kind="avalon"
    version="14.0"
-   start="pcp.cpu_bridge_m0"
+   start="pcp_0.cpu_bridge_m0"
    end="ddr3_emif_0.avl_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
@@ -877,7 +877,7 @@
  <connection
    kind="avalon"
    version="14.0"
-   start="pcp.slow_bridge_m0"
+   start="pcp_0.slow_bridge_m0"
    end="hostinterface_0.pcp">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x6000" />
@@ -886,7 +886,7 @@
  <connection
    kind="avalon"
    version="14.0"
-   start="pcp.slow_bridge_m0"
+   start="pcp_0.slow_bridge_m0"
    end="openmac_0.macReg">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x4000" />
@@ -895,7 +895,7 @@
  <connection
    kind="avalon"
    version="14.0"
-   start="pcp.slow_bridge_m0"
+   start="pcp_0.slow_bridge_m0"
    end="openmac_0.macTimer">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x6800" />
@@ -904,7 +904,7 @@
  <connection
    kind="avalon"
    version="14.0"
-   start="pcp.slow_bridge_m0"
+   start="pcp_0.slow_bridge_m0"
    end="openmac_0.pktBuf">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
@@ -936,14 +936,14 @@
  <connection
    kind="interrupt"
    version="14.0"
-   start="pcp.mac_irq"
+   start="pcp_0.mac_irq"
    end="openmac_0.macIrq">
   <parameter name="irqNumber" value="0" />
  </connection>
  <connection
    kind="interrupt"
    version="14.0"
-   start="pcp.sync_irq"
+   start="pcp_0.sync_irq"
    end="openmac_0.timerIrq">
   <parameter name="irqNumber" value="0" />
  </connection>
@@ -964,7 +964,7 @@
  <connection
    kind="avalon"
    version="14.0"
-   start="pcp.slow_bridge_m0"
+   start="pcp_0.slow_bridge_m0"
    end="sysid_qsys.control_slave">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x6810" />
@@ -978,7 +978,7 @@
  <connection
    kind="avalon"
    version="14.0"
-   start="pcp.flash_bridge_m0"
+   start="pcp_0.flash_bridge_m0"
    end="epcq_flash_controller_0.epcs_control_port">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x0000" />
