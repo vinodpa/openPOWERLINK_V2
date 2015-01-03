@@ -53,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 // Get hostinterface base address from system.h
-#if defined(__HOSTINTERFACE)
+#if defined(HOSTINTERFACE_0_BASE)
 #define HOSTIF_BASE                         HOSTINTERFACE_0_BASE
 #else
 #define HOSTIF_BASE                         0x10000000  //FIXME: Use multiplex ipcore base here
