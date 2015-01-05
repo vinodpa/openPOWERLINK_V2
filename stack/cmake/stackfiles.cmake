@@ -508,7 +508,6 @@ SET(TARGET_ALTERA_ARM_SOURCES
     ${ARCH_SOURCE_DIR}/altera_arm/target-arm.c
     ${ARCH_SOURCE_DIR}/altera_arm/target-mutex.c
     ${ARCH_SOURCE_DIR}/altera_arm/sleep.c
-    ${CONTRIB_SOURCE_DIR}/trace/trace-cyclone_arm.c
     )
 
 SET(TARGET_ALTERA_ARM_DUAL_SOURCES
