@@ -27,4 +27,4 @@ DATE = "11:34:45  June 10, 2014"
 
 # Revisions
 
-PROJECT_REVISION = "mn-soc-hostif--gpio"
+PROJECT_REVISION = "mn-soc-hostif-gpio"
