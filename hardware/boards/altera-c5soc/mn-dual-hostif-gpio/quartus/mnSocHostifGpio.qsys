@@ -163,7 +163,7 @@
  <parameter name="hdlLanguage" value="VERILOG" />
  <parameter name="hideFromIPCatalog" value="false" />
  <parameter name="maxAdditionalLatency" value="1" />
- <parameter name="projectName" value="toplevel.qpf" />
+ <parameter name="projectName">mn-soc-hostif--gpio.qpf</parameter>
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="0" />
  <parameter name="testBenchDutName" value="" />
@@ -1014,6 +1014,11 @@
   <parameter name="baseAddress" value="0x6900" />
   <parameter name="defaultConnection" value="false" />
  </connection>
+ <connection
+   kind="reset"
+   version="14.0"
+   start="pcp_0.jtag_reset"
+   end="epcq_flash_controller_0.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />

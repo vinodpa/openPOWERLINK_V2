@@ -81,7 +81,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -107,7 +107,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -133,7 +133,7 @@
       }
       datum sopceditor_expanded
       {
-         value = "0";
+         value = "1";
          type = "boolean";
       }
    }
@@ -150,17 +150,12 @@
          type = "boolean";
       }
    }
-   element cc_nios2per.s0
+   element reset_bridge_0
    {
-      datum _lockedAddress
+      datum _sortIndex
       {
-         value = "1";
-         type = "boolean";
-      }
-      datum baseAddress
-      {
-         value = "268435456";
-         type = "String";
+         value = "13";
+         type = "int";
       }
    }
    element flash_bridge.s0
@@ -176,7 +171,15 @@
          type = "String";
       }
    }
-   element cpu_bridge.s0
+   element slow_bridge.s0
+   {
+      datum baseAddress
+      {
+         value = "0";
+         type = "String";
+      }
+   }
+   element cc_nios2per.s0
    {
       datum _lockedAddress
       {
@@ -185,12 +188,17 @@
       }
       datum baseAddress
       {
-         value = "0";
+         value = "268435456";
          type = "String";
       }
    }
-   element slow_bridge.s0
+   element cpu_bridge.s0
    {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
       datum baseAddress
       {
          value = "0";
@@ -357,6 +365,11 @@
    name="flash_bridge_m0"
    internal="flash_bridge.m0"
    type="avalon"
+   dir="start" />
+ <interface
+   name="jtag_reset"
+   internal="reset_bridge_0.out_reset"
+   type="reset"
    dir="start" />
  <module
    kind="altera_avalon_jtag_uart"
@@ -662,6 +675,16 @@
   <parameter name="PIPELINE_RESPONSE" value="1" />
   <parameter name="AUTO_CLK_CLOCK_RATE" value="100000000" />
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone V" />
+ </module>
+ <module
+   kind="altera_reset_bridge"
+   version="14.0"
+   enabled="1"
+   name="reset_bridge_0">
+  <parameter name="ACTIVE_LOW_RESET" value="1" />
+  <parameter name="SYNCHRONOUS_EDGES" value="deassert" />
+  <parameter name="NUM_RESET_OUTPUTS" value="1" />
+  <parameter name="AUTO_CLK_CLOCK_RATE" value="50000000" />
  </module>
  <connection
    kind="reset"
@@ -989,6 +1012,16 @@
    version="14.0"
    start="clk_50.clk_reset"
    end="flash_bridge.reset" />
+ <connection
+   kind="clock"
+   version="14.0"
+   start="clk_50.clk"
+   end="reset_bridge_0.clk" />
+ <connection
+   kind="reset"
+   version="14.0"
+   start="cpu_0.jtag_debug_module_reset"
+   end="reset_bridge_0.in_reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="false" />
