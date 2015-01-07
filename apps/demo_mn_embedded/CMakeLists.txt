@@ -126,6 +126,8 @@ IF (CMAKE_SYSTEM_NAME STREQUAL "Generic" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "zy
     INCLUDE(zynqarmapppostactions)
 ELSEIF (CMAKE_SYSTEM_NAME STREQUAL "Generic" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "Microblaze")
    INCLUDE(microblazeapppostactions)
+ELSEIF (CMAKE_SYSTEM_NAME STREQUAL "Generic" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "alterac5arm")
+   INCLUDE(alteraarmapppostactions)
 ENDIF ()
 
 ################################################################################
