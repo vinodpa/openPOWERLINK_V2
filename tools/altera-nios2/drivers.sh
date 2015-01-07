@@ -83,6 +83,8 @@ fi
 # Let's source the board.settings (null.settings before)
 BOARD_SETTINGS_FILE=${BOARD_PATH}/board.settings
 CFG_DRV_CPU_NAME=
+CFG_DRV_EPCS=
+CFG_DRV_EPCQ=
 CFG_JTAG_CABLE=
 if [ -f ${BOARD_SETTINGS_FILE} ]; then
     source ${BOARD_SETTINGS_FILE}
@@ -198,6 +200,11 @@ then
     echo "INFO: Set JTAG Cable to ${CFG_JTAG_CABLE}."
 fi
 
+if [ -n "${CFG_DEVICE_ID}" ];
+then
+    DRV_GEN_ARGS+="--set DEVICE_ID ${CFG_DEVICE_ID} "
+    echo "INFO: Set JTAG Chain device Id to ${CFG_DEVICE_ID}."
+fi
 # And add stack library
 LIB_STACK_DIR=$(find ${OUT_PATH} -type d -name "liboplk*")
 
@@ -213,5 +220,14 @@ fi
 
 chmod +x ${OPLK_BASE_DIR}/tools/altera-nios2/fix-app-makefile
 ${OPLK_BASE_DIR}/tools/altera-nios2/fix-app-makefile ${OUT_PATH}/Makefile
+
+# Add EPCS flash makefile rules
+if [ -n "${CFG_DRV_EPCS}" ]; then
+    chmod +x ${OPLK_BASE_DIR}/tools/altera-nios2/add-app-makefile-epcs
+    ${OPLK_BASE_DIR}/tools/altera-nios2/add-app-makefile-epcs ${OUT_PATH}/Makefile
+elif [ -n "${CFG_DRV_EPCQ}" ]; then
+    chmod +x ${OPLK_BASE_DIR}/tools/altera-nios2/add-app-makefile-epcq
+    ${OPLK_BASE_DIR}/tools/altera-nios2/add-app-makefile-epcq ${OUT_PATH}/Makefile
+fi
 
 exit 0
