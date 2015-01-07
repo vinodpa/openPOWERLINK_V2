@@ -1,12 +1,11 @@
 # Gitignore for boards
 
-#AlteraSoC
-software/
-hps_isw_handoff/
 # Altera Quartus with Qsys
 ## Dirs
 .qsys_edit/
 db/
+/**/quartus/*/*
+/**/qsys/*/*
 incremental_db/
 ## Files
 *.bak
@@ -25,6 +24,7 @@ incremental_db/
 *.summary
 *.pof
 *.txt
+*.csv
 
 # Xilinx Platform Studio
 ## Dirs
