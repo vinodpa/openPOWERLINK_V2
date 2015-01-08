@@ -59,9 +59,6 @@ MACRO(GENERATE_BSP EXAMPLE_NAME ALT_DEMO_DIR ALT_BSP_TARGET_DIR PROCESSOR_NAME T
         bsp-${EXAMPLE_NAME} ALL
         DEPENDS ${UBOOT_TARGET}
         DEPENDS ${HAL_TARGET}
-        #DEPENDS bsp
-    #    COMMAND make
-    #    WORKING_DIRECTORY ${SPL_PATH}
     )
 
     IF(DEFINED CFG_ARM_BOOTLOADER_ENABLE AND CFG_ARM_BOOTLOADER_ENABLE)
@@ -84,25 +81,16 @@ MACRO(GENERATE_BSP EXAMPLE_NAME ALT_DEMO_DIR ALT_BSP_TARGET_DIR PROCESSOR_NAME T
     
     IF(DEFINED CFG_ARM_BOOT_FROM_SDCARD AND CFG_ARM_BOOT_FROM_SDCARD)
         SET (SPL_GEN_ARGS ${SPL_GEN_ARGS} --set spl.boot.BOOT_FROM_SDMMC true )
-        SET (SPL_GEN_ARGS ${SPL_GEN_ARGS} --set spl.boot.FAT_LOAD_PAYLOAD_NAME demo_mn_embedded.bin )
+        SET (SPL_GEN_ARGS ${SPL_GEN_ARGS} --set spl.boot.FAT_LOAD_PAYLOAD_NAME BOOT.bin )
         UNSET(TARGET_INIT_SCRIPT)
         SET(TARGET_INIT_SCRIPT None)
     ELSE()
         SET (SPL_GEN_ARGS ${SPL_GEN_ARGS} --set spl.boot.BOOT_FROM_SDMMC false )
     ENDIF()
 
-    SET(BSP_SET_CMD "bsp-create-settings.exe  ${SPL_GEN_ARGS}")
-    MESSAGE("bsp-generate-files.exe --settings ${SPL_PATH}/settings.bsp --bsp-dir ${SPL_PATH}")
-    MESSAGE("bsp-create-settings.exe  ${SPL_GEN_ARGS}")
     ADD_CUSTOM_TARGET(
         ${UBOOT_TARGET}
         DEPENDS ${SPL_PATH}/uboot.ds
-    #    DEPENDS ${BSP_SPL_SRC_DIR}/emif.xml
-    #    DEPENDS ${BSP_SPL_SRC_DIR}/hps.xml
-    #    OUTPUT ${SPL_PATH}/uboot.ds
-    #    COMMAND chmod -R +rwx ${SPL_PATH}
-    #    COMMAND bsp-create-settings.exe  ${SPL_GEN_ARGS}
-    #    COMMAND bsp-generate-files.exe --settings ${SPL_PATH}/settings --bsp-dir ${SPL_PATH}
     )
 
     ADD_CUSTOM_COMMAND(
@@ -110,8 +98,6 @@ MACRO(GENERATE_BSP EXAMPLE_NAME ALT_DEMO_DIR ALT_BSP_TARGET_DIR PROCESSOR_NAME T
         DEPENDS ${BSP_SPL_SRC_DIR}/hps.xml
         OUTPUT ${SPL_PATH}/uboot.ds
         COMMAND chmod -R +rwx ${SPL_PATH}
-        #COMMAND bsp-create-settings.exe  --preloader-settings-dir C:/my-WS/OPLK/AltSoc/F/hardware/boards/altera-c5soc/mn-dual-hostif-gpio/quartus/hps_isw_handoff/mnDualHostifGpio_host_0_hps_0 --settings C:/my-WS/OPLK/AltSoc/F/hardware/build/altera-arm/boards/altera-c5soc/mn-dual-hostif-gpio/bsphost_0_hps_0/spl-1/settings.bsp --type spl  --set spl.boot.WATCHDOG_ENABLE false --set spl.boot.SDRAM_SCRUBBING true  --set spl.debug.SKIP_SDRAM false --set spl.boot.SDRAM_SCRUB_REMAIN_REGION true  --set spl.debug.SEMIHOSTING false --set spl.performance.SERIAL_SUPPORT true  --set spl.boot.BOOT_FROM_SDMMC true 
-        #COMMAND ${BSP_SET_CMD}
         COMMAND bsp-create-settings.exe  ${SPL_GEN_ARGS}
         COMMAND bsp-generate-files.exe --settings ${SPL_PATH}/settings.bsp --bsp-dir ${SPL_PATH}
         WORKING_DIRECTORY ${SPL_PATH}
@@ -130,7 +116,6 @@ MACRO(GENERATE_BSP EXAMPLE_NAME ALT_DEMO_DIR ALT_BSP_TARGET_DIR PROCESSOR_NAME T
     
     FILE(MAKE_DIRECTORY ${BSP_SDK_DIR})
     FILE(MAKE_DIRECTORY ${BSP_SDK_INC_DIR})
-    #FILE(MAKE_DIRECTORY bsp)
     
     IF (DEFINED CFG_ARM_HAL_TYPE AND (CFG_ARM_HAL_TYPE STREQUAL "hwlib"))
 
@@ -138,34 +123,26 @@ MACRO(GENERATE_BSP EXAMPLE_NAME ALT_DEMO_DIR ALT_BSP_TARGET_DIR PROCESSOR_NAME T
         
         
         FOREACH(SRC IN ITEMS ${LIB_ARCH_HAL_SRCS})
-            #GET_FILENAME_COMPONENT(SRC_REL_PATH ${SRC})
-            #SET (LIB_ARCH_SRC_LIST ${LIB_ARCH_SRC_LIST} ${SRC_REL_PATH})
             set_source_files_properties(${BSP_SDK_DIR}/${SRC} PROPERTIES GENERATED 1)
             SET (LIB_ARCH_SRC_LIST ${LIB_ARCH_SRC_LIST} ${BSP_SDK_DIR}/${SRC})
         ENDFOREACH()
         
         FOREACH(INC IN ITEMS ${LIB_ARCH_HAL_INCS})
             FILE(GLOB INC_LIST "${INC}/*.h")
-            #MESSAGE("Includes ${INC_LIST}")
             SET(LIB_ARCH_HAL_INC_LIST ${LIB_ARCH_HAL_INC_LIST} ${INC_LIST})
         ENDFOREACH()
-        
-        MESSAGE("Includes ${LIB_ARCH_HAL_INC_LIST}")
+
         SET(ARM_HAL_SRCS ${LIB_ARCH_SRC_LIST})
         
-        #FILE(GLOB_RECURSE ARM_HAL_SRCS "${BSP_SDK_DIR}/*.c")
         ADD_DEFINITIONS(${ALT_${PROC_INST_NAME}_CFLAGS} "-D__altera_arm__  -O3 -Ofast -g -Wall -std=c99 " ${LIB_ARCH_HAL_C_FLAGS})
         INCLUDE_DIRECTORIES(${LIB_ARCH_HAL_INCS})
         ADD_LIBRARY(${HAL_TARGET} ${ARM_HAL_SRCS})
         set_target_properties(${HAL_TARGET} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY ${ALT_BSP_TARGET_DIR})
-        ADD_DEPENDENCIES(${HAL_TARGET} SRC)
+        ADD_DEPENDENCIES(${HAL_TARGET} HAL_SRC)
+
         ADD_CUSTOM_TARGET(
-               SRC
-              #bsp
-            #DEPENDS ${BSP_SDK_DIR}/src
+            HAL_SRC
             DEPENDS ${BSP_SDK_INC_DIR}/system.h
-                            #COMMAND echo **********
-            #COMMAND ${CMAKE_COMMAND} -E (FOREACH(SRC IN ITEMS ${LIB_ARCH_SRCS}) copy_if_different ${SRCS} ${BSP_SDK_DIR} ENDFOREACH())
             COMMAND echo ${ARM_HWLIB_PATH}
             COMMAND pwd
             COMMAND tar -C ${ARM_HWLIB_PATH} -cjf temp.tar ${LIB_ARCH_HAL_SRCS}
@@ -173,39 +150,22 @@ MACRO(GENERATE_BSP EXAMPLE_NAME ALT_DEMO_DIR ALT_BSP_TARGET_DIR PROCESSOR_NAME T
             COMMAND ${CMAKE_COMMAND} -E remove temp.tar
             COMMAND chmod -R +rwx *
             COMMAND  ${CMAKE_COMMAND} -E copy_directory ${LIB_ARCH_HAL_INCS} ${BSP_SDK_INC_DIR}
-            #COMMAND echo ${LIB_ARCH_SRCS}
-            #COMMAND ${CMAKE_COMMAND} -E FILE(GLOB_RECURSE ARM_HAL_SRCS "${BSP_SDK_DIR}/*.c")
-            #COMMAND echo ${ARM_HAL_SRCS}
-            #COMMAND ${CMAKE_COMMAND} -E ADD_DEFINITIONS(${ALT_${PROC_INST_NAME}_CFLAGS} ${LIB_ARCH_C_FLAGS})
-            #COMMAND ${CMAKE_COMMAND} -E INCLUDE_DIRECTORIES(${LIB_ARCH_INCS})
-            #COMMAND echo ${LIB_ARCH_INCS}
-            #COMMAND ${CMAKE_COMMAND} -E FILE(MAKE_DIRECTORY ${HAL_TARGET})
-            #COMMAND ${CMAKE_COMMAND} -E ADD_LIBRARY(${HAL_TARGET} ${ARM_HAL_SRCS})
-            COMMAND echo ${HAL_TARGET}
-            #COMMAND ${CMAKE_COMMAND} -E SET_PROPERTY(TARGET ${HAL_TARGET} PROPERTY DEBUG_POSTFIX "_d")
-            
             WORKING_DIRECTORY ${BSP_SDK_DIR}
         )
 
 
 
         ADD_CUSTOM_COMMAND(
-            #TARGET(${HAL_TARGET})
-            #PRE_BUILD
             DEPENDS ${BSP_QUARTUS_DIR}/${TOP_SYSTEM_NAME}.sopcinfo
-            #OUTPUT ${BSP_SDK_DIR}/src
             OUTPUT ${BSP_SDK_INC_DIR}/system.h
             COMMAND sopc-create-header-files ${BSP_QUARTUS_DIR}/${TOP_SYSTEM_NAME}.sopcinfo --module ${CFG_HOST_NAME}_arm_a9_0 --single system.h
             WORKING_DIRECTORY ${BSP_SDK_INC_DIR}
         )
-        
-        #ADD_CUSTOM_COMMAND(TARGET ${HAL_TARGET}
-               #POST_BUILD
-               #COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE_NAME:${HOSTIF_PROJECT_NAME}> ${PROJECT_BINARY_DIR}/lib${HOSTIF_LIB_NAME}.a
-              #)
+
     # BSP has to be generated from .sopc file
     ELSEIF (DEFINED CFG_ARM_BSP_GEN AND (CFG_ARM_HAL_TYPE STREQUAL "BSP"))
         #TODO For NIOS/ in-built bsp with Altera
+        MESSAGE("Current design only supports a HAL from the hardware library!!")
     ENDIF()
 
 
