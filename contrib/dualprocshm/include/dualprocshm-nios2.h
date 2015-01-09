@@ -92,9 +92,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DPSHM_WRITE32(base, val)    IOWR_32DIRECT((UINT32)base, 0, val);
 #define DPSHM_ENABLE_INTR(fEnable)  target_enableGlobalInterrupt(fEnable)
 
-#define DPSHM_ENABLE_HOST_SYNC_IRQ()    \
-                    DPSHM_WRITE8(PCIE_SUBSYTEM_PCIE_IP_BASE + 0x50, 0x1)
-
 // Memory barrier
 // FIXME: Find other suitable way to handle memory barrier for NIOS2
 #define DPSHM_DMB()                 usleep(2)

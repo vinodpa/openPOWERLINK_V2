@@ -46,45 +46,29 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAX_DYNAMIC_BUFF_SIZE       MAX_DYNAMIC_BUFF_COUNT * 4  ///< Max dynamic buffer size
 
 /* BASE ADDRESSES */
-#if defined(__MICROBLAZE__)
-#include "dualprocshm-microblaze.h"
-
-// TODO : gks check if this can be retrieved from hardware configuration
-#define COMMON_MEM_BASE             0x2C000000
-#define MEM_ADDR_TABLE_BASE         COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE
-#define MEM_INTR_BASE               MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE
+#if defined(__NIOS2__)
 
 #define TARGET_SYNC_IRQ_ID         -1
 #define TARGET_SYNC_IRQ            -1
 
-///< Interrupt controller specific defines
-#define TARGET_IRQ_IC_BASE         -1
-#define TARGET_IRQ_IC_DIST_BASE    -1
 
+#include "dualprocshm-nios2.h"
 
-#elif defined(__arm__)
-#include "dualprocshm-arm.h"
-
-// TODO : gks check if this can be retrieved from hardware configuration
-#define COMMON_MEM_BASE             0x2C000000
+#define COMMON_MEM_BASE             COM_MEM_BASE
 #define MEM_ADDR_TABLE_BASE         COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE
 #define MEM_INTR_BASE               MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE
 
-#define TARGET_SYNC_IRQ_ID         XPAR_PS7_SCUGIC_0_DEVICE_ID
-#define TARGET_SYNC_IRQ            XPAR_FABRIC_AXI_OPENMAC_0_TIMER_IRQ_INTR
+#elif defined(__altera_arm__)
 
-///< Interrupt controller specific defines
-#ifdef XPAR_PS7_SCUGIC_0_BASEADDR
-#define TARGET_IRQ_IC_BASE         XPAR_PS7_SCUGIC_0_BASEADDR
-#endif
+#define TARGET_SYNC_IRQ_ID         1
+#define TARGET_SYNC_IRQ            -1
 
-#ifdef XPAR_PS7_SCUGIC_0_DIST_BASEADDR
-#define TARGET_IRQ_IC_DIST_BASE    XPAR_PS7_SCUGIC_0_DIST_BASEADDR
-#endif
+#include "dualprocshm-alteraarm.h"
 
-#else
-
-#error "unknown target for Zynq"
+// TODO : gks check if this can be retrieved from hardware configuration
+#define COMMON_MEM_BASE             COM_MEM_BASE
+#define MEM_ADDR_TABLE_BASE         COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE
+#define MEM_INTR_BASE               MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE
 
 #endif
 

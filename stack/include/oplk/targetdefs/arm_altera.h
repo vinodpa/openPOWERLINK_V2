@@ -85,7 +85,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define FPGA_BUS_WIDTH                              32
 #define __IO_CALC_ADDRESS_NATIVE(base, offset) \
     (base + offset * (FPGA_BUS_WIDTH / 8))
-#define IORD16(base, offset)                    alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
+#define IORD16(base, offset)                    alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8)) // *****or hword
 #define IORD32(base, offset)                    alt_read_word(base + offset * (FPGA_BUS_WIDTH / 8))
 #define IOWR16(base, offset, val)               alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)
 #define IOWR32(base, offset, val)               alt_write_word(base + offset * (FPGA_BUS_WIDTH / 8), val)

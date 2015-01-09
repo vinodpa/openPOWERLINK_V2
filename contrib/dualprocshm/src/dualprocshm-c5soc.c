@@ -1,10 +1,10 @@
 /**
 ********************************************************************************
-\file   dualprocshm-zynq.c
+\file   dualprocshm-c5soc.c
 
-\brief  Dual Processor Library Support File - Zynq SoC
+\brief  Dual Processor Library Support File - Cyclone V SoC
 
-This file provides specific function definitions for Zynq SoC to support shared
+This file provides specific function definitions for Cyclone V SoC to support shared
 memory interface using dual processor library.
 
 \ingroup module_dualprocshm
@@ -119,7 +119,7 @@ Target specific routine to release the common memory.
 void dualprocshm_releaseCommonMemAddr(UINT16 pSize_p)
 {
     UNUSED_PARAMETER(pSize_p);
-    // nothing to do be done on zynq
+    // nothing to do be done on c5soc
 }
 
 //------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ dynamic mapping table.
 //------------------------------------------------------------------------------
 void dualprocshm_releaseDynMapTableAddr(void)
 {
-    // nothing to be done on zynq
+    // nothing to be done on c5soc
 }
 
 //------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ interrupt synchronization registers.
 //------------------------------------------------------------------------------
 void dualprocshm_releaseIntrMemAddr()
 {
-    // nothing to be done on zynq
+    // nothing to be done on c5soc
 }
 
 //------------------------------------------------------------------------------
