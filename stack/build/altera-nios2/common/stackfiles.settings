@@ -123,7 +123,7 @@ ERRHND_UCAL_HOSTIF_SOURCES="\
 ${USER_SOURCE_DIR}/errhnd/errhnducal-hostif.c \
 "
 
-ERRHND_UCAL_DUALPROCSHM_SOURCES ="\
+ERRHND_UCAL_DUALPROCSHM_SOURCES="\
 ${USER_SOURCE_DIR}/errhnd/errhnducal-noosdual.c \
 "
 
@@ -348,6 +348,10 @@ ${CONTRIB_SOURCE_DIR}/dualprocshm/src/dualprocshm-noos.c \
 "
 DUALPROCSHM_KERNEL_SOURCES="\
 ${CONTRIB_SOURCE_DIR}/dualprocshm/src/dualprocshm-pcp.c \
+"
+
+DUALPROCSHM_DRIVER_SOURCES="\
+${CONTRIB_SOURCE_DIR}/dualprocshm/src/dualprocshm-c5soc.c \
 "
 ################################################################################
 # Target system specific sources

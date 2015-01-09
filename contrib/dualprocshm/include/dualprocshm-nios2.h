@@ -92,6 +92,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DPSHM_WRITE32(base, val)    IOWR_32DIRECT((UINT32)base, 0, val);
 #define DPSHM_ENABLE_INTR(fEnable)  target_enableGlobalInterrupt(fEnable)
 
+#ifdef __INT_BUS__
+#define DPSHM_ENABLE_HOST_SYNC_IRQ()
+#else
+#error "Currently only Internal Bus between shared memory and driver is supported!!"
+#endif
+
 // Memory barrier
 // FIXME: Find other suitable way to handle memory barrier for NIOS2
 #define DPSHM_DMB()                 usleep(2)

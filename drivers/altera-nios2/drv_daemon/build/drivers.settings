@@ -39,14 +39,15 @@ DRV_INCLUDES="\
 ${OPLK_BASE_DIR}/stack/include \
 ${OPLK_BASE_DIR}/stack/src/arch/altera_nios2 \
 ${OPLK_BASE_DIR}/stack/include/kernel \
-if [ ${CFG_HOSTINTERFACE=0} -ne 0 ]; then
-    echo "Compiling for Hostinterface"
+"
+if [ ${CFG_HOSTINTERFACE} -ne 0 ]; then
+    echo "INFO: Compiling for Hostinterface"
     DRV_INCLUDES="\
     ${DRV_INCLUDES} \
     ${OPLK_BASE_DIR}/stack/proj/generic/liboplkmndrv-hostif \
     "
 else
-    echo "Compiling for DualProcShm"
+    echo "INFO: Compiling for DualProcShm"
     DRV_INCLUDES="\
     ${DRV_INCLUDES} \
     ${OPLK_BASE_DIR}/stack/proj/generic/liboplkmndrv-dualprocshm \

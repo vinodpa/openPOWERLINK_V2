@@ -32,7 +32,7 @@
 # DRIVER PROCESSOR
 
 # Qsys sub of processor that processes drv
-CFG_DRV_SUB_NAME=pcp_0
+CFG_DRV_SUB_NAME=pcp
 # Processor that processes drv
 CFG_DRV_PROC_NAME=cpu_0
 # -> Build complete name
@@ -60,3 +60,9 @@ CFG_NODE=MN
 
 # JTAG Cable
 CFG_JTAG_CABLE="USB-BlasterII [USB-1]"
+
+# Driver Arguments
+CFG_PLATFORM_CFLAGS=-D__C5SOC__
+
+# Driver Interface Configuration
+CFG_DRV_BUS="INT BUS"

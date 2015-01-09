@@ -48,6 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* BASE ADDRESSES */
 #if defined(__NIOS2__)
 
+#include <system.h>
 #define TARGET_SYNC_IRQ_ID         -1
 #define TARGET_SYNC_IRQ            -1
 
@@ -60,6 +61,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #elif defined(__altera_arm__)
 
+#include <system.h>
 #define TARGET_SYNC_IRQ_ID         1
 #define TARGET_SYNC_IRQ            -1
 
