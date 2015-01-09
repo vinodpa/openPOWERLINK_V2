@@ -38,8 +38,16 @@ IF (CFG_KERNEL_STACK_PCP_HOSTIF_MODULE)
     EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy "${CFG_HW_LIB_DIR}/spl_bsp/preloader-mkpimage.bin" "${PROJECT_BINARY_DIR}")
     SET(EXECUTABLE_CPU_NAME ${CFG_HOST_NAME})      # On link using host-interface the CPU name is Host
 
+ELSE IF(CFG_KERNEL_DUALPROCSHM)
+
+    SET(ALT_BSP_DIR ${CFG_HW_LIB_DIR}/bsp${CFG_HOST_NAME}/${CFG_HOST_NAME})
+    SET(ALT_DUALPROCSHM_DIR ${CFG_HW_LIB_DIR}/libdualprocshm-host)
+    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy "${CFG_HW_LIB_DIR}/linker/linker.ld" "${PROJECT_BINARY_DIR}")
+    SET(LSSCRIPT ${PROJECT_BINARY_DIR}/linker.ld)
+    SET(EXECUTABLE_CPU_NAME ${CFG_HOST_NAME})      # On link using host-interface the CPU name is Host
+
 ELSE ()
-    MESSAGE(FATAL_ERROR "Only CFG_KERNEL_STACK_PCP_HOSTIF_MODULE is currently implemented on Cyclone V!")
+    MESSAGE(FATAL_ERROR "Only CFG_KERNEL_STACK_PCP_HOSTIF_MODULE and CFG_KERNEL_DUALPROCSHM is currently implemented on Cyclone V!")
 ENDIF ()
 
 ################################################################################
@@ -68,6 +76,19 @@ IF (CFG_KERNEL_STACK_PCP_HOSTIF_MODULE)
 
 ENDIF (CFG_KERNEL_STACK_PCP_HOSTIF_MODULE)
 
+IF (CFG_KERNEL_DUALPROCSHM)
+    IF(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+        SET(LIB_DUALPROCSHM_NAME "dualprocshm-host_d")
+    ELSE()
+        SET(LIB_DUALPROCSHM_NAME "dualprocshm-host")
+    ENDIF()
+
+    UNSET(ALT_LIB_DUALPROCSHM CACHE)
+    MESSAGE(STATUS "Searching for LIBRARY ${LIB_DUALPROCSHM_NAME} in ${CFG_HW_LIB_DIR}/libdualprocshm-host")
+    FIND_LIBRARY(ALT_LIB_DUALPROCSHM NAMES ${LIB_DUALPROCSHM_NAME}
+                         HINTS ${ALT_DUALPROCSHM_DIR}
+            )
+ENDIF (CFG_KERNEL_DUALPROCSHM)
 ################################################################################
 # Set architecture specific sources and include directories
 
@@ -125,5 +146,13 @@ ELSEIF (CFG_KERNEL_STACK_PCP_HOSTIF_MODULE)
     ELSE ()
         MESSAGE(FATAL_ERROR "${LIB_HOSTIFLIB_NAME} for board ${CFG_DEMO_BOARD_NAME} and demo ${CFG_DEMO_NAME} not found! Check the parameter CMAKE_BUILD_TYPE to confirm your 'Debug' or 'Release' settings")
     ENDIF ()
+
+ELSEIF (CFG_KERNEL_DUALPROCSHM)
+    IF(NOT ${ALT_LIB_DUALPROCSHM} STREQUAL "ALT_LIB_DUALPROCSHM-NOTFOUND" )
+        SET(ARCH_LIBRARIES  ${ARCH_LIBRARIES} ${ALT_LIB_DUALPROCSHM})
+        LINK_DIRECTORIES(${ALT_DUALPROCSHM_DIR})
+    ELSE()
+        MESSAGE(FATAL_ERROR "Dual processor library for ${CFG_DEMO_BOARD_NAME} and demo ${CFG_DEMO_NAME} not found!")
+    ENDIF()
 
 ENDIF (CFG_KERNEL_STACK_DIRECTLINK)

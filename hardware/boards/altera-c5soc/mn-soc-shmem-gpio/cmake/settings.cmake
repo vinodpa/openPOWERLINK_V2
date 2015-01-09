@@ -32,7 +32,7 @@
 # D E M O   I D E N T I F I C A T I O N
 
 # Name of the demo
-SET(CFG_DEMO_NAME "mn-dual-hostif-gpio")
+SET(CFG_DEMO_NAME "mn-soc-shmem-gpio")
 
 # Board of the demo
 SET(CFG_DEMO_BOARD_NAME "altera-c5soc")
@@ -95,4 +95,4 @@ MARK_AS_ADVANCED(CFG_HOST_ARM_HW_FLOAT)
 # E N A B L E   P R O C E S S O R   S O F T W A R E   ( H O S T )
 
 # Interface between host and pcp
-SET(CFG_HOST_HOSTIF_ENABLE TRUE)
+SET(CFG_HOST_HOSTIF_ENABLE FALSE)
