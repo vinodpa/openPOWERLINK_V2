@@ -72,6 +72,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MEM_ADDR_TABLE_BASE         COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE
 #define MEM_INTR_BASE               MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE
 
+#else
+
+#error "DPSHM ERROR: Selected processor is not supported"
 #endif
 
 #endif //_INC_dualprocshm_c5soc_H_

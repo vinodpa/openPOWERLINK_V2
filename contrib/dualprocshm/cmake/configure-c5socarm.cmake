@@ -41,8 +41,8 @@ SET(LIB_ARCH_INCS
 ################################################################################
 # Set architecture specific definitions
 
-ADD_DEFINITIONS(${XIL_${PROC_INST_NAME}_FLAGS} "-fmessage-length=0 -mcpu=${CFG_${PROC_INST_NAME}_CPU_VERSION} -ffunction-sections -fdata-sections -fno-inline")
-ADD_DEFINITIONS("-D__C5SOC__")
+ADD_DEFINITIONS(${ALT_${PROC_INST_NAME}_FLAGS} "-fmessage-length=0 -mcpu=${CFG_${PROC_INST_NAME}_CPU_VERSION} -ffunction-sections -fdata-sections -fno-inline")
+ADD_DEFINITIONS("-D__C5SOC__ -D__altera_arm__")
 
 ################################################################################
 # Set architecture specific installation files

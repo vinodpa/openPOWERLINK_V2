@@ -1,8 +1,9 @@
 ################################################################################
 #
-# CMake configuration for openPOWERLINK MN application library on Altera-ARM core
+# CMake file for HAL where target is ARM
 #
-# Copyright (c) 2014, Kalycito Infotech Private Limited.
+# Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+# Copyright (c) 2014, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -29,55 +30,38 @@
 ################################################################################
 
 ################################################################################
-# Include board specific settings file
-INCLUDE(setalteraarmboardconfig)
-
-SET_BOARD_CONFIGURATION(${CFG_COMPILE_LIB_MN_HW_LIB_DIR})
 
 ################################################################################
-# Set paths
-SET(ARCH_INSTALL_POSTFIX ${CFG_DEMO_BOARD_NAME}/${CFG_DEMO_NAME})
+# Set architecture specific sources and include directories
 
+
+SET(LIB_ARCH_HAL_SRCS
+            src/hwmgr/alt_address_space.c
+            src/hwmgr/alt_bridge_manager.c
+            src/hwmgr/alt_cache.c
+            src/hwmgr/alt_clock_manager.c
+            src/hwmgr/alt_dma_program.c
+            src/hwmgr/alt_dma.c
+
+            src/hwmgr/alt_fpga_manager.c
+            src/hwmgr/alt_generalpurpose_io.c
+            src/hwmgr/alt_globaltmr.c
+            src/hwmgr/alt_i2c.c
+            src/hwmgr/alt_interrupt.c
+            src/hwmgr/alt_mmu.c
+
+            src/hwmgr/alt_reset_manager.c
+            src/hwmgr/alt_system_manager.c
+            src/hwmgr/alt_timers.c
+            src/hwmgr/alt_watchdog.c
+    )
+
+SET(LIB_ARCH_HAL_INCS
+            ${ARM_HWLIB_PATH}/include
+    )
+
+SET(LIB_ARCH_HAL_C_FLAGS " ")
 ################################################################################
-# Find boards support package
-SET(ALT_BSP_DIR ${CFG_COMPILE_LIB_MN_HW_LIB_DIR}/bsp${CFG_HOST_NAME}/${CFG_HOST_NAME})
-
-MESSAGE(STATUS "Searching for the board support package in ${ALT_BSP_DIR}")
-IF(EXISTS ${ALT_BSP_DIR})
-    SET(ALT_LIB_BSP_INC ${ALT_BSP_DIR}/include)
-ELSE()
-    MESSAGE(FATAL_ERROR "Board support package for board ${CFG_DEMO_BOARD_NAME} and demo ${CFG_DEMO_NAME} not found!")
-ENDIF()
-
-################################################################################
-# Set architecture specific sources
-SET(LIB_ARCH_SOURCES
-                     ${TARGET_ALTERA_ARM_SOURCES}
-                     ${TARGET_ALTERA_ARM_DUAL_SOURCES}
-   )
-
-################################################################################
-# Deactivate optimization for usleep
-SET_SOURCE_FILES_PROPERTIES(${ARCH_SOURCE_DIR}/altera_arm/sleep.c
-                            PROPERTIES COMPILE_FLAGS "-O0")
-
-################################################################################
-# Set architecture specific includes
-INCLUDE_DIRECTORIES(
-                    ${ALT_LIB_BSP_INC}
-                    ${ARCH_SOURCE_DIR}/altera_arm
-                    ${CONTRIB_SOURCE_DIR}/dualprocshm/include
-                    ${CFG_COMPILE_LIB_MN_HW_LIB_DIR}/include
-                   )
-
-################################################################################
-# Set additional target specific compile flags
-ADD_DEFINITIONS("${ALT_HOST_CFLAGS} -fmessage-length=0 -ffunction-sections -fdata-sections -fno-inline")
-
-ADD_DEFINITIONS("-D__C5SOC__ -D__altera_arm__")
-################################################################################
-
-
+# Set architecture specific installation files
 ########################################################################
 # Eclipse project files
-

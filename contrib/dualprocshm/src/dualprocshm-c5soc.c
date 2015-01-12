@@ -345,9 +345,13 @@ The function is used to enable or disable the sync interrupt.
 void dualprocshm_enableSyncIrq(BOOL fEnable_p)
 {
     if (fEnable_p)
+    {
         DPSHM_ENABLE_SYNC_INTR();
+    }
     else
+    {
         DPSHM_DISABLE_SYNC_INTR();
+    }
 }
 
 //============================================================================//

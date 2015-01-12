@@ -68,7 +68,7 @@ SET(CFG_BUILD_KERNEL_STACK "PCP Daemon Host-Interface"
     CACHE STRING "Configure how to build the kernel stack")
 
 SET(KernelStackBuildTypes
-    "PCP Daemon Host-Interface;None"
+    "PCP Daemon Host-Interface;PCP Daemon Shared Memory Interface;None"
     CACHE INTERNAL
     "List of possible kernel stack build types")
 
@@ -80,15 +80,25 @@ IF (CFG_BUILD_KERNEL_STACK STREQUAL "Link to Application")
     SET(CFG_KERNEL_STACK_DIRECTLINK ON CACHE INTERNAL
          "Link kernel stack directly into application (Single process solution)")
     UNSET(CFG_KERNEL_STACK_PCP_HOSTIF_MODULE CACHE)
+    UNSET(CFG_KERNEL_DUALPROCSHM CACHE)
 
 ELSEIF (CFG_BUILD_KERNEL_STACK STREQUAL "PCP Daemon Host-Interface")
 
     SET(CFG_KERNEL_STACK_PCP_HOSTIF_MODULE ON CACHE INTERNAL
          "Build kernel stack as PCP daemon (dual processor)")
     UNSET(CFG_KERNEL_STACK_DIRECTLINK CACHE)
+    UNSET(CFG_KERNEL_DUALPROCSHM CACHE)
+
+ELSEIF (CFG_BUILD_KERNEL_STACK STREQUAL "PCP Daemon Shared Memory Interface")
+
+    SET(CFG_KERNEL_DUALPROCSHM ON CACHE INTERNAL
+         "Build kernel stack as PCP daemon (dual processor)")
+    UNSET(CFG_KERNEL_STACK_DIRECTLINK CACHE)
+    UNSET(CFG_KERNEL_STACK_PCP_HOSTIF_MODULE CACHE)
 
 ELSEIF (CFG_BUILD_KERNEL_STACK STREQUAL "None")
     UNSET(CFG_KERNEL_STACK_PCP_HOSTIF_MODULE CACHE)
     UNSET(CFG_KERNEL_STACK_DIRECTLINK CACHE)
+    UNSET(CFG_KERNEL_DUALPROCSHM CACHE)
 
 ENDIF (CFG_BUILD_KERNEL_STACK STREQUAL "Link to Application")

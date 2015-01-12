@@ -51,7 +51,7 @@ IF (CFG_ARM_SEMIHOSTING_ENABLE)
 ENDIF()
 
 # Enable CDC file on SDCARD
-SET(CFG_CDC_ONSDCARD FALSE)
+#SET(CFG_CDC_ONSDCARD FALSE)
 
 # Bootloader Available for ARM
 SET(CFG_ARM_BOOTLOADER_ENABLE TRUE)
@@ -63,9 +63,9 @@ SET(CFG_ARM_HAL_TYPE "hwlib")
 # P R O C E S S O R   F E A T U R E S   ( H O S T )
 
 # Qsys subsystem name of processor that processes host/app
-CFG_HOST_SUB_NAME=host_0
+SET(CFG_HOST_SUB_NAME "host_0")
 # Processor that processes host/app
-CFG_HOST_PROC_NAME=hps_0
+SET(CFG_HOST_PROC_NAME "hps_0")
 
 # Name of host subsystem
 SET(CFG_HOST_NAME ${CFG_HOST_SUB_NAME}_${CFG_HOST_PROC_NAME})
@@ -84,7 +84,7 @@ OPTION(CFG_HOST_ARM_FRAME_AAPCS "ARM core has Stack frame compliant with AAPCS" 
 MARK_AS_ADVANCED(CFG_HOST_ARM_FRAME_AAPCS)
 
 # ARM core should use 4 byte enums
-OPTION(CFG_HOST_ARM_SHORT_ENUMS "ARM core uses 4-bytes enums" ON)
+OPTION(CFG_HOST_ARM_SHORT_ENUMS "ARM core uses 4-bytes enums" OFF)
 MARK_AS_ADVANCED(CFG_HOST_ARM_SHORT_ENUMS)
 
 # ARM has enabled divider
@@ -95,4 +95,5 @@ MARK_AS_ADVANCED(CFG_HOST_ARM_HW_FLOAT)
 # E N A B L E   P R O C E S S O R   S O F T W A R E   ( H O S T )
 
 # Interface between host and pcp
-SET(CFG_HOST_HOSTIF_ENABLE FALSE)
+#SET(CFG_HOST_HOSTIF_ENABLE FALSE)
+SET(CFG_HOST_DUALPROCSHM_ENABLE TRUE)

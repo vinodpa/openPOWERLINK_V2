@@ -47,7 +47,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <system.h>
 
 #include <socal/socal.h>
-
+#include <alt_timers.h>
+#include <alt_globaltmr.h>
+#include <alt_interrupt.h>
+#include <alt_cache.h>
+#include <alt_fpga_manager.h>
+#include <alt_bridge_manager.h>
+#include <alt_address_space.h>
+#include <alt_mpu_registers.h>
+#include <alt_clock_manager.h>
 //------------------------------------------------------------------------------
 // const defines
 //------------------------------------------------------------------------------
@@ -67,6 +75,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DPSHM_WRITE16(base, val)    alt_write_hword((UINT32)base, val)
 
 // Memory barrier
+#define CACHE_ALIGNED_BYTE_CHECK    (ALT_CACHE_LINE_SIZE - 1)
+#define DUMMY(...)
+// FIXME screwed if the base address flooring truncates more address than the range ceiling appends //EDIT: now its fixed
 #define DPSHM_DMB()
 
 // cache handling
@@ -106,23 +117,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DPSHM_ENABLE_SYNC_INTR() \
     ({                                                                          \
         int         ret = 0;                                                    \
-        alt_int_dist_pending_clear((SYNC_IRQ);                                  \
+        alt_int_dist_pending_clear(SYNC_IRQ);                                  \
                                                                                 \
-        if (alt_int_dist_target_set((SYNC_IRQ, TARGET_CPU) != ALT_E_SUCCESS)    \
+        if (alt_int_dist_target_set(SYNC_IRQ, TARGET_CPU) != ALT_E_SUCCESS)    \
         {                                                                       \
             ret = -1;                                                           \
-            DEBUG_LVL_ERROR_TRACE("Sync IRQ target cpu set failed\n");          \
+            TRACE("Sync IRQ target cpu set failed\n");          \
         }                                                                       \
         else if (alt_int_dist_trigger_set(SYNC_IRQ, ALT_INT_TRIGGER_EDGE) != ALT_E_SUCCESS) \
         {                                                                       \
             ret = -1;                                                           \
-            DEBUG_LVL_ERROR_TRACE("Sync IRQ trigger set failed\n");             \
+            TRACE("Sync IRQ trigger set failed\n");             \
         }                                                                       \
         else if (alt_int_dist_enable(SYNC_IRQ) != ALT_E_SUCCESS)                \
         {                                                                       \
             /* Set interrupt distributor target */                              \
             ret = -1;                                                           \
-            DEBUG_LVL_ERROR_TRACE("Sync IRQ could not be enabled in the distributor\n");    \
+            TRACE("Sync IRQ could not be enabled in the distributor\n");    \
         }                                                                       \
                                                                                 \
         ret;                                                                    \
@@ -135,7 +146,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         {                                                                       \
             /* access to any FPGA registers if required */                      \
             ret = -1;                                                           \
-            DEBUG_LVL_ERROR_TRACE("Sync IRQ could not be disabled in the distributor\n");   \
+            TRACE("Sync IRQ could not be disabled in the distributor\n");   \
         }                                                                       \
                                                                                 \
         ret;                                                                    \

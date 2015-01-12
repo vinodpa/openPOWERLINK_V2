@@ -60,8 +60,11 @@ The generic defines are valid for the whole openPOWERLINK stack.
 #define CONFIG_INCLUDE_SDOC
 #define CONFIG_INCLUDE_SDO_ASND
 #define CONFIG_INCLUDE_LEDU
-#define CONFIG_INCLUDE_CFM
 #define CONFIG_INCLUDE_VETH
+
+#ifndef CONFIG_INCLUDE_CFM
+#define CONFIG_INCLUDE_CFM
+#endif
 
 #ifndef BENCHMARK_MODULES
 #define BENCHMARK_MODULES                   (0 \
@@ -107,7 +110,9 @@ The SDO defines determine the SDO stack configuration.
 #define CONFIG_SDO_MAX_CONNECTION_COM              100
     ///< max. supported SDO command connections
 /**@}*/
+#ifndef CONFIG_CDC_ON_SD
 #define CONFIG_CDC_ON_SD            TRUE
+#endif
 //------------------------------------------------------------------------------
 // typedef
 //------------------------------------------------------------------------------
