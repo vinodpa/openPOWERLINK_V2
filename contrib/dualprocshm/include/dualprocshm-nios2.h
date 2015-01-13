@@ -84,12 +84,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DUALPROCSHM_USLEEP(x)       usleep((unsigned int)x)
 
 // IO operations
-#define DPSHM_READ8(base)           IORD_8DIRECT((UINT32)base, 0);
-#define DPSHM_WRITE8(base, val)     IOWR_8DIRECT((UINT32)base, 0, val);
-#define DPSHM_READ16(base)          IORD_16DIRECT((UINT32)base, 0);
-#define DPSHM_WRITE16(base, val)    IOWR_16DIRECT((UINT32)base, 0, val);
-#define DPSHM_READ32(base)          IORD_32DIRECT((UINT32)base, 0);
-#define DPSHM_WRITE32(base, val)    IOWR_32DIRECT((UINT32)base, 0, val);
+#define DPSHM_READ8(base)           IORD_8DIRECT((UINT32)base, 0)
+#define DPSHM_WRITE8(base, val)     IOWR_8DIRECT((UINT32)base, 0, val)
+#define DPSHM_READ16(base)          IORD_16DIRECT((UINT32)base, 0)
+#define DPSHM_WRITE16(base, val)    IOWR_16DIRECT((UINT32)base, 0, val)
+#define DPSHM_READ32(base)          IORD_32DIRECT((UINT32)base, 0)
+#define DPSHM_WRITE32(base, val)    IOWR_32DIRECT((UINT32)base, 0, val)
 #define DPSHM_ENABLE_INTR(fEnable)  target_enableGlobalInterrupt(fEnable)
 
 #ifdef __INT_BUS__
@@ -100,7 +100,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Memory barrier
 // FIXME: Find other suitable way to handle memory barrier for NIOS2
-#define DPSHM_DMB()                 usleep(2)
+#define DPSHM_DMB()                 //usleep(2)
 
 // Cache hadling
 #define DUALPROCSHM_FLUSH_DCACHE_RANGE(base, range) \

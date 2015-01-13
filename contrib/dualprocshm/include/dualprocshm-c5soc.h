@@ -38,12 +38,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _INC_dualprocshm_c5soc_H_
 #define _INC_dualprocshm_c5soc_H_
 
-#define OPLK_OPTIMIZE               TRUE                        ///< Optimize the dualprocessor library for openPOWERLINK stack on non-OS
+#define OPLK_OPTIMIZE               TRUE                           ///< Optimize the dualprocessor library for openPOWERLINK stack on non-OS
 
 /* SIZE */
-#define MAX_COMMON_MEM_SIZE         2048                        ///< Max common memory size
-#define MAX_DYNAMIC_BUFF_COUNT      15                          ///< Number of maximum dynamic buffers
-#define MAX_DYNAMIC_BUFF_SIZE       MAX_DYNAMIC_BUFF_COUNT * 4  ///< Max dynamic buffer size
+#define MAX_COMMON_MEM_SIZE         2048                          ///< Max common memory size
+#define MAX_DYNAMIC_BUFF_COUNT      15                            ///< Number of maximum dynamic buffers
+#define MAX_DYNAMIC_BUFF_SIZE       (MAX_DYNAMIC_BUFF_COUNT * 4)  ///< Max dynamic buffer size
 
 /* BASE ADDRESSES */
 #if defined(__NIOS2__)
@@ -56,8 +56,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "dualprocshm-nios2.h"
 
 #define COMMON_MEM_BASE             COM_MEM_BASE
-#define MEM_ADDR_TABLE_BASE         COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE
-#define MEM_INTR_BASE               MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE
+#define MEM_ADDR_TABLE_BASE         (COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE)
+#define MEM_INTR_BASE               (MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE)
+
+#define SHARED_MEM_BASE             DDR3_EMIF_0_BASE
 
 #elif defined(__altera_arm__)
 
@@ -69,8 +71,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // TODO : gks check if this can be retrieved from hardware configuration
 #define COMMON_MEM_BASE             COM_MEM_BASE
-#define MEM_ADDR_TABLE_BASE         COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE
-#define MEM_INTR_BASE               MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE
+#define MEM_ADDR_TABLE_BASE         (COMMON_MEM_BASE + MAX_COMMON_MEM_SIZE)
+#define MEM_INTR_BASE               (MEM_ADDR_TABLE_BASE + MAX_DYNAMIC_BUFF_SIZE)
+
+#define SHARED_MEM_BASE             DDR3_EMIF_0_BASE
 
 #else
 

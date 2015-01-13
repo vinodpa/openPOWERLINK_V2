@@ -65,6 +65,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DUALPROCSHM_MALLOC(size)        malloc(size)
 #define DUALPROCSHM_FREE(ptr)           free(ptr)
 
+#define CALC_OFFSET(addr_p, baseAddr_p)                                     \
+    ({                                                                      \
+        unsigned long   offset = 0;                                         \
+        offset = (addr_p - baseAddr_p);                                     \
+        offset;                                                             \
+    })
+
 // sleep
 #define DUALPROCSHM_USLEEP(x)           usleep((UINT32)x)
 
@@ -73,6 +80,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DPSHM_WRITE8(base, val)     alt_write_byte((UINT32)base, val)
 #define DPSHM_READ16(base)          alt_read_hword((UINT32)base)
 #define DPSHM_WRITE16(base, val)    alt_write_hword((UINT32)base, val)
+#define DPSHM_READ32(base)          alt_read_word((UINT32)base)
+#define DPSHM_WRITE32(base, val)    alt_write_word((UINT32)base, val)
 
 // Memory barrier
 #define CACHE_ALIGNED_BYTE_CHECK    (ALT_CACHE_LINE_SIZE - 1)
