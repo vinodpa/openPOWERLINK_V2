@@ -43,6 +43,7 @@ ELSEIF(CFG_KERNEL_DUALPROCSHM)
     SET(ALT_BSP_DIR ${CFG_HW_LIB_DIR}/bsp${CFG_HOST_NAME}/${CFG_HOST_NAME})
     SET(ALT_DUALPROCSHM_DIR ${CFG_HW_LIB_DIR}/libdualprocshm-host)
     EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy "${CFG_HW_LIB_DIR}/linker/linker.ld" "${PROJECT_BINARY_DIR}")
+    EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E copy "${CFG_HW_LIB_DIR}/spl_bsp/preloader-mkpimage.bin" "${PROJECT_BINARY_DIR}")
     SET(LSSCRIPT ${PROJECT_BINARY_DIR}/linker.ld)
     SET(EXECUTABLE_CPU_NAME ${CFG_HOST_NAME})      # On link using host-interface the CPU name is Host
 
