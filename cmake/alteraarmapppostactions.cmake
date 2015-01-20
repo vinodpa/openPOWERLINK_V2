@@ -49,9 +49,7 @@ ADD_CUSTOM_COMMAND(
     POST_BUILD
     COMMAND arm-altera-eabi-objcopy -O binary ${PROJECT_NAME}.axf ${PROJECT_NAME}.bin
     COMMAND mkimage -A arm -T standalone -C none -a 0x100040 -e 0 -n "baremetal image" -d ${PROJECT_NAME}.bin ${PROJECT_NAME}-mkimage.bin
-    #COMMAND mb-size ${EXECUTABLE_NAME} | tee "${PROJECT_NAME}.size"
-    #COMMAND elfcheck ${EXECUTABLE_NAME} -hw ${XIL_HW_SPEC}/system.xml -pe ${EXECUTABLE_CPU_NAME} | tee "${PROJECT_NAME}.elfcheck"
-    #COMMAND data2mem -bd ${EXECUTABLE_NAME} -d -o m ${PROJECT_NAME}.mem
+
 )
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES
@@ -72,9 +70,15 @@ ADD_CUSTOM_TARGET(
 
 ################################################################################
 # Set architecture specific installation files
-INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIRECTORY}/${PROJECT_NAME}-mkimage.bin
+INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-mkimage.bin
+        DESTINATION ${ARCH_INSTALL_POSTFIX}
+        RENAME BOOT.bin
+       )
+
+INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/preloader-mkpimage.bin
         DESTINATION ${ARCH_INSTALL_POSTFIX}
        )
+
 #INSTALL(PROGRAMS ${XIL_TOOLS_DIR}/buildboot.make
 #        DESTINATION ${ARCH_INSTALL_POSTFIX} RENAME Makefile
 #       )

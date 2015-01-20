@@ -203,7 +203,11 @@ fi
 if [ -n "${CFG_DEVICE_ID}" ];
 then
     DRV_GEN_ARGS+="--set DEVICE_ID ${CFG_DEVICE_ID} "
+    DRV_GEN_ARGS+="--set DOWNLOAD_DEVICE_FLAG=\"--device=${CFG_DEVICE_ID}\" "
     echo "INFO: Set JTAG Chain device Id to ${CFG_DEVICE_ID}."
+    export CFG_DEVICE_ID
+else
+    DRV_GEN_ARGS+="--set DOWNLOAD_DEVICE_FLAG=\"\" "
 fi
 # And add stack library
 LIB_STACK_DIR=$(find ${OUT_PATH} -type d -name "liboplk*")
@@ -215,6 +219,10 @@ RET=$?
 
 if [ ${RET} -ne 0 ]; then
     echo "ERROR: Application generation returned with error ${RET}!"
+    if [ -n "${CFG_DEVICE_ID}" ];
+    then
+        unset CFG_DEVICE_ID
+    fi
     exit ${RET}
 fi
 
@@ -230,4 +238,8 @@ elif [ -n "${CFG_DRV_EPCQ}" ]; then
     ${OPLK_BASE_DIR}/tools/altera-nios2/add-app-makefile-epcq ${OUT_PATH}/Makefile
 fi
 
+if [ -n "${CFG_DEVICE_ID}" ];
+then
+    unset CFG_DEVICE_ID
+fi
 exit 0

@@ -92,7 +92,7 @@ static char*            pszCdcFilename_g = "mnobd.cdc";
 #else
 const unsigned char     aCdcBuffer[] =
 {
-    #include "C:\my-WS\OPLK\WRK\openPOWERLINK_V2_JB\apps\demo_mn_embedded\src\mnobd.txt"
+    #include "mnobd.txt"
 };
 
 #endif

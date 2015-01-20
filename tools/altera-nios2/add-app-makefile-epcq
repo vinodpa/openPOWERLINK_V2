@@ -30,7 +30,7 @@ $(PROGRAM_EPCQ_TARGET) : $(ELF)
 # Rule for erasing the EPCQ memory content
 .PHONY : erase-epcq
 erase-epcq:
-	@nios2-configure-sof $(DOWNLOAD_CABLE_FLAG) -C $(QUARTUS_PROJECT_DIR); \
+	@nios2-configure-sof $(DOWNLOAD_CABLE_FLAG) $(DOWNLOAD_DEVICE_FLAG) -C $(QUARTUS_PROJECT_DIR); \
 	$(ECHO) $(FLASHPROG) $(DOWNLOAD_CABLE_FLAG) $(SOPC_SYSID_FLAG) --epcs --base=$($(basename $(PROGRAM_EPCQ_TARGET))_START) -g --accept-bad-sysid --erase-all; \
 	$(FLASHPROG) $(DOWNLOAD_CABLE_FLAG) $(SOPC_SYSID_FLAG) --epcs --base=$($(basename $(PROGRAM_EPCQ_TARGET))_START) -g --accept-bad-sysid --erase-all
 

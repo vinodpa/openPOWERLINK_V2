@@ -51,7 +51,12 @@ IF ((NOT ${OPLKLIB} STREQUAL "OPLKLIB-NOTFOUND") AND (NOT ${OPLKLIB_DEBUG} STREQ
     SET(OPLKCFG_PATH ${OPLKCFG_PATH}/config-${OPLKLIB_NAME})
 ENDIF()
 
-SET(CFG_CDC_ON_SD ON CACHE BOOL "CDC on external SDCARD")
+IF (NOT DEFINED CFG_CDC_ONSDCARD)
+    SET(CFG_CDC_ON_SD OFF CACHE BOOL "CDC on external SDCARD")
+ELSE()
+    SET(CFG_CDC_ON_SD ON CACHE BOOL "CDC on external SDCARD")
+ENDIF()
+
 SET(CFG_CFM ON CACHE BOOL "Use Configuration Manager (CFM)")
 
 # Set generic sources and include directories for this demo
