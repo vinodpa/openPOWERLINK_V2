@@ -101,6 +101,7 @@ ENDIF()
 SET(ARCH_HWLIB_PATH ${SOC_EDS_ROOT_PATH}/ip/altera/hps/altera_hps/hwlib)
 SET(ARCH_SOC_TOOLS_PATH ${SOC_EDS_ROOT_PATH}/host_tools/altera/preloadergen)
 SET(ARM_HWLIB_PATH ${ARCH_HWLIB_PATH})
+SET(ARCH_TOOLS_PATH ${OPLK_ROOT_DIR}/tools/altera-arm)
 SET(DEMO_ARCH_SOURCES
     ${DEMO_ARCHSOURCES}
     ${COMMON_SOURCE_DIR}/gpio/gpio-cyclone_arm.c
@@ -122,6 +123,7 @@ ADD_DEFINITIONS(${ALT_HOST_CFLAGS} "-D__altera_arm__ -std=c99")
 ################################################################################
 # Set architecture specific linker flags
 SET(ARCH_LINKER_FLAGS " -T ${LSSCRIPT} -mfloat-abi=soft -march=armv7-a -mtune=cortex-a9  -mcpu=cortex-a9 -mno-unaligned-access ")
+
 ################################################################################
 # Set architecture specific libraries
 

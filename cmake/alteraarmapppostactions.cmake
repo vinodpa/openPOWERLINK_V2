@@ -1,9 +1,9 @@
 ################################################################################
 #
-# CMake file for ZYNQ SoC post build actions
+# CMake file for Altera Cyclone V SoC ARM post build actions
 #
-# Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
-# Copyright (c) 2014, Kalycito Infotech Private Limited
+# Copyright (c) 2015, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+# Copyright (c) 2015, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,14 +34,19 @@
 
 # Elf verify enable
 #TODO Check if SDCARD BOOT
-#OPTION(XIL_VERIFY_ELF "Verify the executable after download" OFF)
-#MARK_AS_ADVANCED(XIL_VERIFY_ELF)
 
 ##############################################################################
 # Set paths
-#SET(XIL_HW_SPEC ${CFG_HW_LIB_DIR}/hw_platform)
-#SET(XIL_XPS_DEMO_DIR ${CFG_DEMO_DIR}/xps)
-#SET(XIL_ZYNQ_BINARY_DIR ${CMAKE_INSTALL_PREFIX}/${CFG_DEMO_BOARD_NAME}/${CFG_DEMO_NAME})
+
+##############################################################################
+# Demo pre build action
+
+ADD_DEPENDENCIES(${EXECUTABLE_NAME} ARCH_PRE_BUILD_DEPS)
+ADD_CUSTOM_TARGET(ARCH_PRE_BUILD_DEPS
+            COMMAND chmod +x ${ARCH_TOOLS_PATH}/fix-app-makefile.sh
+            COMMAND ${ARCH_TOOLS_PATH}/fix-app-makefile.sh ${CMAKE_BINARY_DIR}/CMakeFiles/demo_mn_embedded.axf.dir/build.make
+)
+
 ##############################################################################
 # Demo post build action
 ADD_CUSTOM_COMMAND(

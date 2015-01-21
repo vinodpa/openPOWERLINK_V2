@@ -115,11 +115,6 @@ SET_PROPERTY(TARGET ${EXECUTABLE_NAME}
 
 SET_PROPERTY(TARGET ${EXECUTABLE_NAME}
              PROPERTY LINK_FLAGS ${ARCH_LINKER_FLAGS})
-ADD_DEPENDENCIES(${EXECUTABLE_NAME} INFO)
-
-ADD_CUSTOM_TARGET(INFO
-            COMMAND echo $PWD
-)
 
 ################################################################################
 # Libraries to link
