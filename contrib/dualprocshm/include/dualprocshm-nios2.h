@@ -63,6 +63,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define DUALPROCSHM_MALLOC(size)    alt_uncached_malloc(size)
 #define DUALPROCSHM_FREE(ptr)       alt_uncached_free(ptr)
+#define DPSHM_UNREG_SYNC_INTR(callback, arg)
+#define DPSHM_CLEAR_SYNC_IRQ()
 
 #define CALC_OFFSET(addr_p, baseAddr_p)                                     \
     ({                                                                      \

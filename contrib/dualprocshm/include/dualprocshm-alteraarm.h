@@ -60,6 +60,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 
+
+#ifndef TRACE
+#ifndef NDEBUG
+#define TRACE(...) printf(__VA_ARGS__)
+#else
+#define TRACE(...)
+#endif
+#endif
+
 // memory
 #define DPSHM_MAKE_NONCACHEABLE(ptr)    (void*)(((unsigned long)ptr))
 #define DUALPROCSHM_MALLOC(size)        malloc(size)
@@ -90,7 +99,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DPSHM_DMB()
 
 // cache handling
-#if 1 // TODO find a way to detect the cache configuration
+#if 0 // TODO find a way to detect the cache configuration
 #define DUALPROCSHM_FLUSH_DCACHE_RANGE(base, range)                                                                                                                \
     ({                                                                                                                                                \
          uint32_t tempBase = (uint32_t) (((uint32_t) base) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK));                                                 \
@@ -117,11 +126,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 // Sync Manager
-#define SYNC_IRQ        (ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + TARGET_SYNC_IRQ_ID)
+#define SYNC_IRQ        (ALT_INT_INTERRUPT_F2S_FPGA_IRQ0 + TARGET_SYNC_IRQ)
 #define TARGET_CPU      0x1
 
 #define DPSHM_REG_SYNC_INTR(callback, arg)                       \
-    alt_int_isr_register((SYNC_IRQ), callback_p, pArg_p)
+    alt_int_isr_register(SYNC_IRQ, callback, arg)
+
+#define DPSHM_UNREG_SYNC_INTR(callback, arg)  alt_int_isr_unregister(SYNC_IRQ)
+
+#define DPSHM_CLEAR_SYNC_IRQ()        alt_int_dist_pending_clear(SYNC_IRQ)
 
 #define DPSHM_ENABLE_SYNC_INTR() \
     ({                                                                          \
@@ -133,7 +146,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             ret = -1;                                                           \
             TRACE("Sync IRQ target cpu set failed\n");          \
         }                                                                       \
-        else if (alt_int_dist_trigger_set(SYNC_IRQ, ALT_INT_TRIGGER_EDGE) != ALT_E_SUCCESS) \
+        else if (alt_int_dist_trigger_set(SYNC_IRQ, ALT_INT_TRIGGER_LEVEL) != ALT_E_SUCCESS) \
         {                                                                       \
             ret = -1;                                                           \
             TRACE("Sync IRQ trigger set failed\n");             \
@@ -160,14 +173,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                                                                 \
         ret;                                                                    \
     })
-
-#ifndef TRACE
-#ifndef NDEBUG
-#define TRACE(...) printf(__VA_ARGS__)
-#else
-#define TRACE(...)
-#endif
-#endif
 
 //------------------------------------------------------------------------------
 // typedef

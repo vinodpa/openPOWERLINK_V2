@@ -64,8 +64,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #elif defined(__altera_arm__)
 
 #include <system.h>
-#define TARGET_SYNC_IRQ_ID         1
-#define TARGET_SYNC_IRQ            -1
+#define TARGET_SYNC_IRQ_ID         0
+#define TARGET_SYNC_IRQ            0
 
 #include "dualprocshm-alteraarm.h"
 

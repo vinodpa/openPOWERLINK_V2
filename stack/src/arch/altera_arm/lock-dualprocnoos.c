@@ -45,7 +45,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <alt_cache.h>
 #include <socal/socal.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <system.h>
+#include <oplk/targetdefs/arm_altera.h>
 
 //============================================================================//
 //            G L O B A L   D E F I N I T I O N S                             //
@@ -108,12 +110,14 @@ This function initializes the lock instance.
 \ingroup module_target
 */
 //------------------------------------------------------------------------------
-int target_initLock(LOCK_T*pLock_p)
+int target_initLock(LOCK_T* pLock_p)
 {
     if (pLock_p == NULL)
         return -1;
 
     pLock_l = pLock_p;
+    alt_write_byte(pLock_l, LOCK_UNLOCKED_C);
+    OPLK_DCACHE_FLUSH(pLock_l, 1);
 
     return 0;
 }
@@ -140,14 +144,15 @@ int target_lock(void)
     // spin if id is not written to shared memory
     do
     {
-        alt_cache_system_invalidate(pLock_l, 1);
+        OPLK_DCACHE_INVALIDATE(pLock_l, 1);
         val = alt_read_byte(pLock_l);
 
         // write local id if unlocked
         if (val == LOCK_UNLOCKED_C)
         {
             alt_write_byte(pLock_l, LOCK_LOCAL_ID);
-            alt_cache_system_clean(pLock_l, 1);
+            OPLK_DCACHE_FLUSH(pLock_l, 1);
+            //usleep(2);
             continue; // return to top of loop to check again
         }
     } while (val != LOCK_LOCAL_ID);
@@ -172,7 +177,7 @@ int target_unlock(void)
         return -1;
 
     alt_write_byte(pLock_l, LOCK_UNLOCKED_C);
-    alt_cache_system_clean(pLock_l, 1);
+    OPLK_DCACHE_FLUSH(pLock_l, 1);
     return 0;
 }
 

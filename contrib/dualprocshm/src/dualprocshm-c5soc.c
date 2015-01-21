@@ -73,6 +73,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // const defines
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+// local types
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// local vars
+//------------------------------------------------------------------------------
+targetSyncHdl   pfnIrqCb_l = NULL;
+
+//------------------------------------------------------------------------------
+// local function prototypes
+//------------------------------------------------------------------------------
+static void cs3ISR(uint32_t icciar_p, void* pArg_p);
 //============================================================================//
 //            P U B L I C   F U N C T I O N S                                 //
 //============================================================================//
@@ -332,7 +345,15 @@ used by the application for synchronization.
 //------------------------------------------------------------------------------
 void dualprocshm_regSyncIrqHdl(targetSyncHdl callback_p, void* pArg_p)
 {
-    DPSHM_REG_SYNC_INTR(callback_p, pArg_p);
+    if (callback_p == NULL)
+    {
+        DPSHM_UNREG_SYNC_INTR(cs3ISR, pArg_p);
+    }
+    else
+    {
+        DPSHM_REG_SYNC_INTR(cs3ISR, pArg_p);
+        pfnIrqCb_l = callback_p;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -363,4 +384,27 @@ void dualprocshm_enableSyncIrq(BOOL fEnable_p)
 //============================================================================//
 /// \name Private Functions
 /// \{
+//------------------------------------------------------------------------------
+/**
+\brief  Primary ISR for dualprocshm sync interrupt
+
+The function receives the sync IRQ from HPS distributor and forwards to the
+dualprocshm module callback function
+
+ \param icciar_p     The Interrupt Controller CPU Interrupt
+                     Acknowledgement Register value (ICCIAR) value
+                     corresponding to the current interrupt.
+
+ \param pArg_p       argument to the function
+
+*/
+//------------------------------------------------------------------------------
+static void cs3ISR(uint32_t icciar_p, void* pArg_p)
+{
+    // clear the interrupt in the distributor
+    DPSHM_CLEAR_SYNC_IRQ();
+    if (pfnIrqCb_l != NULL)
+        pfnIrqCb_l(pArg_p);
+    return;
+}
 /// \}
