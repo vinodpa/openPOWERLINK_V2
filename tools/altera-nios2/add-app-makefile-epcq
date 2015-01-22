@@ -13,14 +13,14 @@ PROGRAM_EPCQ_TARGET := $(addsuffix $(PROGRAM_EPCQ_SUFFIX), $(FLASH_FILES))
 .PHONY : program-epcq
 program-epcq : $(PROGRAM_EPCQ_TARGET)
 
-SOF_FILE := $(wildcard $(QUARTUS_PROJECT_DIR)/output_files/*.sof)
+SOF_FILE := $(wildcard $(QUARTUS_SOF_DIR)/*.sof)
 
 .PHONY : $(PROGRAM_EPCQ_TARGET)
 $(PROGRAM_EPCQ_TARGET) : $(ELF)
 	@$(ECHO) Info: Programming $(basename $@).flash
 	@if [ -n "$($(basename $@)_EPCS_FLAGS)" ]; \
 	then \
-		nios2-configure-sof $(DOWNLOAD_CABLE_FLAG)  --device=$(DEVICE_ID)  -C $(QUARTUS_PROJECT_DIR)/output_files/; \
+		nios2-configure-sof $(DOWNLOAD_CABLE_FLAG)  $(DOWNLOAD_DEVICE_FLAG)  -C $(QUARTUS_SOF_DIR); \
 		sof2flash --input=$(SOF_FILE) --output=sof.flash --epcq --verbose; \
 		$(ELF2FLASH) --after=sof.flash --input=$(ELF) --outfile=$(basename $@)_after_sof.flash --epcs --verbose; \
 		$(ECHO) $(FLASHPROG) $(DOWNLOAD_CABLE_FLAG) $(SOPC_SYSID_FLAG) --epcs --base=$($(basename $@)_START) -g sof.flash $(basename $@)_after_sof.flash; \
@@ -30,7 +30,7 @@ $(PROGRAM_EPCQ_TARGET) : $(ELF)
 # Rule for erasing the EPCQ memory content
 .PHONY : erase-epcq
 erase-epcq:
-	@nios2-configure-sof $(DOWNLOAD_CABLE_FLAG) $(DOWNLOAD_DEVICE_FLAG) -C $(QUARTUS_PROJECT_DIR); \
+	@nios2-configure-sof $(DOWNLOAD_CABLE_FLAG) $(DOWNLOAD_DEVICE_FLAG) -C $(QUARTUS_SOF_DIR); \
 	$(ECHO) $(FLASHPROG) $(DOWNLOAD_CABLE_FLAG) $(SOPC_SYSID_FLAG) --epcs --base=$($(basename $(PROGRAM_EPCQ_TARGET))_START) -g --accept-bad-sysid --erase-all; \
 	$(FLASHPROG) $(DOWNLOAD_CABLE_FLAG) $(SOPC_SYSID_FLAG) --epcs --base=$($(basename $(PROGRAM_EPCQ_TARGET))_START) -g --accept-bad-sysid --erase-all
 

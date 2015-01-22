@@ -174,6 +174,16 @@ DRV_GEN_ARGS="\
 --set QUARTUS_PROJECT_DIR=${BOARD_PATH}/quartus \
 ${CFG_DRV_ARGS} \
 "
+# Determine the output path
+MAJOR_VER=$(quartus_sh -v |grep Version|cut -f2 -d' '| cut -f1 -d.)
+if [ "${MAJOR_VER}" == "14" ]; then
+    DRV_GEN_ARGS+="--set QUARTUS_SOF_DIR=$(QUARTUS_PROJECT_DIR)/output_files "
+elif [ "${MAJOR_VER}" == "13" ]; then
+    DRV_GEN_ARGS+="--set QUARTUS_SOF_DIR=$(QUARTUS_PROJECT_DIR) "
+else
+    echo "ERROR: Quartus version ${MAJOR_VER} not supported!"
+    exit 1
+fi
 
 # Get path to board includes
 BOARD_INCLUDE_PATH=$(readlink -f "${BOARD_PATH}/include")
@@ -202,7 +212,6 @@ fi
 
 if [ -n "${CFG_DEVICE_ID}" ];
 then
-    DRV_GEN_ARGS+="--set DEVICE_ID ${CFG_DEVICE_ID} "
     DRV_GEN_ARGS+="--set DOWNLOAD_DEVICE_FLAG=\"--device=${CFG_DEVICE_ID}\" "
     echo "INFO: Set JTAG Chain device Id to ${CFG_DEVICE_ID}."
     export CFG_DEVICE_ID
@@ -238,6 +247,7 @@ elif [ -n "${CFG_DRV_EPCQ}" ]; then
     ${OPLK_BASE_DIR}/tools/altera-nios2/add-app-makefile-epcq ${OUT_PATH}/Makefile
 fi
 
+#TODO: use trap instead of multiple cleanup checks
 if [ -n "${CFG_DEVICE_ID}" ];
 then
     unset CFG_DEVICE_ID
