@@ -708,8 +708,11 @@ static UINT32 getDynBuffAddr(tDualprocDrvInstance pInstance_p, UINT16 index_p)
     UINT32          buffoffset = 0x00;
     UINT32          buffAddr;
 
-    dualprocshm_targetReadData(tableBase + tableEntryOffs,
-                               DYN_MEM_TABLE_ENTRY_SIZE, (UINT8*)&buffoffset);
+    while (buffoffset == 0)
+    {
+        dualprocshm_targetReadData(tableBase + tableEntryOffs,
+                                   DYN_MEM_TABLE_ENTRY_SIZE, (UINT8*)&buffoffset);
+    }
 
     buffAddr = (SHARED_MEM_BASE + buffoffset);
     return buffAddr;
