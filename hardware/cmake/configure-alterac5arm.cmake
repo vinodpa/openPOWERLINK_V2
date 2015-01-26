@@ -35,8 +35,6 @@ MESSAGE(STATUS "INFO: Altera Cyclone V SoC platform selected")
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/altera" ${CMAKE_MODULE_PATH})
 SET(CMAKE_MODULE_PATH "${OPLK_BASE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
-INCLUDE(geneclipsefilelist)
-INCLUDE(geneclipseincludelist)
 INCLUDE(setalteraarmboardconfig)
 
 ################################################################################
@@ -47,7 +45,6 @@ SET(BOARD_DIRS ${PROJECT_SOURCE_DIR}/boards/altera-c5soc)
 
 # Skip bitstream generation
 OPTION(SKIP_BITSTREAM "Skip bitstream generation to save time." ON)
-MARK_AS_ADVANCED(SKIP_BITSTREAM)
 
 ################################################################################
 # Find the Altera ARM toolchain

@@ -177,9 +177,9 @@ ${CFG_DRV_ARGS} \
 # Determine the output path
 MAJOR_VER=$(quartus_sh -v |grep Version|cut -f2 -d' '| cut -f1 -d.)
 if [ "${MAJOR_VER}" == "14" ]; then
-    DRV_GEN_ARGS+="--set QUARTUS_SOF_DIR=$(QUARTUS_PROJECT_DIR)/output_files "
+    DRV_GEN_ARGS+="--set QUARTUS_SOF_DIR=\$(QUARTUS_PROJECT_DIR)/output_files "
 elif [ "${MAJOR_VER}" == "13" ]; then
-    DRV_GEN_ARGS+="--set QUARTUS_SOF_DIR=$(QUARTUS_PROJECT_DIR) "
+    DRV_GEN_ARGS+="--set QUARTUS_SOF_DIR=\$(QUARTUS_PROJECT_DIR) "
 else
     echo "ERROR: Quartus version ${MAJOR_VER} not supported!"
     exit 1
@@ -216,7 +216,7 @@ then
     echo "INFO: Set JTAG Chain device Id to ${CFG_DEVICE_ID}."
     export CFG_DEVICE_ID
 else
-    DRV_GEN_ARGS+="--set DOWNLOAD_DEVICE_FLAG=\"\" "
+    DRV_GEN_ARGS+="--set DOWNLOAD_DEVICE_FLAG=\"--device=1\" "
 fi
 # And add stack library
 LIB_STACK_DIR=$(find ${OUT_PATH} -type d -name "liboplk*")

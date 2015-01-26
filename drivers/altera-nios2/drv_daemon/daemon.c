@@ -197,7 +197,6 @@ static void bgtPlk(void)
 
     while (1)
     {
-        printf(".\n");
         ctrlk_updateHeartbeat();
         fExit = ctrlk_process();
 

@@ -40,21 +40,23 @@ SET(CFG_DEMO_BOARD_NAME "altera-c5soc")
 # Bus system used in the demo
 SET(CFG_DEMO_BUS_SYSTEM "axi")
 
-# Enable semihosting operation for debugging from DS5
-OPTION(CFG_ARM_SEMIHOSTING_ENABLE "Debug ARM core from DS5" OFF)
-MARK_AS_ADVANCED(CFG_ARM_SEMIHOSTING_ENABLE)
-
 # Boot ARM from SD card
-IF (CFG_ARM_SEMIHOSTING_ENABLE)
-    OPTION(CFG_ARM_BOOT_FROM_SDCARD "Boot ARM from SD card" OFF)
-    MARK_AS_ADVANCED(CFG_ARM_BOOT_FROM_SDCARD)
+OPTION(CFG_ARM_BOOT_FROM_SDCARD "Boot ARM from SD card" ON)
+
+# Enable semihosting operation for debugging from DS5
+#CMAKE_DEPENDENT_OPTION(CFG_ARM_SEMIHOSTING_ENABLE "Debug ARM core from DS5" ON
+#                       "NOT CFG_ARM_BOOT_FROM_SDCARD" OFF)
+IF (NOT CFG_ARM_BOOT_FROM_SDCARD)
+    OPTION(CFG_ARM_SEMIHOSTING_ENABLE "Debug ARM core from DS5" ON)
+ELSE()
+    SET(CFG_ARM_SEMIHOSTING_ENABLE OFF)
 ENDIF()
 
 # Enable CDC file on SDCARD
 #SET(CFG_CDC_ONSDCARD FALSE)
 
 # Bootloader Available for ARM
-SET(CFG_ARM_BOOTLOADER_ENABLE TRUE)
+OPTION(CFG_ARM_BOOTLOADER_ENABLE "Build ARM Preloader" ON)
 
 # BSP generation not Available for ARM
 SET(CFG_ARM_HAL_TYPE "hwlib")
@@ -95,5 +97,4 @@ MARK_AS_ADVANCED(CFG_HOST_ARM_HW_FLOAT)
 # E N A B L E   P R O C E S S O R   S O F T W A R E   ( H O S T )
 
 # Interface between host and pcp
-#SET(CFG_HOST_HOSTIF_ENABLE FALSE)
 SET(CFG_HOST_DUALPROCSHM_ENABLE TRUE)
