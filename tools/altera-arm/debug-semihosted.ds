@@ -1,48 +1,38 @@
-############################################################
-#
-# Copyright Altera 2013
-# All Rights Reserved
-# File: preloader.ds
-#
-############################################################
-
-#
-# stop processor if running
-#
+# Reset and stop the system.
+reset system
 stop
 wait 5s
 reset system
 wait 5s
 
-set semihosting enabled 0
+# Disable semihosting.
+set semihosting enabled false
 
 #
-# load the preloader (a.k.a the spl from our uboot dist)
+# Load the SPL preloader into memory.
 #
-loadfile "$sdir/uboot-socfpga/spl/u-boot-spl" 0x0
+loadfile "$sdir/u-boot-spl" 0x0
 
 #
-# set pc to entry point
+# Enable semihosting.
 #
-set debug-from *$entrypoint     # Set start-at setting to address of $entrypoint
-start 
+set semihosting enabled true
 
-#
-# delete any breakpoints
-#
+# Delete any existing breakpoints.
 delete
 
-#
-# set hw breakpoint in spl in function, spl_boot_device,
-# The function, spl_boot_device, is called right before the spl tries
-# to load.  We stop here so we don't have to change any spl.
-#
+# Set a breakpoint in the SPL function spl_boot_device(). This function is
+# called right before the SPL tries to load the next stage in the preloader.
 tbreak spl_boot_device
 
-# tell target to continue executing spl
-cont
+# Set the PC to the entry point and go.
+run
 
-# wait for breakpoint
-wait 60s
+# Wait for the breakpoint.
+wait
 
+# Load the demo program.
+loadfile "$sdir/demo_mn_embedded.axf" 0x0
 
+# Run the target and break at main().
+start
