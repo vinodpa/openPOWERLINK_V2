@@ -32,8 +32,6 @@
 ################################################################################
 # U S E R   O P T I O N S
 
-# Elf verify enable
-#TODO Check if SDCARD BOOT
 
 ##############################################################################
 # Set paths
@@ -41,21 +39,25 @@
 ##############################################################################
 # Demo pre build action
 
-ADD_DEPENDENCIES(${EXECUTABLE_NAME} ARCH_PRE_BUILD_DEPS)
-ADD_CUSTOM_TARGET(ARCH_PRE_BUILD_DEPS
+ADD_DEPENDENCIES(${EXECUTABLE_NAME} ${EXECUTABLE_NAME}-ARCH_PRE_BUILD_DEPS)
+ADD_CUSTOM_TARGET(${EXECUTABLE_NAME}-ARCH_PRE_BUILD_DEPS
             COMMAND chmod +x ${ARCH_TOOLS_PATH}/fix-app-makefile.sh
             COMMAND ${ARCH_TOOLS_PATH}/fix-app-makefile.sh ${CMAKE_BINARY_DIR}/CMakeFiles/demo_mn_embedded.axf.dir/build.make
 )
 
 ##############################################################################
 # Demo post build action
-ADD_CUSTOM_COMMAND(
-    TARGET ${EXECUTABLE_NAME}
-    POST_BUILD
-    COMMAND arm-altera-eabi-objcopy -O binary ${PROJECT_NAME}.axf ${PROJECT_NAME}.bin
-    COMMAND mkimage -A arm -T standalone -C none -a 0x100040 -e 0 -n "baremetal image" -d ${PROJECT_NAME}.bin ${PROJECT_NAME}-mkimage.bin
 
-)
+
+IF(DEFINED CFG_ARM_BOOT_FROM_SDCARD AND CFG_ARM_BOOT_FROM_SDCARD)
+    ADD_CUSTOM_COMMAND(
+        TARGET ${EXECUTABLE_NAME}
+        POST_BUILD
+        COMMAND arm-altera-eabi-objcopy -O binary ${PROJECT_NAME}.axf ${PROJECT_NAME}.bin
+        COMMAND mkimage -A arm -T standalone -C none -a 0x100040 -e 0 -n "baremetal image" -d ${PROJECT_NAME}.bin ${PROJECT_NAME}-mkimage.bin
+    )
+ENDIF()
+
 
 SET_DIRECTORY_PROPERTIES(PROPERTIES
                          ADDITIONAL_MAKE_CLEAN_FILES "${EXECUTABLE_NAME};${PROJECT_NAME}.bin;${PROJECT_NAME}-mkimage.bin"
@@ -68,22 +70,31 @@ SET(ADD_CLEAN_FILES ${ADD_CLEAN_FILES}
                     ${PROJECT_NAME}-mkimage.bin
    )
 
-ADD_CUSTOM_TARGET(
-            build-sd
-            COMMAND alt-boot-disk-util.exe -p preloader-mkpimage.bin -a write -d F
-    )
-
 ################################################################################
 # Set architecture specific installation files
-INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-mkimage.bin
+
+IF(DEFINED CFG_ARM_SEMIHOSTING_ENABLE AND CFG_ARM_SEMIHOSTING_ENABLE)
+    CONFIGURE_FILE(${ALT_TOOLS_DIR}/debug-semihosted.ds.in ${ARCH_INSTALL_POSTFIX}/debug-semihosted.ds @ONLY)
+ELSE()
+    CONFIGURE_FILE(${ALT_TOOLS_DIR}/debug-unhosted.ds.in ${ARCH_INSTALL_POSTFIX}/debug-unhosted.ds @ONLY)
+ENDIF()
+
+IF(DEFINED CFG_ARM_BOOT_FROM_SDCARD AND CFG_ARM_BOOT_FROM_SDCARD)
+    INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-mkimage.bin
         DESTINATION ${ARCH_INSTALL_POSTFIX}
         RENAME BOOT.bin
        )
 
-INSTALL(PROGRAMS ${CMAKE_BINARY_DIR}/preloader-mkpimage.bin
-        DESTINATION ${ARCH_INSTALL_POSTFIX}
-       )
+    INSTALL(PROGRAMS ${CFG_HW_LIB_DIR}/spl_bsp/preloader-mkpimage.bin
+            DESTINATION ${ARCH_INSTALL_POSTFIX}
+           )
+ELSE()
+    INSTALL(PROGRAMS ${CFG_HW_LIB_DIR}/spl_bsp/uboot-socfpga/spl/u-boot-spl
+            DESTINATION ${ARCH_INSTALL_POSTFIX}
+           )
+ENDIF()
 
-#INSTALL(PROGRAMS ${XIL_TOOLS_DIR}/buildboot.make
-#        DESTINATION ${ARCH_INSTALL_POSTFIX} RENAME Makefile
-#       )
+
+INSTALL(PROGRAMS ${ALT_TOOLS_DIR}/buildboot.make
+        DESTINATION ${ARCH_INSTALL_POSTFIX} RENAME Makefile
+       )

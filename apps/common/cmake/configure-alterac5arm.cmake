@@ -32,8 +32,6 @@
 ################################################################################
 # Handle includes
 SET(CMAKE_MODULE_PATH "${OPLK_ROOT_DIR}/cmake" ${CMAKE_MODULE_PATH})
-INCLUDE(geneclipsefilelist)
-INCLUDE(geneclipseincludelist)
 INCLUDE(setalteraarmboardconfig)
 INCLUDE(listdir)
 
@@ -53,9 +51,7 @@ SET(CFG_HW_LIB_DIR ${CFG_HW_LIB_PATH}/${CFG_HW_LIB})
 
 ################################################################################
 # Include board specific settings file
-MESSAGE("FLAGS: ${ALT_${PROC_INST_NAME}_CFLAGS}")
 SET_BOARD_CONFIGURATION(${CFG_HW_LIB_DIR})
-MESSAGE("FLAGS: ${ALT_${PROC_INST_NAME}_CFLAGS}")
 ################################################################################
 # Set variables
 SET(ARCH_EXE_SUFFIX ".axf")

@@ -2,7 +2,6 @@
 #
 # CMake file for HAL where target is ARM
 #
-# Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
 # Copyright (c) 2014, Kalycito Infotech Private Limited
 # All rights reserved.
 #
@@ -60,7 +59,7 @@ SET(LIB_ARCH_HAL_INCS
             ${ARM_HWLIB_PATH}/include
     )
 
-SET(LIB_ARCH_HAL_C_FLAGS " ")
+SET(LIB_ARCH_HAL_C_FLAGS "-D__altera_arm__  -O3 -Ofast -g -Wall -std=c99 " )
 ################################################################################
 # Set architecture specific installation files
 ########################################################################
