@@ -1,6 +1,6 @@
 /**
 ********************************************************************************
-\file   hostiflib_arm.h
+\file   hostiflib-altera_arm.h
 
 \brief  Host Interface Library - For Altera Cyclone-V ARM target
 
@@ -36,8 +36,8 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------*/
 
-#ifndef _INC_hostiflib_arm_H_
-#define _INC_hostiflib_arm_H_
+#ifndef _INC_hostiflib-altera_arm_H_
+#define _INC_hostiflib-altera_arm_H_
 
 //------------------------------------------------------------------------------
 // includes
@@ -94,4 +94,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //------------------------------------------------------------------------------
 void hostif_usSleep(uint32_t usDelay_p);
 
-#endif /* _INC_hostiflib_arm_H_ */
+#endif /* _INC_hostiflib-altera_arm_H_ */
