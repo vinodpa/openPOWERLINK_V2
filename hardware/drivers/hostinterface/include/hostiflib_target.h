@@ -55,7 +55,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #elif defined(__altera_arm__)
 
-#include "hostiflib_arm.h"
+#include "hostiflib-altera_arm.h"
 
 #else
 

@@ -40,7 +40,7 @@ INCLUDE(setalteraarmboardconfig)
 # Set architecture specific sources and include directories
 
 SET(LIB_ARCH_SRCS
-        ${PROJECT_SOURCE_DIR}/src/hostiflibint_arm.c
+        ${PROJECT_SOURCE_DIR}/src/hostiflibint-altera_arm.c
     )
 
 SET(LIB_ARCH_INCS
