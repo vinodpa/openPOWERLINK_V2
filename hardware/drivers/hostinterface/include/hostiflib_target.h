@@ -53,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "hostiflib_microblaze.h"
 
-#elif defined(__arm__)
+#elif defined(__altera_arm__)
 
 #include "hostiflib_arm.h"
 
