@@ -49,7 +49,7 @@ OPTION(SKIP_BITSTREAM "Skip bitstream generation to save time." ON)
 ################################################################################
 # Find the Altera ARM toolchain
 SET (SOC_EDS_ROOT_PATH $ENV{SOCEDS_DEST_ROOT})
-IF(${SOC_EDS_ROOT_PATH} STREQUAL "")
+IF("${SOC_EDS_ROOT_PATH}" STREQUAL "")
     MESSAGE(FATAL_ERROR "Run this program from the soc embedded shell!")
 ENDIF()
 
