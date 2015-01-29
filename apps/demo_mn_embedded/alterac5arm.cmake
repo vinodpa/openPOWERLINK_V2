@@ -53,7 +53,7 @@ ENDIF ()
 # Find boards support package
 UNSET(ALT_LIB_BSP CACHE)
 MESSAGE(STATUS "Searching for the board support package in ${ALT_BSP_DIR}")
-FIND_LIBRARY(ALT_LIB_BSP NAME hal-arm
+FIND_LIBRARY(ALT_LIB_BSP NAME hal
                      HINTS ${ALT_BSP_DIR}
             )
 
@@ -105,8 +105,13 @@ SET(DEMO_ARCH_SOURCES
     ${COMMON_SOURCE_DIR}/gpio/gpio-cyclone_arm.c
     ${COMMON_SOURCE_DIR}/lcd/lcdl-cyclone_arm.c
     ${COMMON_SOURCE_DIR}/system/system-cyclone_arm.c
-    ${CONTRIB_SOURCE_DIR}/trace/trace-cyclone_arm.c
    )
+
+IF(DEFINED CFG_${PROC_INST_NAME}_SEMIHOSTING_ENABLE AND CFG_${PROC_INST_NAME}_SEMIHOSTING_ENABLE)
+    # No trace function is required
+ELSE()
+    SET(DEMO_ARCH_SOURCES ${DEMO_ARCHSOURCES} ${CONTRIB_SOURCE_DIR}/trace/trace-cyclone_arm.c)
+ENDIF()
 
 INCLUDE_DIRECTORIES(
                     ${ALT_BSP_DIR}/include

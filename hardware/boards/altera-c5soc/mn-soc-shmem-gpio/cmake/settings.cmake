@@ -41,26 +41,29 @@ SET(CFG_DEMO_BOARD_NAME "altera-c5soc")
 SET(CFG_DEMO_BUS_SYSTEM "axi")
 
 # Boot ARM from SD card
-OPTION(CFG_ARM_BOOT_FROM_SDCARD "Boot ARM from SD card" ON)
+OPTION(CFG_HOST_BOOT_FROM_SDCARD "Boot ARM from SD card" ON)
 
 # Enable semihosting operation for debugging from DS5
-#CMAKE_DEPENDENT_OPTION(CFG_ARM_SEMIHOSTING_ENABLE "Debug ARM core from DS5" ON
-#                       "NOT CFG_ARM_BOOT_FROM_SDCARD" OFF)
-IF (NOT CFG_ARM_BOOT_FROM_SDCARD)
-    OPTION(CFG_ARM_SEMIHOSTING_ENABLE "Debug ARM core from DS5" ON)
+#CMAKE_DEPENDENT_OPTION(CFG_HOST_SEMIHOSTING_ENABLE "Debug ARM core from DS5" ON
+#                       "NOT CFG_HOST_BOOT_FROM_SDCARD" OFF)
+IF (NOT CFG_HOST_BOOT_FROM_SDCARD)
+    OPTION(CFG_HOST_SEMIHOSTING_ENABLE "Debug ARM core from DS5" ON)
 ELSE()
-    SET(CFG_ARM_SEMIHOSTING_ENABLE OFF)
+    SET(CFG_HOST_SEMIHOSTING_ENABLE OFF)
 ENDIF()
 
 # Enable CDC file on SDCARD
 #SET(CFG_CDC_ONSDCARD FALSE)
 
 # Bootloader Available for ARM
-OPTION(CFG_ARM_BOOTLOADER_ENABLE "Build ARM Preloader" ON)
+OPTION(CFG_HOST_BOOTLOADER_ENABLE "Build ARM Preloader" ON)
 
 # BSP generation not Available for ARM
-SET(CFG_ARM_HAL_TYPE "hwlib")
+SET(CFG_HOST_HAL_TYPE "hwlib")
 
+# Linker scripts used for ARM
+SET(CFG_HOST_SEMIHOSTED_LINKER cycloneV-dk-ram-semihosted.ld)
+SET(CFG_HOST_UNHOSTED_LINKER cycloneV-dk-ram-unhosted.ld)
 ################################################################################
 # P R O C E S S O R   F E A T U R E S   ( H O S T )
 
@@ -68,6 +71,7 @@ SET(CFG_ARM_HAL_TYPE "hwlib")
 SET(CFG_HOST_SUB_NAME "host_0")
 # Processor that processes host/app
 SET(CFG_HOST_PROC_NAME "hps_0")
+SET(CFG_HOST_PROC_IP_NAME "hps")
 
 # Name of host subsystem
 SET(CFG_HOST_NAME ${CFG_HOST_SUB_NAME}_${CFG_HOST_PROC_NAME})

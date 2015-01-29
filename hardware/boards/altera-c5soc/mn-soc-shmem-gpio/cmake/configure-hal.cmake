@@ -33,8 +33,8 @@
 ################################################################################
 # Set architecture specific sources and include directories
 
-
-SET(LIB_ARCH_HAL_SRCS
+UNSET(LIB_HOST_ARCH_HAL_SRCS)
+SET(LIB_HOST_ARCH_HAL_SRCS
             src/hwmgr/alt_address_space.c
             src/hwmgr/alt_bridge_manager.c
             src/hwmgr/alt_cache.c
@@ -55,11 +55,15 @@ SET(LIB_ARCH_HAL_SRCS
             src/hwmgr/alt_watchdog.c
     )
 
-SET(LIB_ARCH_HAL_INCS
+UNSET(LIB_HOST_ARCH_HAL_INCS)
+SET(LIB_HOST_ARCH_HAL_INCS
             ${ARM_HWLIB_PATH}/include
     )
 
-SET(LIB_ARCH_HAL_C_FLAGS "-D__altera_arm__  -O3 -Ofast -g -Wall -std=c99 " )
+UNSET(LIB_HOST_ARCH_HAL_C_FLAGS)
+SET(LIB_HOST_ARCH_HAL_C_FLAGS "-D__altera_arm__  -O3 -Ofast -g -Wall -std=c99 " )
+UNSET(ARCH_HOST_MODULE_NAME)
+SET(ARCH_HOST_MODULE_NAME    ${CFG_HOST_NAME}_arm_a9_0)
 ################################################################################
 # Set architecture specific installation files
 ########################################################################
