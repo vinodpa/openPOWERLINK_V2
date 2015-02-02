@@ -2,7 +2,7 @@
 ********************************************************************************
 \file   targetsection.h
 
-\brief  Special function linking for TERASIC DE2-115 Eval Board MN dual GPIO
+\brief  Special function linking for Altera Cyclone V SoC Eval Board MN dual GPIO
 
 This header file defines macros for Altera Nios II targets to link specific
 functions to tightly-coupled memory.

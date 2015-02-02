@@ -64,3 +64,9 @@ CFG_NODE=MN
 # JTAG Cable
 CFG_JTAG_CABLE="USB-BlasterII [USB-1]"
 CFG_DEVICE_ID=2
+
+# Driver Arguments
+CFG_PLATFORM_CFLAGS=-D__C5SOC__
+
+# Driver Interface Configuration
+CFG_DRV_BUS="INT BUS"
