@@ -40,7 +40,7 @@ INCLUDE(geneclipseincludelist)
 ################################################################################
 # Set Paths
 SET(ALT_HW_LIB_DIR ${OPLK_BASE_DIR}/hardware/lib/${SYSTEM_NAME_DIR}/${SYSTEM_PROCESSOR_DIR})
-SET(ALT_TOOLS_DIR ${TOOLS_DIR}/aletra-arm)
+SET(ALT_TOOLS_DIR ${TOOLS_DIR}/altera-arm)
 
 ################################################################################
 # Options for MN libraries

@@ -100,7 +100,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // cache handling
 #if 0 // TODO find a way to detect the cache configuration
-#define DUALPROCSHM_FLUSH_DCACHE_RANGE(base, range)                                                                                                                \
+#define DUALPROCSHM_FLUSH_DCACHE_RANGE(base, range)                                                                                                   \
     ({                                                                                                                                                \
          uint32_t tempBase = (uint32_t) (((uint32_t) base) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK));                                                 \
          uint32_t tempCeil = (uint32_t) ((((uint32_t) base + (uint32_t) range) + CACHE_ALIGNED_BYTE_CHECK) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK)); \
@@ -110,7 +110,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      })
 //alt_cache_system_clean((void*) ((uint32_t)base & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK)), (size_t) (((size_t) range + CACHE_ALIGNED_BYTE_CHECK) & ~((size_t) CACHE_ALIGNED_BYTE_CHECK)));
 
-#define DUALPROCSHM_INVALIDATE_DCACHE_RANGE(base, range)                                                                                                           \
+#define DUALPROCSHM_INVALIDATE_DCACHE_RANGE(base, range)                                                                                              \
     ({                                                                                                                                                \
          uint32_t tempBase = (uint32_t) (((uint32_t) base) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK));                                                 \
          uint32_t tempCeil = (uint32_t) ((((uint32_t) base + (uint32_t) range) + CACHE_ALIGNED_BYTE_CHECK) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK)); \

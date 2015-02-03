@@ -35,6 +35,8 @@ MESSAGE(STATUS "INFO: Altera Cyclone V SoC platform selected")
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/altera" ${CMAKE_MODULE_PATH})
 SET(CMAKE_MODULE_PATH "${OPLK_BASE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+INCLUDE(geneclipsefilelist)
+INCLUDE(geneclipseincludelist)
 INCLUDE(setalteraarmboardconfig)
 
 ################################################################################
@@ -59,7 +61,7 @@ SET (ALT_LIBGEN bsp-editor)
 ################################################################################
 # Set path to system folders
 SET(ARCH_IPCORE_REPO None)
-SET(ARCH_TOOLS_DIR ${OPLK_BASE_DIR}/tools/altera-socarm)
+SET(ARCH_TOOLS_DIR ${OPLK_BASE_DIR}/tools/altera-arm)
 SET(ARCH_HWLIB_PATH ${SOC_EDS_ROOT_PATH}/ip/altera/hps/altera_hps/hwlib)
 SET(ARCH_SOC_TOOLS_PATH ${SOC_EDS_ROOT_PATH}/host_tools/altera/preloadergen)
 MESSAGE("The Hardware library Path is set to ${ARCH_HWLIB_PATH}")
