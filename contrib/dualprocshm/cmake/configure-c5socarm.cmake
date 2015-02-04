@@ -30,6 +30,9 @@
 
 ################################################################################
 # Set architecture specific sources and include directories
+INCLUDE(geneclipsefilelist)
+INCLUDE(geneclipseincludelist)
+INCLUDE(geneclipseflaglist)
 
 SET(LIB_ARCH_SRCS "")
 
@@ -42,10 +45,20 @@ SET(LIB_ARCH_INCS
 # Set architecture specific definitions
 
 ADD_DEFINITIONS(${ALT_${PROC_INST_NAME}_FLAGS} "-fmessage-length=0 -mcpu=${CFG_${PROC_INST_NAME}_CPU_VERSION} -ffunction-sections -fdata-sections -fno-inline")
-ADD_DEFINITIONS("-D__C5SOC__ -D__altera_arm__")
+ADD_DEFINITIONS(-D__C5SOC__ -D__altera_arm__)
 
 ################################################################################
 # Set architecture specific installation files
 
 ########################################################################
 # Eclipse project files
+SET(CFG_CPU_NAME ${CFG_${PROC_INST_NAME}_NAME})
+
+GEN_ECLIPSE_FILE_LIST("${HOSTIF_LIB_SRCS}" "" PART_ECLIPSE_FILE_LIST)
+SET(ECLIPSE_FILE_LIST "${ECLIPSE_FILE_LIST} ${PART_ECLIPSE_FILE_LIST}")
+GEN_ECLIPSE_FILE_LIST("${LIB_ARCH_SRCS}" "arch" PART_ECLIPSE_FILE_LIST)
+SET(ECLIPSE_FILE_LIST "${ECLIPSE_FILE_LIST} ${PART_ECLIPSE_FILE_LIST}")
+GET_PROPERTY(LIBRARY_INCLUDES DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+GEN_ECLIPSE_INCLUDE_LIST("${LIBRARY_INCLUDES} ${LIB_ARCH_INCS}" ECLIPSE_INCLUDE_LIST )
+CONFIGURE_FILE(${ARCH_TOOLS_DIR}/eclipse/libproject.in ${PROJECT_BINARY_DIR}/.project @ONLY)
+CONFIGURE_FILE(${ARCH_TOOLS_DIR}/eclipse/libcproject.in ${PROJECT_BINARY_DIR}/.cproject @ONLY)
