@@ -44,6 +44,7 @@ INCLUDE(geneclipselibrarylist)
 SET(CFG_HW_LIB_PATH ${OPLK_ROOT_DIR}/hardware/lib/${SYSTEM_NAME_DIR}/${SYSTEM_PROCESSOR_DIR}
         CACHE PATH "Path to the hardware library folder")
 
+SET(CPU_INST_NAME HOST)
 # Get subdirectories (board/demo)
 LIST_SUBDIRECTORIES(HW_BOARD_DEMOS ${CFG_HW_LIB_PATH} 2)
 

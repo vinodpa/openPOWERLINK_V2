@@ -28,7 +28,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
-MACRO(GEN_ECLIPSE_LIBRARY_LIST LIB_LIST RES_LIB_LIST RES_LIB_PATH_LIST)
+MACRO(GEN_ECLIPSE_LIBRARY_LIST LIB_LIST FRAG_BOARD_NAME RES_LIB_LIST RES_LIB_PATH_LIST)
 
     SET(TMP_LIB_LIST "")
     FOREACH(LIB IN ITEMS ${LIB_LIST})
@@ -40,8 +40,35 @@ MACRO(GEN_ECLIPSE_LIBRARY_LIST LIB_LIST RES_LIB_LIST RES_LIB_PATH_LIST)
         STRING(SUBSTRING ${LIB} ${BEGIN} 2 POST_FIX)
         IF (NOT ${POST_FIX} STREQUAL "_d")
             STRING(SUBSTRING ${LIB} 3 -1 LIB)
-            SET(TMP_LIB_LIST "${TMP_LIB_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"${LIB}\"/>\r")
-            SET(TMP_LIB_PATH_LIST "${TMP_LIB_PATH_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"${LIB_PATH}\"/>\r")
+            string(FIND ${LIB} "oplk" STR_POS)
+            IF ("${STR_POS}" EQUAL "0")
+                SET(LIB ${LIB})  # no change
+                SET(TMP_LIB_LIST "${TMP_LIB_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"${LIB}\"/>\r")
+                SET(TMP_LIB_PATH_LIST "${TMP_LIB_PATH_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"&quot;\${workspace_loc:/${LIB}/Debug}&quot;\"/>\r")
+            ELSE()
+                string(FIND ${LIB} "dualproc" STR_POS) # -@CFG_DEMO_NAME@
+                IF ("${STR_POS}" EQUAL "0")
+                    STRING(REPLACE "-" "_" DEMO_NAME ${CFG_DEMO_NAME})
+                    SET(LIB ${LIB}-@FRAG_BOARD_NAME@_@DEMO_NAME@)
+                    SET(TMP_LIB_LIST "${TMP_LIB_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"${LIB}\"/>\r")
+                    SET(TMP_LIB_PATH_LIST "${TMP_LIB_PATH_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"&quot;\${workspace_loc:/${LIB}/Debug}&quot;\"/>\r")
+                ELSE()
+                    string(FIND ${LIB} "hostif" STR_POS) # -@CFG_DEMO_NAME@
+                    IF ("${STR_POS}" EQUAL "0")
+                        SET(LIB ${LIB}-@FRAG_BOARD_NAME@_@CFG_DEMO_NAME@)
+                        SET(TMP_LIB_LIST "${TMP_LIB_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"${LIB}\"/>\r")
+                        SET(TMP_LIB_PATH_LIST "${TMP_LIB_PATH_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"&quot;\${workspace_loc:/${LIB}/Debug}&quot;\"/>\r")
+                    ELSE()
+                        string(FIND ${LIB} "hal" STR_POS) # bsp-@CFG_DEMO_NAME@-@CFG_CPU_NAME@
+                        IF ("${STR_POS}" EQUAL "0")
+                            SET(LIB bsp-@FRAG_BOARD_NAME@-@CFG_DEMO_NAME@-@CFG_CPU_NAME@)
+                            SET(TMP_LIB_LIST "${TMP_LIB_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"${LIB}\"/>\r")
+                            SET(TMP_LIB_PATH_LIST "${TMP_LIB_PATH_LIST}\t\t\t\t\t\t\t\t\t<listOptionValue builtIn=\"false\" value=\"&quot;\${workspace_loc:/${LIB}/Debug}&quot;\"/>\r")
+                        ENDIF()
+                    ENDIF()
+                ENDIF()
+            ENDIF()
+            
         ENDIF()
     ENDFOREACH()
 
