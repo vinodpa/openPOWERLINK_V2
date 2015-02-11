@@ -89,6 +89,10 @@ SET(CFG_HOST_TCIMEM_NAME dummy)
 OPTION(CFG_HOST_ARM_FRAME_AAPCS "ARM core has Stack frame compliant with AAPCS" ON)
 MARK_AS_ADVANCED(CFG_HOST_ARM_FRAME_AAPCS)
 
+# ARM core has enabled frame compliant with AAPCS
+OPTION(CFG_HOST_ARM_USE_CACHE "ARM core uses cache" ON)
+MARK_AS_ADVANCED(CFG_HOST_ARM_USE_CACHE)
+
 # ARM core should use 4 byte enums
 OPTION(CFG_HOST_ARM_SHORT_ENUMS "ARM core uses 4-bytes enums" OFF)
 MARK_AS_ADVANCED(CFG_HOST_ARM_SHORT_ENUMS)

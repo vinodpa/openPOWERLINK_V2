@@ -180,10 +180,13 @@ tOplkError target_init(void)
     tOplkError          oplkRet = kErrorOk;
     ALT_STATUS_CODE     halRet = ALT_E_SUCCESS;
 
+#ifdef ENABLE_CACHE
     // Enable Cache
-    //halRet = alt_cache_system_enable();
+    halRet = alt_cache_system_enable();
+#else
     halRet = alt_cache_system_disable();
-    //alt_cache_l1_data_disable();
+#endif
+
     if (halRet != ALT_E_SUCCESS)
     {
         oplkRet = kErrorGeneralError;

@@ -95,18 +95,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Memory barrier
 #define CACHE_ALIGNED_BYTE_CHECK    (ALT_CACHE_LINE_SIZE - 1)
 #define DUMMY(...)
-// FIXME screwed if the base address flooring truncates more address than the range ceiling appends //EDIT: now its fixed
-#define DPSHM_DMB()
 
 // cache handling
-#if 0 // TODO find a way to detect the cache configuration
+#ifdef ENABLE_CACHE
 #define DUALPROCSHM_FLUSH_DCACHE_RANGE(base, range)                                                                                                   \
     ({                                                                                                                                                \
          uint32_t tempBase = (uint32_t) (((uint32_t) base) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK));                                                 \
          uint32_t tempCeil = (uint32_t) ((((uint32_t) base + (uint32_t) range) + CACHE_ALIGNED_BYTE_CHECK) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK)); \
          alt_cache_system_clean((void*) tempBase, (size_t) (tempCeil - tempBase));                                                                    \
-         DUMMY("base: %lu, range: %lu, tempBase: %lu, tempCeil: %lu\n", base, range, tempBase, tempCeil);                                             \
-         DUMMY("D.");                                                                                                                                 \
      })
 //alt_cache_system_clean((void*) ((uint32_t)base & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK)), (size_t) (((size_t) range + CACHE_ALIGNED_BYTE_CHECK) & ~((size_t) CACHE_ALIGNED_BYTE_CHECK)));
 
@@ -115,8 +111,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
          uint32_t tempBase = (uint32_t) (((uint32_t) base) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK));                                                 \
          uint32_t tempCeil = (uint32_t) ((((uint32_t) base + (uint32_t) range) + CACHE_ALIGNED_BYTE_CHECK) & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK)); \
          alt_cache_system_invalidate((void*) tempBase, (size_t) (tempCeil - tempBase));                                                               \
-         DUMMY("base: %lu, range: %lu, tempBase: %lu, tempCeil: %lu\n", base, range, tempBase, tempCeil);                                             \
-         DUMMY("I.");                                                                                                                                 \
      })
 //alt_cache_system_invalidate((void*) ((uint32_t) base & ~((uint32_t) CACHE_ALIGNED_BYTE_CHECK)), (size_t) (((size_t) range + CACHE_ALIGNED_BYTE_CHECK) & ~((size_t) CACHE_ALIGNED_BYTE_CHECK)))
 #else
