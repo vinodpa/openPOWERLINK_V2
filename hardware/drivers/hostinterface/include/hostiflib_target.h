@@ -107,7 +107,7 @@ set to those provided by stdint.h.
 /**@}*/
 
 #ifndef UNUSED_PARAMETER
-#define UNUSED_PARAMETER(par)    (void)par
+#define UNUSED_PARAMETER(par)   (void)par
 #endif
 
 //------------------------------------------------------------------------------

@@ -5,7 +5,6 @@
 .qsys_edit/
 db/
 /**/quartus/*/*
-/**/qsys/*/*
 incremental_db/
 ## Files
 *.bak

@@ -203,7 +203,7 @@ The function sets the local node's MAC address.
 //------------------------------------------------------------------------------
 tOplkError arp_setMacAddr(UINT8* pMacAddr_p)
 {
-    memcpy(&arpInstance_l.aMacAddr[0], pMacAddr_p, ARP_HWADDR_LENGTH);
+    memcpy(&arpInstance_l.aMacAddr, pMacAddr_p, ARP_HWADDR_LENGTH);
 
     return kErrorOk;
 }
@@ -225,7 +225,7 @@ tOplkError arp_setIpAddr(UINT32 ipAddr_p)
 {
     UINT32 ipAddr = htonl(ipAddr_p); // Swap to get network order
 
-    memcpy(&arpInstance_l.aIpAddr[0], (UINT8*) &ipAddr, ARP_PROADDR_LENGTH);
+    memcpy(arpInstance_l.aIpAddr, (UINT8*)&ipAddr, ARP_PROADDR_LENGTH);
 
     return kErrorOk;
 }
@@ -247,10 +247,10 @@ tOplkError arp_setDefGateway(UINT32 defGateway_p)
 {
     UINT32 defGateway = htonl(defGateway_p); // Swap to get network order
 
-    memcpy(&arpInstance_l.aDefaultGwIp[0], (UINT8*)&defGateway, ARP_PROADDR_LENGTH);
+    memcpy(arpInstance_l.aDefaultGwIp, (UINT8*)&defGateway, ARP_PROADDR_LENGTH);
 
     // Invalidate default gateway's MAC address
-    memset(&arpInstance_l.aDefaultGwMac[0], 0, ARP_HWADDR_LENGTH);
+    memset(arpInstance_l.aDefaultGwMac, 0, ARP_HWADDR_LENGTH);
 
     return kErrorOk;
 }
@@ -285,7 +285,7 @@ tOplkError arp_sendRequest(UINT32 ipAddr_p)
     pFrame->operation = htons(ARP_OP_REQUEST);
 
     // Sender IP Address
-    memcpy(pFrame->aSenderProtocolAddress, &arpInstance_l.aIpAddr[0], ARP_PROADDR_LENGTH);
+    memcpy(pFrame->aSenderProtocolAddress, arpInstance_l.aIpAddr, ARP_PROADDR_LENGTH);
 
     // Overwrite last byte with node ID
     pFrame->aSenderProtocolAddress[3] = arpInstance_l.nodeId;

@@ -43,7 +43,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <common/target.h>
 
 #include <stdlib.h>
-#include <unistd.h>
 #include <system.h>
 #include <io.h>
 
@@ -149,7 +148,6 @@ int target_lock(void)
         if (val == LOCK_UNLOCKED_C)
         {
             IOWR_8DIRECT(pLock_l, 0, LOCK_LOCAL_ID);
-            //usleep(2);
             continue; // return to top of loop to check again
         }
     } while (val != LOCK_LOCAL_ID);

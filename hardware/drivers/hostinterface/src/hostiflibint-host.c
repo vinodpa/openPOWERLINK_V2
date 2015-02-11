@@ -125,7 +125,6 @@ tHostifReturn hostif_createInt(tHostif* pHostif_p)
     UINT                loopCnt;
 
     // Busy wait for enabled bridge
-    //while (getBridgeEnabled(pHostif_p) == FALSE)
     for (loopCnt = HOSTIF_BRIDGE_INIT_TIMEOUT_MS; loopCnt > 0; loopCnt--)
     {
         if (getBridgeEnabled(pHostif_p) == TRUE)

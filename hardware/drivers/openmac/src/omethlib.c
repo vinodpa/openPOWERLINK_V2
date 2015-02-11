@@ -273,7 +273,7 @@ static ometh_internal_typ    omethInternal;    // driver internal data
         pDesc->flags.byte.low    = OMETH_MAX_RETRY;                                                 \
     }                                                                                               \
     pDesc->flags.byte.high    = pInfo->flags1 | addFlags;    /* set flag to start transmitter */    \
-if (len == 0){printf("4"); while(1); return 0;}                                                                                                    \
+                                                                                                    \
     return len                                                                                      \
 
 //*************************************************************************************

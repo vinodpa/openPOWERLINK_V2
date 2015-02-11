@@ -70,6 +70,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MEM_LOCK_SIZE               1   ///< Memory lock size
 #define DYN_MEM_TABLE_ENTRY_SIZE    4   ///< Size of Dynamic table entry
 
+#ifndef CALC_OFFSET
+#define CALC_OFFSET(addr_p, baseAddr_p)     (addr_p - baseAddr_p)
+#endif
+
+#ifndef DUALPROCSHM_MALLOC
+#define DUALPROCSHM_MALLOC(size_p)      malloc(size_p)
+#endif
+
+#ifndef DUALPROCSHM_FREE
+#define DUALPROCSHM_FREE(ptr_p)         free(ptr_p)
+#endif
 //------------------------------------------------------------------------------
 // module global vars
 //------------------------------------------------------------------------------

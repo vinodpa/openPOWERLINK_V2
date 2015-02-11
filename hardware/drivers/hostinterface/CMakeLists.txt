@@ -107,7 +107,7 @@ SET(HOSTIF_LIB_INCS
 ########################################################################
 ADD_DEFINITIONS("-Wall -Wextra -pedantic -std=c99")
 ADD_DEFINITIONS(${HOSTIF_CFLAGS})
- ADD_DEFINITIONS(-DCONFIG_HOSTIF_PCP=${CFG_HOSTIF_PCP})
+ADD_DEFINITIONS(-DCONFIG_HOSTIF_PCP=${CFG_HOSTIF_PCP})
 
 ########################################################################
 # Setup the architecture specific definitions
