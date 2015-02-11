@@ -116,7 +116,6 @@ ENDIF()
 INCLUDE_DIRECTORIES(
                     ${ALT_BSP_DIR}/include
                     ${OPLK_ROOT_DIR}/stack/src/arch/altera_arm
-                    ${COMMON_SOURCE_DIR}
                    )
 
 ################################################################################

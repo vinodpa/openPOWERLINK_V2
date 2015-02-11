@@ -70,8 +70,7 @@ SET(DEMO_SOURCES
 
 INCLUDE_DIRECTORIES(
                     ${DEMO_SOURCE_DIR}
-                    ${COMMON_SOURCE_DIR}/lcd
-                    ${COMMON_SOURCE_DIR}/arp
+                    ${COMMON_SOURCE_DIR}
                     ${OPLKCFG_PATH}
                    )
 

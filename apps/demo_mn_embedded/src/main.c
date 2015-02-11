@@ -53,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "event.h"
 
 #if (CONFIG_CDC_ON_SD != FALSE)
-#include <sdcard.h>
+#include <sdcard/sdcard.h>
 #endif
 
 //============================================================================//
