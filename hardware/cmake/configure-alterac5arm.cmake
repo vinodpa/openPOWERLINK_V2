@@ -35,6 +35,9 @@ MESSAGE(STATUS "INFO: Altera Cyclone V SoC platform selected")
 SET(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/altera" ${CMAKE_MODULE_PATH})
 SET(CMAKE_MODULE_PATH "${OPLK_BASE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+INCLUDE(geneclipsefilelist)
+INCLUDE(geneclipseincludelist)
+INCLUDE(geneclipseflaglist)
 INCLUDE(setalteraarmboardconfig)
 
 ################################################################################
