@@ -11,7 +11,7 @@ to check the time.
 *******************************************************************************/
 
 /*------------------------------------------------------------------------------
-Copyright (c) 2014, Bernecker+Rainer Industrie-Elektronik Ges.m.b.H. (B&R)
+Copyright (c) 2015, Kalycito Infotech Private Limited
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -114,7 +114,6 @@ static inline uint64_t  getTimerTicksFromScaled(ALT_GPT_TIMER_t timerId_p,
 */
 //------------------------------------------------------------------------------
 int usleep(uint32_t usecs_p)
-{    //printf("-");
 {
     uint64_t        startTime = alt_globaltmr_get64();
     uint32_t        timerPrescaler = alt_globaltmr_prescaler_get() + 1;
@@ -126,9 +125,7 @@ int usleep(uint32_t usecs_p)
 
     while (alt_globaltmr_get64() < endTime)
     {
-    }}
-
-    //printf("|");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -145,8 +142,7 @@ milliseconds have elapsed.
 //------------------------------------------------------------------------------
 int msleep(unsigned long int milliSeconds_p)
 {
-    //printf(".");
-    {    uint64_t                startTickStamp = alt_globaltmr_get64();
+    uint64_t                startTickStamp = alt_globaltmr_get64();
     uint64_t                waitTickCount = getTimerTicksFromScaled(ALT_GPT_CPU_GLOBAL_TMR, SECS_TO_MILLISECS, milliSeconds_p);
     volatile uint32_t*      glbTimerRegCntBase_l = (volatile uint32_t*) (GLOBALTMR_BASE + GLOBALTMR_CNTR_LO_REG_OFFSET);
     volatile uint32_t*      glbTimerRegCntBase_h = (volatile uint32_t*) (GLOBALTMR_BASE + GLOBALTMR_CNTR_HI_REG_OFFSET);
@@ -198,13 +194,9 @@ int msleep(unsigned long int milliSeconds_p)
                 waitCount--;
             }
         }
-//
-//        if (waitCount % 5000 == 0)
-//        printf(".");
-        waitCount++;
-    }}
 
-    //printf("|");
+        waitCount++;
+    }
 }
 
 //============================================================================//

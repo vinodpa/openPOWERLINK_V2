@@ -53,8 +53,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // typedef
 //------------------------------------------------------------------------------
 #ifndef LOCK_T
-//FIXME
-//#define LOCK_T              uint8_t
 typedef uint8_t LOCK_T;
 #endif
 

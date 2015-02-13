@@ -3,7 +3,7 @@
 # CMake macro for setting the board managing the configuration of the current
 # selected board.
 #
-# Copyright (c) 2014, Kalycito Infotech Private Limited
+# Copyright (c) 2015, Kalycito Infotech Private Limited
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ FOREACH(PROC_INST_NAME PCP HOST)
     ELSE()
         SET(ALT_${PROC_INST_NAME}_CFLAGS "${ALT_${PROC_INST_NAME}_CFLAGS} -fno-short-enums")
     ENDIF()
-    
+
     IF(CFG_${PROC_INST_NAME}_ARM_HW_FLOAT)
         SET(ALT_${PROC_INST_NAME}_CFLAGS "${ALT_${PROC_INST_NAME}_CFLAGS} -mfloat-abi=hard")
     ELSE()
